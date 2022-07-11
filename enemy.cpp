@@ -262,7 +262,7 @@ void UpdateEnemy(void)
 
 					// 攻撃
 					SetDamageEF(TRUE);
-					SetCameraShake(20);
+					// SetCameraShake(20);
 					SetPlayerDamage(1);
 
 				}
@@ -336,68 +336,74 @@ void UpdateEnemy(void)
 
 
 
-			// エネミーの消去アニメーション
-			if (g_Enemy[i].isHit == TRUE)				// 攻撃が当たってるか？
-			{											// Yes
-				//BOOL ans = TRUE;
-
-				// SEの停止
-				StopSound(SOUND_LABEL_SE_siren01);
-
-				// 色を元に戻す
-				g_Enemy[i].fuchi = FALSE;
-
-				BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
-
-				// 縮まる処理
-				if ((blast[0].shrink) && (g_Enemy[i].hitTime > 0))
-				{
-					g_Enemy[i].pos.x += (g_Enemy[i].hitPos.x - g_Enemy[i].pos.x) / ENEMY_HIT_MOVE;
-					g_Enemy[i].pos.y += (g_Enemy[i].hitPos.y - g_Enemy[i].pos.y) / ENEMY_HIT_MOVE;
-					g_Enemy[i].pos.z += (g_Enemy[i].hitPos.z - g_Enemy[i].pos.z) / ENEMY_HIT_MOVE;
-
-					// ランダムに回転させる
-					g_Enemy[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
-					g_Enemy[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
-					g_Enemy[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
-
-					if (g_Enemy[i].hitTime == 15)
-					{
-						g_Enemy[i].rot.x += g_Enemy[i].hitRot.x;
-						g_Enemy[i].rot.y += g_Enemy[i].hitRot.y;
-						g_Enemy[i].rot.z += g_Enemy[i].hitRot.z;
-					}
-
-					g_Enemy[i].hitTime--;
-				}
-				
-
-				// 爆弾と一緒に落下する
-				BOOL camera = GetCameraSwitch();
-
-				if (camera == FALSE && blast[0].move == FALSE)
-				{
-					g_Enemy[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
-
-					if (g_Enemy[i].pos.y < ENEMY_OFFSET_Y)
-					{
-						g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
-					}
-				}
-				
-				//爆弾と一緒に奥へ移動する
-				if (blast[0].move == TRUE) /*&& (g_Enemy[i].move == TRUE)*/ //&& (g_Enemy[i].hitTime == 0))
-				{
-					g_Enemy[i].pos.z += FIELD_SPEED+ 2.0f;
-				}
 
 
-				if (blast[0].use == FALSE)
-				{
-					g_Enemy[i].use = FALSE;
-					SetTutorialEnemy(TRUE);
-				}
-			}
+			//=======================================================================
+			// ↓今回は当たった後のエネミーの挙動は攻撃オブジェクト側で行いましょう！
+			//=======================================================================
+
+			//// エネミーの消去アニメーション
+			//if (g_Enemy[i].isHit == TRUE)				// 攻撃が当たってるか？
+			//{											// Yes
+			//	//BOOL ans = TRUE;
+
+			//	// SEの停止
+			//	StopSound(SOUND_LABEL_SE_siren01);
+
+			//	// 色を元に戻す
+			//	g_Enemy[i].fuchi = FALSE;
+
+			//	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+
+			//	// 縮まる処理
+			//	if ((blast[0].shrink) && (g_Enemy[i].hitTime > 0))
+			//	{
+			//		g_Enemy[i].pos.x += (g_Enemy[i].hitPos.x - g_Enemy[i].pos.x) / ENEMY_HIT_MOVE;
+			//		g_Enemy[i].pos.y += (g_Enemy[i].hitPos.y - g_Enemy[i].pos.y) / ENEMY_HIT_MOVE;
+			//		g_Enemy[i].pos.z += (g_Enemy[i].hitPos.z - g_Enemy[i].pos.z) / ENEMY_HIT_MOVE;
+
+			//		// ランダムに回転させる
+			//		g_Enemy[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
+			//		g_Enemy[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
+			//		g_Enemy[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
+
+			//		if (g_Enemy[i].hitTime == 15)
+			//		{
+			//			g_Enemy[i].rot.x += g_Enemy[i].hitRot.x;
+			//			g_Enemy[i].rot.y += g_Enemy[i].hitRot.y;
+			//			g_Enemy[i].rot.z += g_Enemy[i].hitRot.z;
+			//		}
+
+			//		g_Enemy[i].hitTime--;
+			//	}
+			//	
+
+			//	// 爆弾と一緒に落下する
+			//	BOOL camera = GetCameraSwitch();
+
+			//	if (camera == FALSE && blast[0].move == FALSE)
+			//	{
+			//		g_Enemy[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
+
+			//		if (g_Enemy[i].pos.y < ENEMY_OFFSET_Y)
+			//		{
+			//			g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
+			//		}
+			//	}
+			//	
+			//	//爆弾と一緒に奥へ移動する
+			//	if (blast[0].move == TRUE) /*&& (g_Enemy[i].move == TRUE)*/ //&& (g_Enemy[i].hitTime == 0))
+			//	{
+			//		g_Enemy[i].pos.z += FIELD_SPEED+ 2.0f;
+			//	}
+
+
+			//	if (blast[0].use == FALSE)
+			//	{
+			//		g_Enemy[i].use = FALSE;
+			//		SetTutorialEnemy(TRUE);
+			//	}
+			//}
 
 
 			// 影もプレイヤーの位置に合わせる

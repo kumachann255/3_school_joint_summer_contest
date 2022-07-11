@@ -24,7 +24,9 @@
 #include "particle.h"
 
 #include "title.h"
-#include "game.h"
+#include "gameCity.h"
+#include "gameSea.h"
+#include "gameSky.h"
 #include "result.h"
 #include "endroll.h"
 #include "fade.h"
@@ -65,9 +67,9 @@ char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 
 #endif
 
-int	g_Mode = MODE_TITLE;					// 起動時の画面を設定
+int	g_Mode = MODE_GAME_SEA;					// 起動時の画面を設定
 
-int g_Stage = tutorial;							// 現在のステージ
+int g_Stage = stage0;							// 現在のステージ
 
 int g_Score[stage_max] = { 0, 0, 0, 0 };	// 各ステージのスコアを保存
 
@@ -315,7 +317,15 @@ void Update(void)
 		break;
 
 	case MODE_GAME_CITY:	// ゲーム画面の更新
-		UpdateGame();
+		UpdateGameCity();
+		break;
+
+	case MODE_GAME_SEA:	// ゲーム画面の更新
+		UpdateGameSea();
+		break;
+
+	case MODE_GAME_SKY:	// ゲーム画面の更新
+		UpdateGameSky();
 		break;
 
 	case MODE_GAME_COUNT:	// 次のステージまでのカウント画面の更新
@@ -404,7 +414,15 @@ void Draw(void)
 		break;
 
 	case MODE_GAME_CITY:			// ゲーム画面の描画
-		DrawGame();
+		DrawGameCity();
+		break;
+
+	case MODE_GAME_SEA:			// ゲーム画面の描画
+		DrawGameSea();
+		break;
+
+	case MODE_GAME_SKY:			// ゲーム画面の描画
+		DrawGameSky();
 		break;
 
 	case MODE_GAME_COUNT:	// 次のステージまでのカウント画面の描画
@@ -512,7 +530,13 @@ void SetMode(int mode)
 	UninitTitle();
 
 	// ゲーム画面の終了処理
-	UninitGame();
+	UninitGameCity();
+
+	// ゲーム画面の終了処理
+	UninitGameSea();
+
+	// ゲーム画面の終了処理
+	UninitGameSky();
 
 	// 次のステージまでのカウント画面の終了処理
 	UninitCountDown();
@@ -543,7 +567,17 @@ void SetMode(int mode)
 
 	case MODE_GAME_CITY:
 		// ゲーム画面の初期化
-		InitGame();
+		InitGameCity();
+		break;
+
+	case MODE_GAME_SEA:
+		// ゲーム画面の初期化
+		InitGameSea();
+		break;
+
+	case MODE_GAME_SKY:
+		// ゲーム画面の初期化
+		InitGameSky();
 		break;
 
 	case MODE_GAME_COUNT:

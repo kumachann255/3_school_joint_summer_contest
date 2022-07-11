@@ -66,11 +66,3 @@ void DrawPlayer(void);
 PLAYER *GetPlayer(void);
 
 void SetPlayerDamage(int damage);
-
-void SetCarMotion(void);
-
-void SetStayMotion(void);
-
-void SetBomthrowMotion(void);
-
-void SetDamageCar(void);

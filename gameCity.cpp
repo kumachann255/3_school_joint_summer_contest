@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// ゲーム画面処理 [game.cpp]
+// ゲーム画面処理 [gameCity.cpp]
 // Author : 熊澤義弘
 //
 //=============================================================================
@@ -11,7 +11,7 @@
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
-#include "game.h"
+#include "gameCity.h"
 
 #include "player.h"
 #include "enemy.h"
@@ -49,7 +49,7 @@
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void CheckHit(void);
+void CheckHitCity(void);
 
 
 
@@ -66,7 +66,7 @@ static int					g_Stage;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitGame(void)
+HRESULT InitGameCity(void)
 {
 	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
@@ -185,7 +185,7 @@ HRESULT InitGame(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitGame(void)
+void UninitGameCity(void)
 {
 	// チュートリアルの終了処理
 	UninitTutorial();
@@ -257,9 +257,9 @@ void UninitGame(void)
 }
 
 //=============================================================================
-// 更新処理
+// 更新処理(街ステージ
 //=============================================================================
-void UpdateGame(void)
+void UpdateGameCity(void)
 {
 #ifdef _DEBUG
 	if (GetKeyboardTrigger(DIK_V))
@@ -323,7 +323,7 @@ void UpdateGame(void)
 	UpdateShadow();
 
 	// 当たり判定処理
-	CheckHit();
+	CheckHitCity();
 
 	// スコアの更新処理
 	UpdateScore();
@@ -350,10 +350,11 @@ void UpdateGame(void)
 	UpdateTutorial();
 }
 
+
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawGame0(void)
+void DrawGameCity0(void)
 {
 	// 3Dの物を描画する処理
 	// 地面の描画処理
@@ -421,13 +422,13 @@ void DrawGame0(void)
 	DrawPlayerHP();
 
 	// ダメージエフェクトの描画処理
-	DrawDamageEF();
+	// DrawDamageEF();
 
 	// UIの描画処理
 	DrawGameUI();
 
 	// 吹き出しの描画処理
-	DrawSpeech();
+	// DrawSpeech();
 
 	// チュートリアルの描画処理
 	DrawTutorial();
@@ -441,7 +442,7 @@ void DrawGame0(void)
 }
 
 
-void DrawGame(void)
+void DrawGameCity(void)
 {
 	XMFLOAT3 pos;
 
@@ -462,13 +463,13 @@ void DrawGame(void)
 	{
 	case TYPE_FULL_SCREEN:
 		SetViewPort(TYPE_FULL_SCREEN);
-		DrawGame0();
+		DrawGameCity0();
 		break;
 
 	case TYPE_LEFT_HALF_SCREEN:
 	case TYPE_RIGHT_HALF_SCREEN:
 		SetViewPort(TYPE_LEFT_HALF_SCREEN);
-		DrawGame0();
+		DrawGameCity0();
 
 		// エネミー視点
 		pos = GetEnemy()->pos;
@@ -476,13 +477,13 @@ void DrawGame(void)
 		SetCameraAT(pos);
 		SetCamera();
 		SetViewPort(TYPE_RIGHT_HALF_SCREEN);
-		DrawGame0();
+		DrawGameCity0();
 		break;
 
 	case TYPE_UP_HALF_SCREEN:
 	case TYPE_DOWN_HALF_SCREEN:
 		SetViewPort(TYPE_UP_HALF_SCREEN);
-		DrawGame0();
+		DrawGameCity0();
 
 		// エネミー視点
 		pos = GetEnemy()->pos;
@@ -490,7 +491,7 @@ void DrawGame(void)
 		SetCameraAT(pos);
 		SetCamera();
 		SetViewPort(TYPE_DOWN_HALF_SCREEN);
-		DrawGame0();
+		DrawGameCity0();
 		break;
 
 	}
@@ -500,7 +501,7 @@ void DrawGame(void)
 //=============================================================================
 // 当たり判定処理
 //=============================================================================
-void CheckHit(void)
+void CheckHitCity(void)
 {
 	ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
 	ENEMY_HELI *enemyHeli = GetEnemyHeli();		// エネミーのポインターを初期化

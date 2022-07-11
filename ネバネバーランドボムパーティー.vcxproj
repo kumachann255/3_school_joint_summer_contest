@@ -148,7 +148,9 @@
     <ClCompile Include="enemyHeli.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fieldobj.cpp" />
-    <ClCompile Include="game.cpp" />
+    <ClCompile Include="gameCity.cpp" />
+    <ClCompile Include="gameSea.cpp" />
+    <ClCompile Include="gameSky.cpp" />
     <ClCompile Include="gameUI.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
@@ -191,7 +193,9 @@
     <ClInclude Include="enemyHeli.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fieldobj.h" />
-    <ClInclude Include="game.h" />
+    <ClInclude Include="gameCity.h" />
+    <ClInclude Include="gameSea.h" />
+    <ClInclude Include="gameSky.h" />
     <ClInclude Include="gameUI.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
