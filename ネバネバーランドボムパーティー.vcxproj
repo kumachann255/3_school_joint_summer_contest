@@ -168,6 +168,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="score.cpp" />
+    <ClCompile Include="sea_meshfield.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sky.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="score.h" />
+    <ClInclude Include="sea_meshfield.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sky.h" />
     <ClInclude Include="sound.h" />
