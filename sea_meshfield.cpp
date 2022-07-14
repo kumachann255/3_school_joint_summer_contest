@@ -101,9 +101,9 @@ HRESULT InitSeaMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 	g_Vertex = new VERTEX_3D[g_nNumVertexField];
 	g_Center = XMFLOAT3(0.0f, 0.0f, 2000.0f);		// ”g‚Ì”­¶êŠ
 	g_Time = 0.0f;								// ”g‚ÌŒo‰ßŠÔ({‚Æ[‚Æ‚Å“à‘¤ŠO‘¤‚É‚È‚é)
-	g_wave_frequency = 2.0f;					// ”g‚Ìü”g”iã‰º‰^“®‚Ì‘¬‚³j
-	g_wave_correction = 0.015f;					// ”g‚Ì‹——£•â³i•Ï‚¦‚È‚­‚Ä‚à—Ç‚¢‚Æv‚¤j
-	g_wave_amplitude = 6.5f;					// ”g‚ÌU•(”g‚Ì‚‚³)
+	g_wave_frequency = 1.5f;					// ”g‚Ìü”g”iã‰º‰^“®‚Ì‘¬‚³j
+	g_wave_correction = 0.01f;					// ”g‚Ì‹——£•â³i•Ï‚¦‚È‚­‚Ä‚à—Ç‚¢‚Æv‚¤j
+	g_wave_amplitude = 4.5f;					// ”g‚ÌU•(”g‚Ì‚‚³)
 
 	for (int z = 0; z < (g_nNumBlockZField + 1); z++)
 	{

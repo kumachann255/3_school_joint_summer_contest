@@ -11,7 +11,7 @@
 #include "model.h"
 #include "enemy.h"
 #include "blast.h"
-#include "meshfield.h"
+#include "sea_meshfield.h"
 #include "shadow.h"
 #include "collision.h"
 #include "damageEF.h"
@@ -342,69 +342,102 @@ void UpdateEnemy(void)
 			// ↓今回は当たった後のエネミーの挙動は攻撃オブジェクト側で行いましょう！
 			//=======================================================================
 
-			//// エネミーの消去アニメーション
-			//if (g_Enemy[i].isHit == TRUE)				// 攻撃が当たってるか？
-			//{											// Yes
-			//	//BOOL ans = TRUE;
+			// エネミーの消去アニメーション
+			if (g_Enemy[i].isHit == TRUE)				// 攻撃が当たってるか？
+			{											// Yes
+				//BOOL ans = TRUE;
 
-			//	// SEの停止
-			//	StopSound(SOUND_LABEL_SE_siren01);
+				// SEの停止
+				StopSound(SOUND_LABEL_SE_siren01);
 
-			//	// 色を元に戻す
-			//	g_Enemy[i].fuchi = FALSE;
+				// 色を元に戻す
+				g_Enemy[i].fuchi = FALSE;
 
-			//	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+				BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
 
-			//	// 縮まる処理
-			//	if ((blast[0].shrink) && (g_Enemy[i].hitTime > 0))
-			//	{
-			//		g_Enemy[i].pos.x += (g_Enemy[i].hitPos.x - g_Enemy[i].pos.x) / ENEMY_HIT_MOVE;
-			//		g_Enemy[i].pos.y += (g_Enemy[i].hitPos.y - g_Enemy[i].pos.y) / ENEMY_HIT_MOVE;
-			//		g_Enemy[i].pos.z += (g_Enemy[i].hitPos.z - g_Enemy[i].pos.z) / ENEMY_HIT_MOVE;
+				// 縮まる処理
+				if ((blast[0].shrink) && (g_Enemy[i].hitTime > 0))
+				{
+					g_Enemy[i].pos.x += (g_Enemy[i].hitPos.x - g_Enemy[i].pos.x) / ENEMY_HIT_MOVE;
+					g_Enemy[i].pos.y += (g_Enemy[i].hitPos.y - g_Enemy[i].pos.y) / ENEMY_HIT_MOVE;
+					g_Enemy[i].pos.z += (g_Enemy[i].hitPos.z - g_Enemy[i].pos.z) / ENEMY_HIT_MOVE;
 
-			//		// ランダムに回転させる
-			//		g_Enemy[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
-			//		g_Enemy[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
-			//		g_Enemy[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
+					// ランダムに回転させる
+					g_Enemy[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
+					g_Enemy[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
+					g_Enemy[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
 
-			//		if (g_Enemy[i].hitTime == 15)
-			//		{
-			//			g_Enemy[i].rot.x += g_Enemy[i].hitRot.x;
-			//			g_Enemy[i].rot.y += g_Enemy[i].hitRot.y;
-			//			g_Enemy[i].rot.z += g_Enemy[i].hitRot.z;
-			//		}
+					if (g_Enemy[i].hitTime == 15)
+					{
+						g_Enemy[i].rot.x += g_Enemy[i].hitRot.x;
+						g_Enemy[i].rot.y += g_Enemy[i].hitRot.y;
+						g_Enemy[i].rot.z += g_Enemy[i].hitRot.z;
+					}
 
-			//		g_Enemy[i].hitTime--;
-			//	}
-			//	
+					g_Enemy[i].hitTime--;
+				}
+				
 
-			//	// 爆弾と一緒に落下する
-			//	BOOL camera = GetCameraSwitch();
+				// 爆弾と一緒に落下する
+				BOOL camera = GetCameraSwitch();
 
-			//	if (camera == FALSE && blast[0].move == FALSE)
-			//	{
-			//		g_Enemy[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
+				if (camera == FALSE && blast[0].move == FALSE)
+				{
+					g_Enemy[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
 
-			//		if (g_Enemy[i].pos.y < ENEMY_OFFSET_Y)
-			//		{
-			//			g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
-			//		}
-			//	}
-			//	
-			//	//爆弾と一緒に奥へ移動する
-			//	if (blast[0].move == TRUE) /*&& (g_Enemy[i].move == TRUE)*/ //&& (g_Enemy[i].hitTime == 0))
-			//	{
-			//		g_Enemy[i].pos.z += FIELD_SPEED+ 2.0f;
-			//	}
+					if (g_Enemy[i].pos.y < ENEMY_OFFSET_Y)
+					{
+						g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
+					}
+				}
+				
+				//爆弾と一緒に奥へ移動する
+				if (blast[0].move == TRUE) /*&& (g_Enemy[i].move == TRUE)*/ //&& (g_Enemy[i].hitTime == 0))
+				{
+					g_Enemy[i].pos.z += FIELD_SPEED+ 2.0f;
+				}
 
 
-			//	if (blast[0].use == FALSE)
-			//	{
-			//		g_Enemy[i].use = FALSE;
-			//		SetTutorialEnemy(TRUE);
-			//	}
-			//}
+				if (blast[0].use == FALSE)
+				{
+					g_Enemy[i].use = FALSE;
+					SetTutorialEnemy(TRUE);
+				}
+			}
 
+			// レイキャストして足元の高さを求める
+			XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
+			XMFLOAT3 hitPosition;								// 交点
+			hitPosition.y = g_Enemy[i].pos.y - ENEMY_OFFSET_Y;	// 外れた時用に初期化しておく
+			bool ans = RayHitSeaField(g_Enemy[i].pos, &hitPosition, &normal);
+			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
+
+
+			//////////////////////////////////////////////////////////////////////
+			// 姿勢制御
+			//////////////////////////////////////////////////////////////////////
+
+			XMVECTOR vx, nvx, up;
+			XMVECTOR quat;
+			float len, angle;
+
+			// ２つのベクトルの外積を取って任意の回転軸を求める
+			g_Enemy[i].upVector = normal;
+			up = { 0.0f, 1.0f, 0.0f, 0.0f };
+			vx = XMVector3Cross(up, XMLoadFloat3(&g_Enemy[i].upVector));
+
+			// 求めた回転軸からクォータニオンを作り出す
+			nvx = XMVector3Length(vx);
+			XMStoreFloat(&len, nvx);
+			nvx = XMVector3Normalize(vx);
+			angle = asinf(len);
+			quat = XMQuaternionRotationNormal(nvx, angle);
+
+			// 前回のクォータニオンから今回のクォータニオンまでの回転を滑らかにする
+			quat = XMQuaternionSlerp(XMLoadFloat4(&g_Enemy[i].quaternion), quat, 0.05f);
+
+			// 今回のクォータニオンの結果を保存する
+			XMStoreFloat4(&g_Enemy[i].quaternion, quat);
 
 			// 影もプレイヤーの位置に合わせる
 			XMFLOAT3 pos = g_Enemy[i].pos;
@@ -441,6 +474,10 @@ void DrawEnemy(void)
 		// 回転を反映
 		mtxRot = XMMatrixRotationRollPitchYaw(g_Enemy[i].rot.x, g_Enemy[i].rot.y + XM_PI, g_Enemy[i].rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// クォータニオンを反映
+		XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Enemy[i].quaternion));
+		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
 
 		// 移動を反映
 		mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);

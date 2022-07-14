@@ -342,66 +342,66 @@ void UpdateEnemyHeli(void)
 			// ↓今回は当たった後のエネミーの挙動は攻撃オブジェクト側で行いましょう！
 			//=======================================================================
 
-			//// ヘリエネミーの消去アニメーション
-			//if (g_EnemyHeli[i].isHit == TRUE)				// 攻撃が当たってるか？
-			//{											// Yes
-			//	// SEの停止
-			//	StopSound(SOUND_LABEL_SE_propellerSound01);
+			// ヘリエネミーの消去アニメーション
+			if (g_EnemyHeli[i].isHit == TRUE)				// 攻撃が当たってるか？
+			{											// Yes
+				// SEの停止
+				StopSound(SOUND_LABEL_SE_propellerSound01);
 
-			//	// リムライトオフ
-			//	g_EnemyHeli[i].fuchi = FALSE;
+				// リムライトオフ
+				g_EnemyHeli[i].fuchi = FALSE;
 
-			//	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+				BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
 
-			//	// 縮まる処理
-			//	if ((blast[0].shrink) && (g_EnemyHeli[i].hitTime > 0))
-			//	{
-			//		g_EnemyHeli[i].pos.x += (g_EnemyHeli[i].hitPos.x - g_EnemyHeli[i].pos.x) / ENEMY_HELI_HIT_MOVE;
-			//		g_EnemyHeli[i].pos.y += (g_EnemyHeli[i].hitPos.y - g_EnemyHeli[i].pos.y) / ENEMY_HELI_HIT_MOVE;
-			//		g_EnemyHeli[i].pos.z += (g_EnemyHeli[i].hitPos.z - g_EnemyHeli[i].pos.z) / ENEMY_HELI_HIT_MOVE;
+				// 縮まる処理
+				if ((blast[0].shrink) && (g_EnemyHeli[i].hitTime > 0))
+				{
+					g_EnemyHeli[i].pos.x += (g_EnemyHeli[i].hitPos.x - g_EnemyHeli[i].pos.x) / ENEMY_HELI_HIT_MOVE;
+					g_EnemyHeli[i].pos.y += (g_EnemyHeli[i].hitPos.y - g_EnemyHeli[i].pos.y) / ENEMY_HELI_HIT_MOVE;
+					g_EnemyHeli[i].pos.z += (g_EnemyHeli[i].hitPos.z - g_EnemyHeli[i].pos.z) / ENEMY_HELI_HIT_MOVE;
 
-			//		// ランダムに回転させる
-			//		g_EnemyHeli[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
-			//		g_EnemyHeli[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
-			//		g_EnemyHeli[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
+					// ランダムに回転させる
+					g_EnemyHeli[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
+					g_EnemyHeli[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
+					g_EnemyHeli[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
 
-			//		if (g_EnemyHeli[i].hitTime == 15)
-			//		{
-			//			g_EnemyHeli[i].rot.x += g_EnemyHeli[i].hitRot.x;
-			//			g_EnemyHeli[i].rot.y += g_EnemyHeli[i].hitRot.y;
-			//			g_EnemyHeli[i].rot.z += g_EnemyHeli[i].hitRot.z;
-			//		}
+					if (g_EnemyHeli[i].hitTime == 15)
+					{
+						g_EnemyHeli[i].rot.x += g_EnemyHeli[i].hitRot.x;
+						g_EnemyHeli[i].rot.y += g_EnemyHeli[i].hitRot.y;
+						g_EnemyHeli[i].rot.z += g_EnemyHeli[i].hitRot.z;
+					}
 
-			//		g_EnemyHeli[i].hitTime--;
-			//	}
-
-
-
-			//	// 爆弾と一緒に落下する
-			//	BOOL camera = GetCameraSwitch();
-
-			//	if (camera == FALSE && blast[0].move == FALSE)
-			//	{
-			//		g_EnemyHeli[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
-
-			//		if (g_EnemyHeli[i].pos.y < ENEMY_HELI_OFFSET_Y)
-			//		{
-			//			g_EnemyHeli[i].pos.y = ENEMY_HELI_OFFSET_Y;
-			//		}
-			//	}
-
-			//	//爆弾と一緒に奥へ移動する
-			//	if (blast[0].move == TRUE) /*&& (g_EnemyHeli[i].move == TRUE)*/ //&& (g_EnemyHeli[i].hitTime == 0))
-			//	{
-			//		g_EnemyHeli[i].pos.z += FIELD_SPEED + 2.0f;
-			//	}
+					g_EnemyHeli[i].hitTime--;
+				}
 
 
-			//	if (blast[0].use == FALSE)
-			//	{
-			//		g_EnemyHeli[i].use = FALSE;
-			//	}
-			//}
+
+				// 爆弾と一緒に落下する
+				BOOL camera = GetCameraSwitch();
+
+				if (camera == FALSE && blast[0].move == FALSE)
+				{
+					g_EnemyHeli[i].pos.y -= BLAST_DOWN / BLASE_DOWN_SPEED;
+
+					if (g_EnemyHeli[i].pos.y < ENEMY_HELI_OFFSET_Y)
+					{
+						g_EnemyHeli[i].pos.y = ENEMY_HELI_OFFSET_Y;
+					}
+				}
+
+				//爆弾と一緒に奥へ移動する
+				if (blast[0].move == TRUE) /*&& (g_EnemyHeli[i].move == TRUE)*/ //&& (g_EnemyHeli[i].hitTime == 0))
+				{
+					g_EnemyHeli[i].pos.z += FIELD_SPEED + 2.0f;
+				}
+
+
+				if (blast[0].use == FALSE)
+				{
+					g_EnemyHeli[i].use = FALSE;
+				}
+			}
 
 
 			// 影もプレイヤーの位置に合わせる

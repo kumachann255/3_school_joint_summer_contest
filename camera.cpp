@@ -74,6 +74,7 @@ void InitCamera(void)
 	g_Camera.up  = { 0.0f, 1.0f, 0.0f };
 	g_Camera.rot = { 0.0f, 0.0f, 0.0f };
 
+
 	// Ž‹“_‚Æ’Ž‹“_‚Ì‹——£‚ðŒvŽZ
 	float vx, vz;
 	vx = g_Camera.pos.x - g_Camera.at.x;
@@ -132,6 +133,11 @@ void UpdateCamera(void)
 	{
 		SetCameraAT(pPlayer->pos);
 		g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
+
+		if (GetMode() == MODE_GAME_SEA)
+		{
+			g_Camera.pos = { POS_X_CAM, POS_Y_CAM * 1.0f, POS_Z_CAM * 2.0f };
+		}
 	}
 
 	if (g_Move)

@@ -13,7 +13,7 @@
 #include "shadow.h"
 #include "light.h"
 #include "bullet.h"
-#include "meshfield.h"
+#include "sea_meshfield.h"
 #include "bom.h"
 #include "speech.h"
 #include "tutorial.h"
@@ -30,7 +30,7 @@
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
-#define PLAYER_OFFSET_Y		(15.0f)							// プレイヤーの足元をあわせる
+#define PLAYER_OFFSET_Y		(10.0f)							// プレイヤーの足元をあわせる
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
@@ -223,9 +223,9 @@ void UpdatePlayer(void)
 	XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
 	XMFLOAT3 hitPosition;								// 交点
 	hitPosition.y = g_Player.pos.y - PLAYER_OFFSET_Y;	// 外れた時用に初期化しておく
-	bool ans = RayHitField(g_Player.pos, &hitPosition, &normal);
+	bool ans = RayHitSeaField(g_Player.pos, &hitPosition, &normal);
 	g_Player.pos.y = hitPosition.y + PLAYER_OFFSET_Y;
-	g_Player.pos.y = PLAYER_OFFSET_Y;
+	//g_Player.pos.y = PLAYER_OFFSET_Y;
 
 
 	// 影もプレイヤーの位置に合わせる
