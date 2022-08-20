@@ -18,6 +18,8 @@
 #include "speech.h"
 #include "tutorial.h"
 #include "sound.h"
+#include "timingBar.h"
+#include "timingtext.h"
 
 
 //*****************************************************************************
@@ -205,6 +207,12 @@ void UpdatePlayer(void)
 		g_Player.spd = 0.0f;
 	}
 #endif
+
+
+	if (GetKeyboardTrigger(DIK_K))
+	{
+		SetTimingText(GetNoteTiming());
+	}
 
 
 	//	// Key“ü—Í‚ª‚ ‚Á‚½‚çˆÚ“®ˆ—‚·‚é

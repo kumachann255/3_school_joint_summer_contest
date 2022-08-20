@@ -175,6 +175,8 @@
     <ClCompile Include="speech.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="timeUI.cpp" />
+    <ClCompile Include="timingBar.cpp" />
+    <ClCompile Include="timingtext.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
   </ItemGroup>
@@ -221,6 +223,8 @@
     <ClInclude Include="speech.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="timeUI.h" />
+    <ClInclude Include="timingBar.h" />
+    <ClInclude Include="timingtext.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
   </ItemGroup>

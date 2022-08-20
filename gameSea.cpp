@@ -38,6 +38,8 @@
 #include "gameUI.h"
 #include "speech.h"
 #include "tutorial.h"
+#include "timingBar.h"
+#include "timingtext.h"
 
 
 //*****************************************************************************
@@ -156,6 +158,12 @@ HRESULT InitGameSea(void)
 	// チュートリアルの初期化
 	InitTutorial();
 
+	// タイミングバーの初期化
+	InitTImingBar();
+
+	// タイミングテキスト
+	InitTimingText();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -187,6 +195,12 @@ HRESULT InitGameSea(void)
 //=============================================================================
 void UninitGameSea(void)
 {
+	// タイミングテキストの終了処理
+	UninitTimingText();
+
+	// タイミングバーの終了処理
+	UninitTImingBar();
+
 	// チュートリアルの終了処理
 	UninitTutorial();
 
@@ -287,7 +301,7 @@ void UpdateGameSea(void)
 	UpdatePlayer();
 
 	// エネミーの更新処理
-	UpdateEnemy();
+	//UpdateEnemy();
 
 	// エネミーヘリの更新処理
 	UpdateEnemyHeli();
@@ -348,6 +362,12 @@ void UpdateGameSea(void)
 
 	// チュートリアルの更新処理
 	UpdateTutorial();
+
+	// タイミングバーの更新処理
+	UpdateTImingBar();
+
+	// タイミングテキストの更新処理
+	UpdateTimingText();
 }
 
 //=============================================================================
@@ -431,6 +451,12 @@ void DrawGameSea0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングバーの描画処理
+	DrawTImingBar();
+
+	// タイミングテキストの描画処理
+	DrawTimingText();
 
 
 	// ライティングを有効に
