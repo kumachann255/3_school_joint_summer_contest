@@ -176,26 +176,29 @@ void UpdatePlayer(void)
 {
 	CAMERA *cam = GetCamera();
 
-	// ˆÚ“®‚³‚¹‚¿‚á‚¤
-	if (GetKeyboardPress(DIK_LEFT))
-	{	// ¶‚ÖˆÚ“®
-		g_Player.spd = VALUE_MOVE;
-		g_Player.dir = XM_PI / 2;
-	}
-	if (GetKeyboardPress(DIK_RIGHT))
-	{	// ‰E‚ÖˆÚ“®
-		g_Player.spd = VALUE_MOVE;
-		g_Player.dir = -XM_PI / 2;
-	}
-	if (GetKeyboardPress(DIK_UP))
-	{	// ã‚ÖˆÚ“®
-		g_Player.spd = VALUE_MOVE;
-		g_Player.dir = XM_PI;
-	}
-	if (GetKeyboardPress(DIK_DOWN))
-	{	// ‰º‚ÖˆÚ“®
-		g_Player.spd = VALUE_MOVE;
-		g_Player.dir = 0.0f;
+	if (!GetKeyboardPress(DIK_LSHIFT))
+	{
+		// ˆÚ“®‚³‚¹‚¿‚á‚¤
+		if (GetKeyboardPress(DIK_LEFT))
+		{	// ¶‚ÖˆÚ“®
+			g_Player.spd = VALUE_MOVE;
+				g_Player.dir = XM_PI / 2;
+		}
+		if (GetKeyboardPress(DIK_RIGHT))
+		{	// ‰E‚ÖˆÚ“®
+			g_Player.spd = VALUE_MOVE;
+				g_Player.dir = -XM_PI / 2;
+		}
+		if (GetKeyboardPress(DIK_UP))
+		{	// ã‚ÖˆÚ“®
+			g_Player.spd = VALUE_MOVE;
+			g_Player.dir = XM_PI;
+		}
+		if (GetKeyboardPress(DIK_DOWN))
+		{	// ‰º‚ÖˆÚ“®
+			g_Player.spd = VALUE_MOVE;
+			g_Player.dir = 0.0f;
+		}
 	}
 
 

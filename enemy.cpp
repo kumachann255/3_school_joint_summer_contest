@@ -20,6 +20,7 @@
 #include "fade.h"
 #include "tutorial.h"
 #include "timeUI.h"
+#include "target.h"
 
 #include "sound.h"
 
@@ -28,6 +29,8 @@
 //*****************************************************************************
 #define	MODEL_ENEMY			"data/MODEL/patoka-.obj"		// 読み込むモデル名
 #define	MODEL_ENEMY_01		"data/MODEL/sirobai.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_COLLISION		"data/MODEL/collisionBox.obj"		// 読み込むモデル名
+
 
 #define ENEMY_TYPE_MAX		(2)							// エネミータイプの最大数
 
@@ -74,6 +77,10 @@ void SetEnemy(void);
 // グローバル変数
 //*****************************************************************************
 static ENEMY			g_Enemy[MAX_ENEMY];				// エネミー
+static ENEMY			g_Collision[MAX_ENEMY];			// 当たり判定用のボックス
+
+static VERTEX_3D		*g_Vertex = NULL;				// 
+static MODEL			g_Collision_Vertex;	// 
 
 static int				g_Stage;
 
@@ -91,25 +98,32 @@ HRESULT InitEnemy(void)
 	LoadModel(MODEL_ENEMY, &g_Enemy[0].model);
 	LoadModel(MODEL_ENEMY_01, &g_Enemy[1].model);
 
+	LoadModel(MODEL_ENEMY_COLLISION, &g_Collision[0].model);
+
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{	
 		g_Enemy[i].load = TRUE;
 
 		g_Enemy[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
+		g_Collision[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
+
 		g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Enemy[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_Collision[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 		g_Enemy[i].spd = 0.0f;			// 移動スピードクリア
 		g_Enemy[i].size = ENEMY_SIZE;	// 当たり判定の大きさ
 
 			// モデルのディフューズを保存しておく。色変え対応の為。
 		GetModelDiffuse(&g_Enemy[i].model, &g_Enemy[i].diffuse[0]);
+		GetModelDiffuse(&g_Collision[i].model, &g_Collision[i].diffuse[0]);
 
 		//XMFLOAT3 pos = g_Enemy[i].pos;
 		//pos.y -= (ENEMY_OFFSET_Y - 0.1f);
 		//g_Enemy[i].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
 
 		g_Enemy[i].use = FALSE;			// TRUE:生きてる
+		g_Collision[i].use = FALSE;			// TRUE:生きてる
 
 		g_Enemy[i].hitPos = XMFLOAT3(0.0f, ENEMY_OFFSET_Y, 0.0f);	// 爆発の中心
 		g_Enemy[i].hitRot = XMFLOAT3(0.0f, 0.0f, 0.0f);				// 当たり判定後アニメーション用スピード
@@ -120,7 +134,22 @@ HRESULT InitEnemy(void)
 
 		g_Enemy[i].fuchi = FALSE;
 
+
 	}
+
+	LoadObj(MODEL_ENEMY_COLLISION, &g_Collision_Vertex);
+
+	g_Vertex = new VERTEX_3D[g_Collision_Vertex.VertexNum];
+
+	// 初期化
+	for (int i = 0; i < g_Collision_Vertex.VertexNum; i++)
+	{
+		g_Vertex[i].Position = g_Collision_Vertex.VertexArray[i].Position;
+		g_Vertex[i].Diffuse = g_Collision_Vertex.VertexArray[i].Diffuse;
+		g_Vertex[i].Normal = g_Collision_Vertex.VertexArray[i].Normal;
+		g_Vertex[i].TexCoord = g_Collision_Vertex.VertexArray[i].TexCoord;
+	}
+
 
 	g_Stage = GetStage();
 
@@ -335,6 +364,8 @@ void UpdateEnemy(void)
 			}
 
 
+			// 当たり判定ようのボックスと位置を共有する
+			g_Collision[i].pos = g_Enemy[i].pos;
 
 
 
@@ -401,48 +432,55 @@ void UpdateEnemy(void)
 				if (blast[0].use == FALSE)
 				{
 					g_Enemy[i].use = FALSE;
+					g_Collision[i].use = FALSE;
+
 					SetTutorialEnemy(TRUE);
 				}
 			}
 
+			CAMERA *camera = GetCamera();
+			PLAYER *player = GetPlayer();
+
 			// レイキャストして足元の高さを求める
-			XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
 			XMFLOAT3 hitPosition;								// 交点
-			hitPosition.y = g_Enemy[i].pos.y - ENEMY_OFFSET_Y;	// 外れた時用に初期化しておく
-			bool ans = RayHitSeaField(g_Enemy[i].pos, &hitPosition, &normal);
-			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
+			hitPosition = g_Enemy[i].pos;	// 外れた時用に初期化しておく
+			bool ans = RayHitEnemy(player->pos, camera->pos, &hitPosition, i);
 
+			if (ans)
+			{
+				g_Enemy[i].use = FALSE;
+				g_Collision[i].use = FALSE;
+			}
+			////////////////////////////////////////////////////////////////////////
+			//// 姿勢制御
+			////////////////////////////////////////////////////////////////////////
 
-			//////////////////////////////////////////////////////////////////////
-			// 姿勢制御
-			//////////////////////////////////////////////////////////////////////
+			//XMVECTOR vx, nvx, up;
+			//XMVECTOR quat;
+			//float len, angle;
 
-			XMVECTOR vx, nvx, up;
-			XMVECTOR quat;
-			float len, angle;
+			//// ２つのベクトルの外積を取って任意の回転軸を求める
+			//g_Enemy[i].upVector = normal;
+			//up = { 0.0f, 1.0f, 0.0f, 0.0f };
+			//vx = XMVector3Cross(up, XMLoadFloat3(&g_Enemy[i].upVector));
 
-			// ２つのベクトルの外積を取って任意の回転軸を求める
-			g_Enemy[i].upVector = normal;
-			up = { 0.0f, 1.0f, 0.0f, 0.0f };
-			vx = XMVector3Cross(up, XMLoadFloat3(&g_Enemy[i].upVector));
+			//// 求めた回転軸からクォータニオンを作り出す
+			//nvx = XMVector3Length(vx);
+			//XMStoreFloat(&len, nvx);
+			//nvx = XMVector3Normalize(vx);
+			//angle = asinf(len);
+			//quat = XMQuaternionRotationNormal(nvx, angle);
 
-			// 求めた回転軸からクォータニオンを作り出す
-			nvx = XMVector3Length(vx);
-			XMStoreFloat(&len, nvx);
-			nvx = XMVector3Normalize(vx);
-			angle = asinf(len);
-			quat = XMQuaternionRotationNormal(nvx, angle);
+			//// 前回のクォータニオンから今回のクォータニオンまでの回転を滑らかにする
+			//quat = XMQuaternionSlerp(XMLoadFloat4(&g_Enemy[i].quaternion), quat, 0.05f);
 
-			// 前回のクォータニオンから今回のクォータニオンまでの回転を滑らかにする
-			quat = XMQuaternionSlerp(XMLoadFloat4(&g_Enemy[i].quaternion), quat, 0.05f);
+			//// 今回のクォータニオンの結果を保存する
+			//XMStoreFloat4(&g_Enemy[i].quaternion, quat);
 
-			// 今回のクォータニオンの結果を保存する
-			XMStoreFloat4(&g_Enemy[i].quaternion, quat);
-
-			// 影もプレイヤーの位置に合わせる
-			XMFLOAT3 pos = g_Enemy[i].pos;
-			pos.y -= (ENEMY_OFFSET_Y - 0.1f);
-			SetPositionShadow(g_Enemy[i].shadowIdx, pos);
+			//// 影もプレイヤーの位置に合わせる
+			//XMFLOAT3 pos = g_Enemy[i].pos;
+			//pos.y -= (ENEMY_OFFSET_Y - 0.1f);
+			//SetPositionShadow(g_Enemy[i].shadowIdx, pos);
 		}
 	}
 }
@@ -501,6 +539,35 @@ void DrawEnemy(void)
 			break;
 		}
 
+
+		// コリジョン用のボックスの描画
+		// ワールドマトリックスの初期化
+		mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		// 回転を反映
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// クォータニオンを反映
+		quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Collision[i].quaternion));
+		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
+
+		// 移動を反映
+		mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		// ワールドマトリックスの設定
+		SetWorldMatrix(&mtxWorld);
+		XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
+
+		// モデル描画
+		DrawModel(&g_Collision[0].model);
+
+
 		// リムライトの設定
 		SetFuchi(FALSE);
 	}
@@ -558,7 +625,82 @@ void SetEnemy(void)
 			g_Enemy[i].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE * 2.0f, ENEMY_SHADOW_SIZE * 2.0f);
 
 
+			g_Collision[i].use = TRUE;
+			g_Collision[i].pos = g_Enemy[i].pos;
+
+
+
 			return;
 		}
 	}
 }
+
+
+BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num)
+{
+	CameraPos.y = 5.0f;
+
+	XMFLOAT3 start = CameraPos;
+	XMFLOAT3 end = Pos;
+	XMFLOAT3 org = *HitPosition;
+
+	// 必要数分検索を繰り返す
+	for (int i = 0; i < g_Collision_Vertex.VertexNum - 2; i++)
+	{
+		XMFLOAT3 p0 = g_Vertex[i].Position;
+		p0.x += g_Collision[num].pos.x;
+		p0.y += g_Collision[num].pos.y;
+		p0.z += g_Collision[num].pos.z;
+
+		XMFLOAT3 p1 = g_Vertex[i + 1].Position;
+		p1.x += g_Collision[num].pos.x;
+		p1.y += g_Collision[num].pos.y;
+		p1.z += g_Collision[num].pos.z;
+
+		XMFLOAT3 p2 = g_Vertex[i + 2].Position;
+		p2.x += g_Collision[num].pos.x;
+		p2.y += g_Collision[num].pos.y;
+		p2.z += g_Collision[num].pos.z;
+
+		// 三角ポリゴンだから２枚分の当たり判定
+		BOOL ans = RayCast(p0, p2, p1, start, end, HitPosition, &g_Vertex[i].Normal);
+		if (ans)
+		{
+			return TRUE;
+		}
+	}
+
+	// 何処にも当たっていなかった時
+	*HitPosition = org;
+	return FALSE;
+}
+
+
+// スクリーン座標をワールド座標へ変換
+//void SetScreenToWorld(void)
+//{
+//	TARGET *target = GetTarget();
+//	float sx, sy;
+//	float z = 1.0f;
+//	XMFLOAT3 ans;
+//	XMMATRIX *view;
+//	XMMATRIX *proj;
+//
+//	D3D11_VIEWPORT vp;
+//	vp.Width = (FLOAT)SCREEN_WIDTH;
+//	vp.Height = (FLOAT)SCREEN_HEIGHT;
+//	vp.MinDepth = 0.0f;
+//	vp.MaxDepth = 1.0f;
+//	vp.TopLeftX = 0;
+//	vp.TopLeftY = 0;
+//
+//	ans.x = sx = target->pos.x;
+//	ans.y = sy = target->pos.y;
+//	ans.z = z;
+//
+//	XMMATRIX invMat, inv_proj, inv_view;
+//	XMStoreFloat4x4(&g_Camera.mtxProjection, mtxProjection);
+//
+//	XMMatrixInverse(vp, invMat);
+//}
+

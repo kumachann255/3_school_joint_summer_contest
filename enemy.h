@@ -10,7 +10,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_ENEMY		(50)					// エネミーの数
+//#define MAX_ENEMY		(50)					// エネミーの数
+#define MAX_ENEMY		(2)					// エネミーの数
 
 #define	ENEMY_SIZE		(30.0f)				// 当たり判定の大きさ
 
@@ -62,4 +63,5 @@ void UpdateEnemy(void);
 void DrawEnemy(void);
 
 ENEMY *GetEnemy(void);
+BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
 

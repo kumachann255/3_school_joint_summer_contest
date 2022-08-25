@@ -40,6 +40,7 @@
 #include "tutorial.h"
 #include "timingBar.h"
 #include "timingtext.h"
+#include "target.h"
 
 
 //*****************************************************************************
@@ -161,8 +162,11 @@ HRESULT InitGameSea(void)
 	// タイミングバーの初期化
 	InitTImingBar();
 
-	// タイミングテキスト
+	// タイミングテキストの初期化
 	InitTimingText();
+
+	// ターゲットアイコンの初期化
+	InitTarget();
 
 	g_Stage = GetStage();
 
@@ -195,6 +199,9 @@ HRESULT InitGameSea(void)
 //=============================================================================
 void UninitGameSea(void)
 {
+	// ターゲットアイコンの終了処理
+	UninitTarget();
+
 	// タイミングテキストの終了処理
 	UninitTimingText();
 
@@ -301,7 +308,7 @@ void UpdateGameSea(void)
 	UpdatePlayer();
 
 	// エネミーの更新処理
-	//UpdateEnemy();
+	UpdateEnemy();
 
 	// エネミーヘリの更新処理
 	UpdateEnemyHeli();
@@ -368,6 +375,9 @@ void UpdateGameSea(void)
 
 	// タイミングテキストの更新処理
 	UpdateTimingText();
+
+	// ターゲットアイコンの更新処理
+	UpdateTarget();
 }
 
 //=============================================================================
@@ -427,6 +437,9 @@ void DrawGameSea0(void)
 
 	// ライティングを無効
 	SetLightEnable(FALSE);
+
+	// ターゲットアイコンの描画処理
+	DrawTarget();
 
 	// スコアの描画処理
 	DrawScore();
