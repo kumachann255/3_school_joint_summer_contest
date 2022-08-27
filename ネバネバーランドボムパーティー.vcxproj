@@ -143,6 +143,7 @@
     <ClCompile Include="countdown.cpp" />
     <ClCompile Include="damageEF.cpp" />
     <ClCompile Include="debugproc.cpp" />
+    <ClCompile Include="dome.cpp" />
     <ClCompile Include="endroll.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyHeli.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="countdown.h" />
     <ClInclude Include="damageEF.h" />
     <ClInclude Include="debugproc.h" />
+    <ClInclude Include="dome.h" />
     <ClInclude Include="endroll.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemyHeli.h" />

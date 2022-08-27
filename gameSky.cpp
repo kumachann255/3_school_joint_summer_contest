@@ -38,6 +38,7 @@
 #include "gameUI.h"
 #include "speech.h"
 #include "tutorial.h"
+#include "dome.h"
 
 
 //*****************************************************************************
@@ -153,6 +154,9 @@ HRESULT InitGameSky(void)
 	// 吹き出しの初期化
 	InitSpeech();
 
+	// ドームの初期化
+	InitDome();
+
 	// チュートリアルの初期化
 	InitTutorial();
 
@@ -187,6 +191,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// ドームの終了処理
+	UninitDome();
+
 	// チュートリアルの終了処理
 	UninitTutorial();
 
@@ -310,6 +317,9 @@ void UpdateGameSky(void)
 	// スカイドームの更新処理
 	UpdateSky();
 
+	// ドームの更新処理
+	UpdateDome();
+
 	// 弾の更新処理
 	UpdateBullet();
 
@@ -357,8 +367,8 @@ void DrawGameSky0(void)
 {
 	// 3Dの物を描画する処理
 	// 地面の描画処理
-	DrawMeshField();
-	DrawMeshField2();
+	// DrawMeshField();
+	// DrawMeshField2();
 
 	// 影の描画処理
 	DrawShadow();
@@ -388,7 +398,10 @@ void DrawGameSky0(void)
 	DrawTree();
 
 	// スカイドームの描画処理
-	DrawSky();
+	//DrawSky();
+
+	// ドームの描画処理
+	DrawDome();
 
 	// パーティクルの描画処理
 	DrawParticle();
