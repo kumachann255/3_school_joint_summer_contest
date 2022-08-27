@@ -41,6 +41,7 @@
 #include "timingBar.h"
 #include "timingtext.h"
 #include "target.h"
+#include "targetObj.h"
 
 
 //*****************************************************************************
@@ -168,6 +169,9 @@ HRESULT InitGameSea(void)
 	// ターゲットアイコンの初期化
 	InitTarget();
 
+	// ターゲットオブジェクトの初期化
+	InitTargetObj();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -199,6 +203,9 @@ HRESULT InitGameSea(void)
 //=============================================================================
 void UninitGameSea(void)
 {
+	// ターゲットオブジェクトの終了処理
+	UninitTargetObj();
+
 	// ターゲットアイコンの終了処理
 	UninitTarget();
 
@@ -378,6 +385,10 @@ void UpdateGameSea(void)
 
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
+
+	// ターゲットオブジェクトの更新処理
+	UpdateTargetObj();
+
 }
 
 //=============================================================================
@@ -429,6 +440,8 @@ void DrawGameSea0(void)
 	// 攻撃範囲の描画処理
 	DrawAttackR();
 
+	// ターゲットオブジェクトの描画処理
+	//DrawTargetObj();
 
 
 	// 2Dの物を描画する処理
@@ -496,6 +509,7 @@ void DrawGameSea(void)
 	pos.y = 0.0f;			// カメラ酔いを防ぐためにクリアしている
 	SetCameraAT(pos);
 	SetCamera();
+
 
 	switch(g_ViewPortType_Game)
 	{

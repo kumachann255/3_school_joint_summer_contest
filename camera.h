@@ -15,6 +15,11 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define	VIEW_ANGLE		(XMConvertToRadians(70.0f))						// ビュー平面の視野角
+#define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比	
+#define	VIEW_NEAR_Z		(10.0f)											// ビュー平面のNearZ値
+#define	VIEW_FAR_Z		(20000.0f)										// ビュー平面のFarZ値
+
 struct CAMERA
 {
 	XMFLOAT4X4			mtxView;		// ビューマトリックス

@@ -34,5 +34,6 @@ void DrawCombo(void);
 void AddCombo(int add);
 int GetCombo(void);
 void ResetComboTime(void);
+void SetTimingHas(BOOL timing);
 
 

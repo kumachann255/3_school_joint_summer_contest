@@ -14,6 +14,7 @@
 #include "gameUI.h"
 #include "time.h"
 #include "sound.h"
+#include "combo.h"
 
 
 //*****************************************************************************
@@ -251,7 +252,6 @@ void DrawTImingBar(void)
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
-
 }
 
 
@@ -308,6 +308,14 @@ int GetNoteTiming(void)
 
 	// 最高のタイミングだったら歓声を流す
 	if (ans >= 2) PlaySound(SOUND_LABEL_SE_cheers02);
+
+	// 良い以上であればコンボを設定
+	if (ans >= 1) 
+	{
+		SetTimingHas(TRUE);
+		ResetComboTime();	// コンボ継続時間もリセット
+	}
+	else SetTimingHas(FALSE);
 
 	return ans;
 }

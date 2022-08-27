@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// タイトル画面処理 [target.h]
-// Author : 
+// ターゲット用の空オブジェクト処理 [targetObj.h]
+// Author : 熊澤
 //
 //=============================================================================
 #pragma once
@@ -10,30 +10,39 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_TARGET (2)
+#define MAX_TARGETOBJ	(1)					// 数
+
+enum {
+	up,
+	down,
+	right,
+	left,
+};
 
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
-
-struct TARGET
+struct TARGETOBJ
 {
-	XMFLOAT3				pos;		// ポリゴンの座標
-	XMFLOAT3				rot;		// ポリゴンの座標
-	float					w, h;		// 幅と高さ	float
-	float					spd;		// 移動スピード
-	int						TexNo;		// テクスチャ番号
-	BOOL					use;		// TRUE:使っている  FALSE:未使用
-};
+	XMFLOAT4X4			mtxWorld;			// ワールドマトリックス
+	XMFLOAT3			pos;				// モデルの位置
+	XMFLOAT3			rot;				// モデルの向き(回転)
+	XMFLOAT3			scl;				// モデルの大きさ(スケール)
 
+	BOOL				load;
+	DX11_MODEL			model;				// モデル情報
+	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// モデルの色
+	
+	BOOL				use;				// 使うかどうか
+};
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitTarget(void);
-void UninitTarget(void);
-void UpdateTarget(void);
-void DrawTarget(void);
+HRESULT InitTargetObj(void);
+void UninitTargetObj(void);
+void UpdateTargetObj(void);
+void DrawTargetObj(void);
 
-TARGET *GetTarget(void);
-BOOL GetTargetArea(int type);
+TARGETOBJ *GetTargetObj(void);
+

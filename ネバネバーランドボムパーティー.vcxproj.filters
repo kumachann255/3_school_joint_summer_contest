@@ -159,10 +159,14 @@
     <ClCompile Include="dome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="sky_smallmeteor.cpp">
+
+    <ClCompile Include="targetObj.cpp">
+
+    <ClCompile Include="cracker.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="sky_enemy.cpp">
+    <ClCompile Include="cup.cpp">
+
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -311,10 +315,14 @@
     <ClInclude Include="dome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="sky_smallmeteor.h">
+
+    <ClInclude Include="targetObj.h">
+
+    <ClInclude Include="cracker.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="sky_enemy.h">
+    <ClInclude Include="cup.h">
+
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
