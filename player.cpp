@@ -18,6 +18,8 @@
 #include "speech.h"
 #include "tutorial.h"
 #include "sound.h"
+#include "cup.h"
+#include "cracker.h"
 #include "timingBar.h"
 #include "timingtext.h"
 
@@ -262,6 +264,48 @@ void UpdatePlayer(void)
 			g_Player.action = TRUE;
 
 			SetBom();
+		}
+	}
+
+	// 弾発射処理(カップ テスト)
+	if (g_Stage != tutorial)
+	{
+		if (((GetKeyboardTrigger(DIK_1)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
+		{
+			g_Player.action = TRUE;
+
+			SetCup();
+		}
+	}
+	else
+	{
+		if (((GetKeyboardTrigger(DIK_1)) || (IsButtonTriggered(0, BUTTON_B)))
+			&& (!GetTutorialUse()))
+		{
+			g_Player.action = TRUE;
+
+			SetCup();
+		}
+	}
+
+	// 弾発射処理(クラッカー テスト)
+	if (g_Stage != tutorial)
+	{
+		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
+		{
+			g_Player.action = TRUE;
+
+			SetCup();
+		}
+	}
+	else
+	{
+		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B)))
+			&& (!GetTutorialUse()))
+		{
+			g_Player.action = TRUE;
+
+			SetCracker();
 		}
 	}
 

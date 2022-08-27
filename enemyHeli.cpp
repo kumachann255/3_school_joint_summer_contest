@@ -111,7 +111,11 @@ HRESULT InitEnemyHeli(void)
 		g_EnemyHeli[i].move = FALSE;					// 奥へ移動するフラグ TRUE:移動する
 		g_EnemyHeli[i].hitTime = 0;						// 奥へ移動するフラグ TRUE:移動する
 
-		g_EnemyHeli[i].liveCount = 0;		// 生存時間をリセット
+		g_EnemyHeli[i].cupHit = FALSE;					// TRUE:当たってる
+		g_EnemyHeli[i].cupRot = FALSE;					// TRUE:当たってる
+		g_EnemyHeli[i].radian = 0.0f;					// 回転量
+
+		g_EnemyHeli[i].liveCount = 0;					// 生存時間をリセット
 
 		g_EnemyHeli[i].fuchi = FALSE;
 
@@ -524,6 +528,7 @@ void SetEnemyHeli(void)
 			g_EnemyHeli[i].pos.z = ENEMY_HELI_POP_Z;
 			g_EnemyHeli[i].pos.y = ENEMY_HELI_OFFSET_Y;
 			g_EnemyHeli[i].isHit = FALSE;
+			g_EnemyHeli[i].cupHit = FALSE;
 			g_EnemyHeli[i].move = FALSE;
 			g_EnemyHeli[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 

@@ -38,6 +38,8 @@
 #include "gameUI.h"
 #include "speech.h"
 #include "tutorial.h"
+#include "cup.h"
+#include "cracker.h"
 
 
 //*****************************************************************************
@@ -96,6 +98,12 @@ HRESULT InitGameCity(void)
 
 	// 爆破オブジェクトの初期化
 	InitBlast();
+
+	// カップオブジェクトの初期化
+	InitCup();
+
+	// クラッカーオブジェクトの初期化
+	InitCracker();
 
 	//// 壁の初期化
 	//InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_TOP), XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -233,6 +241,12 @@ void UninitGameCity(void)
 	UninitMeshField2();
 	UninitMeshField();
 
+	// クラッカーオブジェクトの終了処理
+	UninitCracker();
+
+	// カップオブジェクトの終了処理
+	UninitCup();
+
 	// 爆破オブジェクトの終了処理
 	UninitBlast();
 
@@ -300,6 +314,12 @@ void UpdateGameCity(void)
 
 	// 爆破オブジェクトの更新処理
 	UpdateBlast();
+
+	// カップオブジェクトの更新処理
+	UpdateCup();
+
+	// クラッカーオブジェクトの更新処理
+	UpdateCracker();
 
 	// 壁処理の更新
 	UpdateMeshWall();
@@ -381,6 +401,12 @@ void DrawGameCity0(void)
 
 	// 弾の描画処理
 	DrawBullet();
+
+	// カップオブジェクトの描画処理
+	DrawCup();
+
+	// クラッカーオブジェクトの描画処理
+	DrawCracker();
 
 	// 壁の描画処理
 	DrawMeshWall();
@@ -509,6 +535,7 @@ void CheckHitCity(void)
 	PLAYER *player = GetPlayer();	// プレイヤーのポインターを初期化
 	BULLET *bullet = GetBullet();	// 弾のポインターを初期化
 	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+	CUP *cup = GetCup();		// 爆破オブジェクトの初期化
 
 	float offsetX;
 	float offsetY;
@@ -605,6 +632,102 @@ void CheckHitCity(void)
 			}
 		}
 	}
+
+
+	// 敵とカップオブジェクト
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		//敵の有効フラグをチェックする
+		if (enemy[i].use == FALSE || enemy[i].cupHit == TRUE)
+			continue;
+
+
+		for (int p = 0; p < MAX_CUP; p++)
+		{
+			//カップオブジェクトの有効フラグをチェックする
+			if (cup[p].use == FALSE)
+				continue;
+
+			//BCの当たり判定
+			float size = cup[p].size;
+			//if (GetMorphing() == 1) size /= 4.0f;
+
+			if (CollisionBC(cup[p].pos, enemy[i].pos, size, enemy[i].size))
+			{
+				if (enemy[i].isHit == TRUE) break;
+
+				// 敵キャラクターは倒される
+				enemy[i].cupHit = TRUE;
+				enemy[i].cupRot = TRUE;
+				//enemy[i].hitTime = 15;
+
+				//offsetX = RamdomFloat(0, 20.0f, -20.0f);
+				//offsetY = RamdomFloat(0, 20.0f, ENEMY_OFFSET_Y);
+				//offsetZ = RamdomFloat(0, -10.0f, -20.0f);
+
+				//enemy[i].hitPos.x = blast[p].pos.x + offsetX;
+				//enemy[i].hitPos.y = blast[p].pos.y + offsetY;
+				//enemy[i].hitPos.z = blast[p].pos.z + offsetZ;
+
+				ReleaseShadow(enemy[i].shadowIdx);
+
+				// スコアを足す
+				AddScore(100);
+
+				// コンボを足す
+				AddCombo(1);
+				ResetComboTime();
+			}
+		}
+	}
+
+	// 敵(ヘリ)とカップオブジェクト
+	for (int i = 0; i < MAX_ENEMY_HELI; i++)
+	{
+		//敵の有効フラグをチェックする
+		if (enemyHeli[i].use == FALSE || enemyHeli[i].cupHit == TRUE)
+			continue;
+
+
+		for (int p = 0; p < MAX_CUP; p++)
+		{
+			//爆破オブジェクトの有効フラグをチェックする
+			if (cup[p].use == FALSE)
+				continue;
+
+			//BCの当たり判定
+			float size = cup[p].size;
+			//if (GetMorphing() == 1) size /= 4.0f;
+
+			if (CollisionBC(cup[p].pos, enemyHeli[i].pos, size, enemyHeli[i].size))
+			{
+				if (enemyHeli[i].cupHit == TRUE) break;
+
+				// 敵キャラクターは倒される
+				enemyHeli[i].cupHit = TRUE;
+				enemyHeli[i].cupRot = TRUE;
+				//enemyHeli[i].hitTime = 15;
+
+				//offsetX = RamdomFloat(0, 5.0f, -5.0f);
+				//offsetY = RamdomFloat(0, 5.0f, ENEMY_HELI_OFFSET_Y - 20.0f);
+				//offsetZ = RamdomFloat(0, 0.0f, -5.0f);
+
+				//enemyHeli[i].hitPos.x = blast[p].pos.x + offsetX;
+				//enemyHeli[i].hitPos.y = blast[p].pos.y + offsetY;
+				//enemyHeli[i].hitPos.z = blast[p].pos.z + offsetZ;
+
+				ReleaseShadow(enemyHeli[i].shadowIdx);
+
+				// スコアを足す
+				AddScore(100);
+
+				// コンボを足す
+				AddCombo(1);
+				ResetComboTime();
+			}
+		}
+	}
+
 
 
 	// プレイヤーのHPが0でゲームオーバー

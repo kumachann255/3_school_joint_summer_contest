@@ -141,6 +141,8 @@
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="combo.cpp" />
     <ClCompile Include="countdown.cpp" />
+    <ClCompile Include="cracker.cpp" />
+    <ClCompile Include="cup.cpp" />
     <ClCompile Include="damageEF.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="dome.cpp" />
@@ -191,6 +193,8 @@
     <ClInclude Include="collision.h" />
     <ClInclude Include="combo.h" />
     <ClInclude Include="countdown.h" />
+    <ClInclude Include="cracker.h" />
+    <ClInclude Include="cup.h" />
     <ClInclude Include="damageEF.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="dome.h" />
