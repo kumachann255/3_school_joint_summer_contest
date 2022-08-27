@@ -159,10 +159,14 @@
     <ClCompile Include="dome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="targetObj.cpp">
+=======
     <ClCompile Include="cracker.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cup.cpp">
+>>>>>>> efa857665a95cb16cc73d28407f1497d3ba01253
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -311,10 +315,14 @@
     <ClInclude Include="dome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="targetObj.h">
+=======
     <ClInclude Include="cracker.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="cup.h">
+>>>>>>> efa857665a95cb16cc73d28407f1497d3ba01253
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

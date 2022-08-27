@@ -178,6 +178,7 @@
     <ClCompile Include="speech.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="target.cpp" />
+    <ClCompile Include="targetObj.cpp" />
     <ClCompile Include="timeUI.cpp" />
     <ClCompile Include="timingBar.cpp" />
     <ClCompile Include="timingtext.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="speech.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="target.h" />
+    <ClInclude Include="targetObj.h" />
     <ClInclude Include="timeUI.h" />
     <ClInclude Include="timingBar.h" />
     <ClInclude Include="timingtext.h" />

@@ -29,11 +29,6 @@
 //#define	POS_Z_CAM		(-400.0f)		// カメラの初期位置(Z座標)
 
 
-#define	VIEW_ANGLE		(XMConvertToRadians(70.0f))						// ビュー平面の視野角
-#define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比	
-#define	VIEW_NEAR_Z		(10.0f)											// ビュー平面のNearZ値
-#define	VIEW_FAR_Z		(20000.0f)										// ビュー平面のFarZ値
-
 #define	VALUE_MOVE_CAMERA	(2.0f)										// カメラの移動量
 #define	VALUE_ROTATE_CAMERA	(XM_PI * 0.01f)								// カメラの回転量
 
@@ -131,7 +126,7 @@ void UpdateCamera(void)
 	}
 	else
 	{
-		SetCameraAT(pPlayer->pos);
+		//SetCameraAT(pPlayer->pos);
 		g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
 
 		if (GetMode() == MODE_GAME_SEA)
