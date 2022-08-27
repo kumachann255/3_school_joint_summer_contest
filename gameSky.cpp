@@ -15,6 +15,7 @@
 
 #include "player.h"
 #include "enemy.h"
+#include "sky_enemy.h"
 #include "attackRange.h"
 #include "bom.h"
 #include "blast.h"
@@ -25,6 +26,7 @@
 #include "fieldobj.h"
 #include "sky.h"
 #include "bullet.h"
+#include "sky_smallmeteor.h"
 #include "score.h"
 #include "particle.h"
 #include "orbit.h"
@@ -83,11 +85,14 @@ HRESULT InitGameSky(void)
 	// プレイヤーの初期化
 	InitPlayer();
 
-	// エネミーの初期化
-	InitEnemy();
+	//// エネミーの初期化
+	//InitEnemy();
 
-	// エネミーヘリの初期化
-	InitEnemyHeli();
+	//// エネミーヘリの初期化
+	//InitEnemyHeli();
+
+	// 空ステージのエネミーの初期化
+	InitSkyEnemy();
 
 	// 攻撃範囲の初期化
 	InitAttackR();
@@ -126,6 +131,9 @@ HRESULT InitGameSky(void)
 
 	// 弾の初期化
 	InitBullet();
+
+	// スモールメテオの初期化
+	InitS_Meteor();
 
 	// スコアの初期化
 	InitScore();
@@ -224,6 +232,9 @@ void UninitGameSky(void)
 	// スコアの終了処理
 	UninitScore();
 
+	// スモールメテオの終了処理
+	UninitS_Meteor();
+
 	// 弾の終了処理
 	UninitBullet();
 
@@ -249,11 +260,14 @@ void UninitGameSky(void)
 	// 攻撃範囲の終了処理
 	UninitAttackR();
 
-	// エネミーヘリの終了処理
-	UninitEnemyHeli();
+	// 空ステージのエネミーの終了処理
+	UninitSkyEnemy();
 
-	// エネミーの終了処理
-	UninitEnemy();
+	//// エネミーヘリの終了処理
+	//UninitEnemyHeli();
+
+	//// エネミーの終了処理
+	//UninitEnemy();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -293,11 +307,14 @@ void UpdateGameSky(void)
 	// プレイヤーの更新処理
 	UpdatePlayer();
 
-	// エネミーの更新処理
-	UpdateEnemy();
+	//// エネミーの更新処理
+	//UpdateEnemy();
 
-	// エネミーヘリの更新処理
-	UpdateEnemyHeli();
+	//// エネミーヘリの更新処理
+	//UpdateEnemyHeli();
+
+	// 空ステージのエネミーの更新処理
+	UpdateSkyEnemy();
 
 	// 攻撃範囲の更新処理
 	UpdateAttackR();
@@ -322,6 +339,9 @@ void UpdateGameSky(void)
 
 	// 弾の更新処理
 	UpdateBullet();
+
+	// スモールメテオの更新処理
+	UpdateS_Meteor();
 
 	// パーティクルの更新処理
 	UpdateParticle();
@@ -373,11 +393,14 @@ void DrawGameSky0(void)
 	// 影の描画処理
 	DrawShadow();
 
-	// エネミーヘリの描画処理
-	DrawEnemyHeli();
+	// 空ステージのエネミーの描画処理
+	DrawSkyEnemy();
 
-	// エネミーの描画処理
-	DrawEnemy();
+	//// エネミーヘリの描画処理
+	//DrawEnemyHeli();
+
+	//// エネミーの描画処理
+	//DrawEnemy();
 
 	// プレイヤーの描画処理
 	DrawPlayer();
@@ -390,6 +413,9 @@ void DrawGameSky0(void)
 
 	// 弾の描画処理
 	DrawBullet();
+
+	// スモールメテオの描画処理
+	DrawS_Meteor();
 
 	// 壁の描画処理
 	DrawMeshWall();
@@ -467,7 +493,7 @@ void DrawGameSky(void)
 
 	// プレイヤー視点
 	pos = GetPlayer()->pos;
-	pos.y = 0.0f;			// カメラ酔いを防ぐためにクリアしている
+	pos.y = -70.0f;			// カメラ酔いを防ぐためにクリアしている
 	SetCameraAT(pos);
 	SetCamera();
 

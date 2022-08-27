@@ -19,6 +19,7 @@
 #include "fieldobj.h"
 #include "collision.h"
 #include "bullet.h"
+#include "sky_smallmeteor.h"
 #include "score.h"
 #include "sound.h"
 #include "particle.h"
@@ -646,7 +647,7 @@ float RamdomFloat(int digits, float max, float min)
 //=============================================================================
 int GetStage(void)
 {
-	return g_Stage;
+	return g_Mode;
 }
 
 

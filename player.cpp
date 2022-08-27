@@ -13,6 +13,7 @@
 #include "shadow.h"
 #include "light.h"
 #include "bullet.h"
+#include "sky_smallmeteor.h"
 #include "sea_meshfield.h"
 #include "bom.h"
 #include "speech.h"
@@ -97,6 +98,8 @@ HRESULT InitPlayer(void)
 
 	g_Player.use = TRUE;
 
+	g_Player.angle = 0.0f;
+
 	g_Stage = GetStage();
 
 
@@ -176,30 +179,33 @@ void UpdatePlayer(void)
 {
 	CAMERA *cam = GetCamera();
 
-	if (!GetKeyboardPress(DIK_LSHIFT))
-	{
-		// 移動させちゃう
-		if (GetKeyboardPress(DIK_LEFT))
-		{	// 左へ移動
-			g_Player.spd = VALUE_MOVE;
-				g_Player.dir = XM_PI / 2;
-		}
-		if (GetKeyboardPress(DIK_RIGHT))
-		{	// 右へ移動
-			g_Player.spd = VALUE_MOVE;
-				g_Player.dir = -XM_PI / 2;
-		}
-		if (GetKeyboardPress(DIK_UP))
-		{	// 上へ移動
-			g_Player.spd = VALUE_MOVE;
-			g_Player.dir = XM_PI;
-		}
-		if (GetKeyboardPress(DIK_DOWN))
-		{	// 下へ移動
-			g_Player.spd = VALUE_MOVE;
-			g_Player.dir = 0.0f;
-		}
-	}
+	//if (!GetKeyboardPress(DIK_LSHIFT))
+	//{
+	//	// 移動させちゃう
+	//	if (GetKeyboardPress(DIK_LEFT))
+	//	{	// 左へ移動
+	//		g_Player.spd = VALUE_MOVE;
+	//			g_Player.dir = XM_PI / 2;
+	//	}
+	//	if (GetKeyboardPress(DIK_RIGHT))
+	//	{	// 右へ移動
+	//		g_Player.spd = VALUE_MOVE;
+	//			g_Player.dir = -XM_PI / 2;
+	//	}
+	//	if (GetKeyboardPress(DIK_UP))
+	//	{	// 上へ移動
+	//		g_Player.spd = VALUE_MOVE;
+	//		g_Player.dir = XM_PI;
+	//	}
+	//	if (GetKeyboardPress(DIK_DOWN))
+	//	{	// 下へ移動
+	//		g_Player.spd = VALUE_MOVE;
+	//		g_Player.dir = 0.0f;
+	//	}
+	//}
+
+
+
 
 
 #ifdef _DEBUG
@@ -228,6 +234,41 @@ void UpdatePlayer(void)
 		g_Player.pos.z -= cosf(g_Player.rot.y) * g_Player.spd;
 	}
 
+	//================================
+	// 空ステージのプレイヤーの挙動
+	//================================
+	if (GetStage() == MODE_GAME_SKY)
+	{
+		if (GetKeyboardPress(DIK_RIGHT))
+		{
+			g_Player.spd = VALUE_MOVE;
+
+				g_Player.angle += 0.01f;
+				g_Player.pos.x = sinf(g_Player.angle) * 100.0f;
+				g_Player.pos.z = cosf(g_Player.angle) * 100.0f;
+
+				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+			
+		}
+
+		if (GetKeyboardPress(DIK_LEFT))
+		{
+			g_Player.spd = VALUE_MOVE;
+
+				g_Player.angle -= 0.01f;
+				g_Player.pos.x = sinf(g_Player.angle) * 100.0f;
+				g_Player.pos.z = cosf(g_Player.angle) * 100.0f;
+
+				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+			
+		}
+
+		if (GetKeyboardTrigger(DIK_L))
+		{
+			SetS_Meteor(g_Player.pos,g_Player.rot.y);
+		}
+
+	}
 
 
 	// レイキャストして足元の高さを求める
