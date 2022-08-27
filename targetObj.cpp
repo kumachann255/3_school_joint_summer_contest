@@ -19,7 +19,7 @@
 #define	MODEL_DOME_CITY			"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 #define MOVE_VALUE_Y			(3.0f)		// ターゲットが縦に動く速度
-#define MOVE_VALUE_X			(0.007f)		// ターゲットが横に動く速度
+#define MOVE_VALUE_X			(0.01f)		// ターゲットが横に動く速度
 
 #define OBJ_DISTANCE			(200.0f)	// カメラからターゲットの距離
 

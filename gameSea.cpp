@@ -441,7 +441,7 @@ void DrawGameSea0(void)
 	DrawAttackR();
 
 	// ターゲットオブジェクトの描画処理
-	DrawTargetObj();
+	//DrawTargetObj();
 
 
 	// 2Dの物を描画する処理
@@ -505,13 +505,9 @@ void DrawGameSea(void)
 #endif
 
 	// プレイヤー視点
-	//pos = GetPlayer()->pos;
-	// ターゲットアイコンが使用されていたらATをターゲットアイコンに変更
-	//if(GetTarget()->use) 
-	//pos = GetTarget()[0].pos;
-
-	//pos.y = 0.0f;			// カメラ酔いを防ぐためにクリアしている
-	//SetCameraAT(pos);
+	pos = GetPlayer()->pos;
+	pos.y = 0.0f;			// カメラ酔いを防ぐためにクリアしている
+	SetCameraAT(pos);
 	SetCamera();
 
 

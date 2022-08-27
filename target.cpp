@@ -16,7 +16,7 @@
 #include "player.h"
 #include "camera.h"
 #include "targetObj.h"
-
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -28,6 +28,7 @@
 
 #define OFFSET_Y					(20.0f)			// 調整
 #define OFFSET_OBJ					(10.0f)
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -128,7 +129,7 @@ void UpdateTarget(void)
 {
 	for (int i = 0; i < MAX_TARGET; i++)
 	{
-		g_Target[1].rot.z += 0.036f;
+		//g_Target[1].rot.z += 0.036f;
 
 		if (GetKeyboardPress(DIK_LSHIFT))
 		{
@@ -269,12 +270,13 @@ XMVECTOR Screenpos(XMVECTOR World_Pos)
 	CAMERA *camera = GetCamera();
 
 	XMVECTOR Eye = XMVectorSet(camera->pos.x, camera->pos.y, camera->pos.z, 0.0f);
-	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y - OFFSET_Y, camera->at.z, 0.0f);
+	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y, camera->at.z, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX g_View = XMMatrixLookAtLH(Eye, At, Up);
 
-	XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 0.1f, 1000.0f);
+	//XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 0.1f, 1000.0f);
+	XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(VIEW_ANGLE, VIEW_ASPECT, VIEW_NEAR_Z, VIEW_FAR_Z);
 
 	float w = (FLOAT)SCREEN_WIDTH / 2.0f;
 	float h = (FLOAT)SCREEN_HEIGHT / 2.0f;

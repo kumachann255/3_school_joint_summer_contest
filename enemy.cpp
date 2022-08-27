@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // エネミーモデル処理 [enemy.cpp]
-// Author : 熊澤義弘＋エナ
+// Author : 熊澤義弘＋エナ 
 //
 //=============================================================================
 #include "main.h"
@@ -133,6 +133,10 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].liveCount = 0;		// 生存時間をリセット
 		g_Enemy[i].type = 0;			// エネミータイプ
 
+		g_Enemy[i].cupHit = FALSE;									// TRUE:当たってる
+		g_Enemy[i].cupRot = FALSE;									// TRUE:当たってる
+		g_Enemy[i].radian = 0.0f;									// 回転量
+
 		g_Enemy[i].fuchi = FALSE;
 
 
@@ -184,6 +188,8 @@ void UninitEnemy(void)
 //=============================================================================
 void UpdateEnemy(void)
 {
+	//return;
+
 	if (g_Stage == tutorial)
 	{	// チュートリアル様に1体出す
 		count++;
@@ -603,6 +609,7 @@ void SetEnemy(void)
 			g_Enemy[i].pos.z = ENEMY_POP_Z;
 			g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
 			g_Enemy[i].isHit = FALSE;
+			g_Enemy[i].cupHit = FALSE;
 			g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 			// x座標はランダム

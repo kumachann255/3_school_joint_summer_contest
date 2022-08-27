@@ -6,6 +6,37 @@
 //=============================================================================
 #pragma once
 
+//*****************************************************************************
+// 構造体定義
+//*****************************************************************************
+
+// パーティクルの種類
+enum
+{
+	PARTICLE_TYPE_CUP,			// カップ用
+	PARTICLE_TYPE_MAX,
+};
+
+
+struct PARTICLE
+{
+	XMFLOAT3		pos;			// 位置
+	XMFLOAT3		rot;			// 回転
+	XMFLOAT3		scl;			// スケール
+	XMFLOAT3		move;			// 移動量
+	
+	MATERIAL		material;		// マテリアル
+
+	int				nIdxShadow;		// 影ID
+	
+	int				type;			// タイプ
+	int				life;			// 寿命
+	
+	float			pop;			// 表示タイミング
+	
+	BOOL			use;			// 使用しているかどうか
+
+};
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -15,6 +46,6 @@ void UninitParticle(void);
 void UpdateParticle(void);
 void DrawParticle(void);
 
-int SetParticle(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT4 col, float fSizeX, float fSizeY, int nLife);
+int SetParticle(int type, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT4 col, float pop, int life);
 void SetColorParticle(int nIdxParticle, XMFLOAT4 col);
 
