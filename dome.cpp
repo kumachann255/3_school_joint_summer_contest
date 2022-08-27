@@ -50,9 +50,9 @@ HRESULT InitDome(void)
 
 		g_Dome[i].use = TRUE;
 
-		g_Dome[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_Dome[i].pos = XMFLOAT3(0.0f, -2300.0f, 0.0f);
 		g_Dome[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Dome[i].scl = XMFLOAT3(30.0f, 30.0f, 30.0f);
+		g_Dome[i].scl = XMFLOAT3(80.0f, 80.0f, 80.0f);
 
 		// モデルのディフューズを保存しておく。色変え対応の為。
 		GetModelDiffuse(&g_Dome[0].model, &g_Dome[0].diffuse[0]);
@@ -104,6 +104,9 @@ void DrawDome(void)
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);
 
+	// フォグ無効
+	SetFogEnable(FALSE);
+
 	for (int i = 0; i < MAX_DOME; i++)
 	{
 		if (g_Dome[i].use == FALSE) continue;
@@ -133,8 +136,13 @@ void DrawDome(void)
 	
 	}
 
+	// フォグ設定を戻す
+	SetFogEnable(TRUE);
+
+
 	// カリング設定を戻す
 	SetCullingMode(CULL_MODE_BACK);
+
 }
 
 //=============================================================================
