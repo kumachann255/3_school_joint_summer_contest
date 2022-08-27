@@ -39,6 +39,10 @@
 #include "speech.h"
 #include "tutorial.h"
 #include "dome.h"
+#include "timingBar.h"
+#include "timingtext.h"
+#include "target.h"
+#include "targetObj.h"
 
 
 //*****************************************************************************
@@ -160,6 +164,18 @@ HRESULT InitGameSky(void)
 	// チュートリアルの初期化
 	InitTutorial();
 
+	// タイミングバーの初期化
+	InitTImingBar();
+
+	// タイミングテキストの初期化
+	InitTimingText();
+
+	// ターゲットアイコンの初期化
+	InitTarget();
+
+	// ターゲットオブジェクトの初期化
+	InitTargetObj();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -191,6 +207,18 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// ターゲットオブジェクトの終了処理
+	UninitTargetObj();
+
+	// ターゲットアイコンの終了処理
+	UninitTarget();
+
+	// タイミングテキストの終了処理
+	UninitTimingText();
+
+	// タイミングバーの終了処理
+	UninitTImingBar();
+
 	// ドームの終了処理
 	UninitDome();
 
@@ -358,6 +386,19 @@ void UpdateGameSky(void)
 
 	// チュートリアルの更新処理
 	UpdateTutorial();
+
+	// タイミングバーの更新処理
+	UpdateTImingBar();
+
+	// タイミングテキストの更新処理
+	UpdateTimingText();
+
+	// ターゲットアイコンの更新処理
+	UpdateTarget();
+
+	// ターゲットオブジェクトの更新処理
+	UpdateTargetObj();
+
 }
 
 //=============================================================================
@@ -421,6 +462,9 @@ void DrawGameSky0(void)
 	// ライティングを無効
 	SetLightEnable(FALSE);
 
+	// ターゲットアイコンの描画処理
+	DrawTarget();
+
 	// スコアの描画処理
 	DrawScore();
 
@@ -445,6 +489,11 @@ void DrawGameSky0(void)
 	// チュートリアルの描画処理
 	DrawTutorial();
 
+	// タイミングバーの描画処理
+	DrawTImingBar();
+
+	// タイミングテキストの描画処理
+	DrawTimingText();
 
 	// ライティングを有効に
 	SetLightEnable(TRUE);
