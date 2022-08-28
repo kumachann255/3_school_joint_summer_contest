@@ -25,7 +25,8 @@ struct CAMERA
 	XMFLOAT4X4			mtxView;		// ビューマトリックス
 	XMFLOAT4X4			mtxInvView;		// ビューマトリックス
 	XMFLOAT4X4			mtxProjection;	// プロジェクションマトリックス
-	
+	XMFLOAT4X4			mtxWorld;		// ワールドマトリックス
+
 	XMFLOAT3			pos;			// カメラの視点(位置)
 	XMFLOAT3			at;				// カメラの注視点
 	XMFLOAT3			up;				// カメラの上方向ベクトル
