@@ -29,7 +29,7 @@ struct SKY_ENEMY
 	BOOL				load;
 	DX11_MODEL			model;		// モデル情報
 
-	float				circle1_spd;		// 移動スピード
+	float				circle1_spd;// 回転スピード
 	float				circle2_spd;
 	float				dir;		// 向き
 	float				size;		// 当たり判定の大きさ

@@ -13,6 +13,7 @@
 #include "debugproc.h"
 #include "target.h"
 #include "player.h"
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -55,6 +56,8 @@ HRESULT InitTargetObj(void)
 
 	// モデルのディフューズを保存しておく。色変え対応の為。
 	GetModelDiffuse(&g_TargetObj.model, &g_TargetObj.diffuse[0]);
+
+
 	
 	g_Load = TRUE;
 	return S_OK;
@@ -106,19 +109,31 @@ void UpdateTargetObj(void)
 		{	// 上へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
+			//if (GetTargetArea(up)) 
+				//g_TargetObj.rot.x -= MOVE_VALUE_X;
 			if (GetTargetArea(up)) g_TargetObj.pos.y += MOVE_VALUE_Y;
 		}
 		if (GetKeyboardPress(DIK_S))
 		{	// 下へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
+			//if (GetTargetArea(down)) 
+				//g_TargetObj.rot.x += MOVE_VALUE_X;
 			if (GetTargetArea(down)) g_TargetObj.pos.y -= MOVE_VALUE_Y;
 		}
 	}
 
+	CAMERA *camera = GetCamera();
+
+	//g_TargetObj.rot.y += camera->rot.y;
+	//g_TargetObj.rot.x += camera->rot.x;
+	//g_TargetObj.rot.z += camera->rot.z;
+
 	// 入力のあった方向へOBJを移動させる
 	g_TargetObj.pos.x = sinf(g_TargetObj.rot.y) * OBJ_DISTANCE;
 	g_TargetObj.pos.z = cosf(g_TargetObj.rot.y) * OBJ_DISTANCE;
+	//g_TargetObj.pos.y = cosf(g_TargetObj.rot.x) * OBJ_DISTANCE;
+	//g_TargetObj.pos.z += sinf(g_TargetObj.rot.x) * OBJ_DISTANCE;
 
 #ifdef _DEBUG	// デバッグ情報を表示する
 	PrintDebugProc("g_TargetObj:↑ → ↓ ←　Space\n");
@@ -152,6 +167,11 @@ void DrawTargetObj(void)
 	// 移動を反映
 	mtxTranslate = XMMatrixTranslation(g_TargetObj.pos.x, g_TargetObj.pos.y, g_TargetObj.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+	// プレイヤーを親とする
+	//PLAYER *player = GetPlayer();
+	//mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&player->mtxWorld));
+
 
 	// ワールドマトリックスの設定
 	SetWorldMatrix(&mtxWorld);
