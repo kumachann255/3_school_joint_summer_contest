@@ -42,6 +42,7 @@
 #include "cracker.h"
 #include "timingBar.h"
 #include "timingtext.h"
+#include "timingEffect.h"
 
 
 //*****************************************************************************
@@ -172,6 +173,9 @@ HRESULT InitGameCity(void)
 	// タイミングテキストの初期化
 	InitTimingText();
 
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -203,6 +207,9 @@ HRESULT InitGameCity(void)
 //=============================================================================
 void UninitGameCity(void)
 {
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
+
 	// タイミングテキストの終了処理
 	UninitTimingText();
 
@@ -389,6 +396,9 @@ void UpdateGameCity(void)
 	// タイミングテキストの更新処理
 	UpdateTimingText();
 
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 }
 
 
@@ -479,6 +489,9 @@ void DrawGameCity0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
 
 	// タイミングバーの描画処理
 	DrawTImingBar();

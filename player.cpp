@@ -23,6 +23,7 @@
 #include "cracker.h"
 #include "timingBar.h"
 #include "timingtext.h"
+#include "combo.h"
 
 
 //*****************************************************************************
@@ -101,6 +102,8 @@ HRESULT InitPlayer(void)
 	g_Player.use = TRUE;
 
 	g_Player.angle = 0.0f;
+
+	g_Player.rockOn = FALSE;
 
 	g_Stage = GetStage();
 
@@ -286,8 +289,20 @@ void UpdatePlayer(void)
 	pos.y -= (PLAYER_OFFSET_Y - 0.1f);
 	SetPositionShadow(g_Player.shadowIdx, pos);
 
+	// 攻撃方法の確認(ロックオンを使うかどうか)
+	// 海ステージで通常攻撃時＋空ステージ
+	if (((GetMode() == MODE_GAME_SEA) && (GetCombo() < COMBO_CHANGE_ACTION)) ||
+		(GetMode() == MODE_GAME_SKY))
+	{
+		g_Player.rockOn = TRUE;
+	}
+	else
+	{
+		g_Player.rockOn = FALSE;
+	}
+	
 	// 弾発射処理
-	if (g_Stage != tutorial)
+	if (g_Stage == tutorial)
 	{
 		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
 		{
@@ -304,7 +319,46 @@ void UpdatePlayer(void)
 		{
 			g_Player.action = TRUE;
 
-			SetBom();
+			switch (GetMode())
+			{
+			case MODE_GAME_CITY:
+				// コンボ数が一定以下の場合は初期攻撃
+				if (GetCombo() < COMBO_CHANGE_ACTION)
+				{
+					SetBom();	// ガム爆弾
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+				}
+				else
+				{	// 派生攻撃
+					SetCup();	// コーヒーカップ
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+				}
+
+				break;
+
+			case MODE_GAME_SEA:
+				// コンボ数が一定以下の場合は初期攻撃
+				if (GetCombo() < COMBO_CHANGE_ACTION)
+				{
+						// タコ一本釣り
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+				}
+				else
+				{	// 派生攻撃
+						// 恐怖のサメ
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+				}
+
+				break;
+
+			case MODE_GAME_SKY:
+				SetS_Meteor(g_Player.pos, g_Player.rot.y);
+				SetTimingText(GetNoteTiming());	// ノーツ判定
+
+				break;
+
+
+			}
 		}
 	}
 

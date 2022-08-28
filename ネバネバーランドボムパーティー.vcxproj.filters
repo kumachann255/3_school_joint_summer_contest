@@ -55,6 +55,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="rockOn.cpp" />
+    <ClCompile Include="timingEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -111,5 +112,6 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="rockOn.h" />
+    <ClInclude Include="timingEffect.h" />
   </ItemGroup>
 </Project>

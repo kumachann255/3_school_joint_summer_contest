@@ -128,6 +128,9 @@ void UninitTarget(void)
 //=============================================================================
 void UpdateTarget(void)
 {
+	// 攻撃方法がサークルの場合はスキップ
+	if (!GetPlayer()->rockOn) return;
+
 	for (int i = 0; i < MAX_TARGET; i++)
 	{
 		if (!g_Target[i].use) return;
@@ -157,6 +160,9 @@ void UpdateTarget(void)
 //=============================================================================
 void DrawTarget(void)
 {
+	// 攻撃方法がサークルの場合はスキップ
+	if (!GetPlayer()->rockOn) return;
+
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;

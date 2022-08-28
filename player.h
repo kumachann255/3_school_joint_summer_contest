@@ -37,6 +37,7 @@ struct PLAYER
 	int					shadowIdx;	// 影のIndex
 	int					hp;			// ヒットポイント
 	BOOL				use;
+	BOOL				rockOn;		// ロックオンの攻撃方法かどうか
 
 
 	// 階層アニメーション用のメンバー変数

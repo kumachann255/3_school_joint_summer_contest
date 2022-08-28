@@ -42,6 +42,7 @@
 #include "timingtext.h"
 #include "target.h"
 #include "targetObj.h"
+#include "timingEffect.h"
 
 
 //*****************************************************************************
@@ -166,6 +167,9 @@ HRESULT InitGameSea(void)
 	// タイミングテキストの初期化
 	InitTimingText();
 
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	// ターゲットアイコンの初期化
 	InitTarget();
 
@@ -208,6 +212,9 @@ void UninitGameSea(void)
 
 	// ターゲットアイコンの終了処理
 	UninitTarget();
+
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
 
 	// タイミングテキストの終了処理
 	UninitTimingText();
@@ -383,6 +390,9 @@ void UpdateGameSea(void)
 	// タイミングテキストの更新処理
 	UpdateTimingText();
 
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
 
@@ -477,6 +487,9 @@ void DrawGameSea0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
 
 	// タイミングバーの描画処理
 	DrawTImingBar();

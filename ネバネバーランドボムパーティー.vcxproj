@@ -184,6 +184,7 @@
     <ClCompile Include="targetObj.cpp" />
     <ClCompile Include="timeUI.cpp" />
     <ClCompile Include="timingBar.cpp" />
+    <ClCompile Include="timingEffect.cpp" />
     <ClCompile Include="timingtext.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="targetObj.h" />
     <ClInclude Include="timeUI.h" />
     <ClInclude Include="timingBar.h" />
+    <ClInclude Include="timingEffect.h" />
     <ClInclude Include="timingtext.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />

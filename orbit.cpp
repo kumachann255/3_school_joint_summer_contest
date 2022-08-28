@@ -153,6 +153,9 @@ void UninitOrbit(void)
 //=============================================================================
 void UpdateOrbit(void)
 {
+	// 攻撃方法がロックオンの場合はスキップ
+	if (GetPlayer()->rockOn) return;
+
 	PLAYER *pPlayer = GetPlayer();
 	ATTACKRANGE *AttackR = GetAttackR();
 
@@ -204,6 +207,9 @@ void UpdateOrbit(void)
 //=============================================================================
 void DrawOrbit(void)
 {
+	// 攻撃方法がロックオンの場合はスキップ
+	if (GetPlayer()->rockOn) return;
+
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
 

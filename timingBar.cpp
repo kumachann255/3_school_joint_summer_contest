@@ -15,6 +15,7 @@
 #include "time.h"
 #include "sound.h"
 #include "combo.h"
+#include "timingEffect.h"
 
 
 //*****************************************************************************
@@ -35,7 +36,12 @@
 #define TARGET_TEXTURE_X			(100.0f)	// ターゲットのサイズ
 #define TARGET_TEXTURE_Y			(100.0f)
 
-#define ONPU_SPEED					(3.0f)	// 音符の速度
+#define ONPU_SPEED					(5.0f)	// 音符の速度
+
+#define DISTANCE_ONPU_CITY			(40)	// 街ステージの音符の間隔(フレーム)
+#define DISTANCE_ONPU_SEA			(40)	// 海ステージの音符の間隔(フレーム)
+#define DISTANCE_ONPU_SKY			(40)	// 空ステージの音符の間隔(フレーム)
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -69,9 +75,8 @@ static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
 static TIMINGNOTE				g_Note[NOTE_MAX];			// 音符
 static TIMINGNOTE				g_Target;					// 音符を押すタイミングのテクスチャ
-static int						g_OldTime;					// 前フレームの時間
-
-static int						g_StartTime;
+static int						g_Time;						// 時間
+static int						g_Distance;
 
 static BOOL						g_Load = FALSE;
 
@@ -127,7 +132,27 @@ HRESULT InitTImingBar(void)
 	g_TexNo = 0;
 
 	// 時間の初期化
-	g_OldTime = (int)(time(NULL));
+	g_Time = 0;
+
+	switch (GetMode())
+	{
+	case MODE_GAME_CITY:
+		g_Distance = DISTANCE_ONPU_CITY;
+
+		break;
+
+	case MODE_GAME_SEA:
+		g_Distance = DISTANCE_ONPU_SEA;
+
+		break;
+
+	case MODE_GAME_SKY:
+		g_Distance = DISTANCE_ONPU_SKY;
+
+		break;
+
+	}
+
 
 	g_Load = TRUE;
 	return S_OK;
@@ -176,17 +201,13 @@ void UpdateTImingBar(void)
 
 
 	// 音符の出現
-	int NowTime = (int)((time(NULL)));
+	g_Time++;
 
-	// 1秒おきに音符を出現させる
-	if (g_OldTime != NowTime)
+	// 一定時間で音符を出現させる
+	if (g_Time % g_Distance == 0)
 	{
 		SetNote();
 	}
-
-	// 今のフレームの時間を記録
-	g_OldTime = NowTime;
-
 }
 
 //=============================================================================
@@ -308,6 +329,9 @@ int GetNoteTiming(void)
 
 	// 最高のタイミングだったら歓声を流す
 	if (ans >= 2) PlaySound(SOUND_LABEL_SE_cheers02);
+
+	// 良い以上の時にエフェクトを発生(エフェクトの種類はランダム)
+	if (ans >= 1) SetTimingEffect(rand() % TEFFECT_TYPE_MAX);
 
 	// 良い以上であればコンボを設定
 	if (ans >= 1) 
