@@ -91,6 +91,7 @@ HRESULT InitTarget(void)
 		g_Target[i].spd = 4.0f;
 		g_Target[i].TexNo = i;
 		g_Target[i].use = TRUE;
+		g_Target[i].count = 0;
 	}
 
 	g_Load = TRUE;
@@ -129,56 +130,9 @@ void UpdateTarget(void)
 {
 	for (int i = 0; i < MAX_TARGET; i++)
 	{
-		//g_Target[1].rot.z += 0.036f;
+		if (!g_Target[i].use) return;
 
-		if (GetKeyboardPress(DIK_LSHIFT))
-		{
-			//// 移動させるんだぴょーん
-			//if (GetKeyboardPress(DIK_LEFT))
-			//{	// 左へ移動
-			//	g_Target[i].pos.x -= g_Target->spd;
-			//}
-			//if (GetKeyboardPress(DIK_RIGHT))
-			//{	// 右へ移動
-			//	g_Target[i].pos.x += g_Target->spd;
-			//}
-			//if (GetKeyboardPress(DIK_UP))
-			//{	// 上へ移動
-			//	g_Target[i].pos.y -= g_Target->spd;
-			//}
-			//if (GetKeyboardPress(DIK_DOWN))
-			//{	// 下へ移動
-			//	g_Target[i].pos.y += g_Target->spd;
-			//}
-		}
-
-
-		//// スクリーンの外に出たら照準を戻す処理
-		//// 右端
-		//if (g_Target[i].pos.x + TEXTURE_WIDTH * 0.5f > SCREEN_WIDTH)
-		//{
-		//	g_Target[i].pos.x = SCREEN_WIDTH - TEXTURE_WIDTH * 0.5f;
-		//}
-		//// 左端
-		//if (g_Target[i].pos.x - TEXTURE_WIDTH * 0.5f < 0.0f)
-		//{
-		//	g_Target[i].pos.x = 0.0f + TEXTURE_WIDTH * 0.5f;
-		//}
-		//// 上端
-		//if (g_Target[i].pos.y - TEXTURE_HEIGHT * 0.5f < 0.0f)
-		//{
-		//	g_Target[i].pos.y = 0.0f + TEXTURE_HEIGHT * 0.5f;
-		//}
-		//// 下端
-		//if (g_Target[i].pos.y + TEXTURE_HEIGHT * 0.5f > SCREEN_HEIGHT)
-		//{
-		//	g_Target[i].pos.y = SCREEN_HEIGHT - TEXTURE_HEIGHT * 0.5f;
-		//}
-
-		//PLAYER *player = GetPlayer();
-		//XMVECTOR pPos = XMLoadFloat3(&player->pos);
-		//XMVECTOR ans = Screenpos(pPos);
-
+		// ワールド座標をスクリーン座標へ変換
 		TARGETOBJ *targetObj = GetTargetObj();
 		XMVECTOR pPos = XMLoadFloat3(&targetObj->pos);
 		XMVECTOR ans = Screenpos(pPos);

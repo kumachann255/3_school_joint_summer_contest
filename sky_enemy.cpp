@@ -10,17 +10,23 @@
 #include "camera.h"
 #include "debugproc.h"
 #include "model.h"
+#include "enemy.h"
 #include "sky_enemy.h"
 #include "shadow.h"
 #include "light.h"
 #include "bullet.h"
 #include "meshfield.h"
+#include "collision.h"
+#include "target.h"
+#include "targetObj.h"
+#include "rockOn.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define	MODEL_SKY_ENEMY		"data/MODEL/m.obj"			// 読み込むモデル名
 #define	MODEL_SKY_ENEMY_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
+#define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 #define	VALUE_MOVE				(2.0f)							// 移動量
 #define	VALUE_ROTATE			(XM_PI * 0.02f)					// 回転量
@@ -40,8 +46,12 @@
 // グローバル変数
 //*****************************************************************************
 static SKY_ENEMY		g_SkyEnemy[MAX_SKY_ENEMY];						// プレイヤー
+static ENEMY			g_Collision[MAX_SKY_ENEMY];			// 当たり判定用のボックス
 
 static SKY_ENEMY		g_Parts[MAX_SKY_ENEMY][SKY_ENEMY_PARTS_MAX];		// プレイヤーのパーツ用
+
+static VERTEX_3D		*g_Vertex = NULL;				// 
+static MODEL			g_Collision_Vertex;	// 
 
 static BOOL		g_Load = FALSE;
 
@@ -71,7 +81,7 @@ static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
 //=============================================================================
 HRESULT InitSkyEnemy(void)
 {
-	srand(time(NULL));	// ランダムの値の初期化
+	LoadModel(MODEL_ENEMY_COLLISION, &g_Collision[0].model);
 
 	for (int i = 0; i < MAX_SKY_ENEMY; i++)
 	{
@@ -106,7 +116,13 @@ HRESULT InitSkyEnemy(void)
 		g_SkyEnemy[i].stay_count = 0;
 		g_SkyEnemy[i].move_count = 0;
 
+		g_SkyEnemy[i].target = FALSE;
 
+
+		g_Collision[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
+		g_Collision[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		GetModelDiffuse(&g_Collision[i].model, &g_Collision[i].diffuse[0]);
+		g_Collision[i].use = FALSE;			// TRUE:生きてる
 
 
 		// ここでプレイヤー用の影を作成している
@@ -161,6 +177,20 @@ HRESULT InitSkyEnemy(void)
 
 		g_Load = TRUE;
 	}
+
+	LoadObj(MODEL_ENEMY_COLLISION, &g_Collision_Vertex);
+
+	g_Vertex = new VERTEX_3D[g_Collision_Vertex.VertexNum];
+
+	// 初期化
+	for (int i = 0; i < g_Collision_Vertex.VertexNum; i++)
+	{
+		g_Vertex[i].Position = g_Collision_Vertex.VertexArray[i].Position;
+		g_Vertex[i].Diffuse = g_Collision_Vertex.VertexArray[i].Diffuse;
+		g_Vertex[i].Normal = g_Collision_Vertex.VertexArray[i].Normal;
+		g_Vertex[i].TexCoord = g_Collision_Vertex.VertexArray[i].TexCoord;
+	}
+
 	return S_OK;
 
 }
@@ -258,6 +288,8 @@ void UpdateSkyEnemy(void)
 		g_SkyEnemy[i].rot.y = g_SkyEnemy[i].angle1;				// 常にプレイヤーの向きを向くようにする
 
 
+		// 当たり判定ようのボックスと位置を共有する
+		g_Collision[i].pos = g_SkyEnemy[i].pos;
 
 
 
@@ -270,6 +302,27 @@ void UpdateSkyEnemy(void)
 			g_SkyEnemy[i].rot.y = g_SkyEnemy[i].dir = 0.0f;
 		}
 #endif
+
+
+		CAMERA *camera = GetCamera();
+		TARGETOBJ *targetObj = GetTargetObj();
+		TARGET *target = GetTarget();
+
+		// レイキャストして足元の高さを求める
+		XMFLOAT3 hitPosition;				// 交点
+		hitPosition = g_SkyEnemy[i].pos;	// 外れた時用に初期化しておく
+		bool ans = RayHitEnemySky(targetObj[0].pos, camera->pos, &hitPosition, i);
+
+		if ((ans) && (!g_SkyEnemy[i].target))
+		{
+			//g_SkyEnemy[i].use = FALSE;
+			g_SkyEnemy[i].target = TRUE;
+			g_Collision[i].use = FALSE;
+			target[0].enemyNum[target[0].count] = i;
+			target[0].count++;
+
+			SetRockOn();
+		}
 
 
 		//g_Player.angle += 0.01f;
@@ -340,9 +393,6 @@ void UpdateSkyEnemy(void)
 		//XMStoreFloat4(&g_Air.quaternion, quat);
 
 
-
-
-
 		// 階層アニメーション
 		for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
 		{
@@ -382,15 +432,13 @@ void UpdateSkyEnemy(void)
 				XMStoreFloat3(&g_Parts[i][j].scl, s0 + scl * time);
 
 			}
-		}
 
 #ifdef _DEBUG	// デバッグ情報を表示する
-		PrintDebugProc("Player:↑ → ↓ ←　Space\n");
-		PrintDebugProc("Player:X:%f Y:%f Z:%f\n", g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
+		PrintDebugProc("g_SkyEnemy[%d]:X:%f Y:%f Z:%f\n", i, g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
 #endif
-
-
+		}
 	}
+
 }
 
 //=============================================================================
@@ -477,6 +525,31 @@ void DrawSkyEnemy(void)
 				DrawModel(&g_Parts[i][j].model);
 
 			}
+
+			// コリジョン用のボックスの描画
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
+
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
+			XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
+
+			// モデル描画
+			DrawModel(&g_Collision[0].model);
+
+
 		}
 	}
 
@@ -491,4 +564,44 @@ void DrawSkyEnemy(void)
 SKY_ENEMY *GetSkyEnemy(void)
 {
 	return &g_SkyEnemy[0];
+}
+
+
+BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num)
+{
+	CameraPos.y = 5.0f;
+
+	XMFLOAT3 start = CameraPos;
+	XMFLOAT3 end = Pos;
+	XMFLOAT3 org = *HitPosition;
+
+	// 必要数分検索を繰り返す
+	for (int i = 0; i < g_Collision_Vertex.VertexNum - 2; i++)
+	{
+		XMFLOAT3 p0 = g_Vertex[i].Position;
+		p0.x += g_Collision[num].pos.x;
+		p0.y += g_Collision[num].pos.y;
+		p0.z += g_Collision[num].pos.z;
+
+		XMFLOAT3 p1 = g_Vertex[i + 1].Position;
+		p1.x += g_Collision[num].pos.x;
+		p1.y += g_Collision[num].pos.y;
+		p1.z += g_Collision[num].pos.z;
+
+		XMFLOAT3 p2 = g_Vertex[i + 2].Position;
+		p2.x += g_Collision[num].pos.x;
+		p2.y += g_Collision[num].pos.y;
+		p2.z += g_Collision[num].pos.z;
+
+		// 三角ポリゴンだから２枚分の当たり判定
+		BOOL ans = RayCast(p0, p2, p1, start, end, HitPosition, &g_Vertex[i].Normal);
+		if (ans)
+		{
+			return TRUE;
+		}
+	}
+
+	// 何処にも当たっていなかった時
+	*HitPosition = org;
+	return FALSE;
 }

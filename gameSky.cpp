@@ -45,6 +45,7 @@
 #include "timingtext.h"
 #include "target.h"
 #include "targetObj.h"
+#include "rockOn.h"
 
 
 //*****************************************************************************
@@ -128,7 +129,7 @@ HRESULT InitGameSky(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitTree();
+	InitFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -184,6 +185,9 @@ HRESULT InitGameSky(void)
 	// ターゲットオブジェクトの初期化
 	InitTargetObj();
 
+	// ロックオンアイコンの初期化
+	InitRockOn();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -215,6 +219,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// ロックオンアイコンの終了処理
+	UninitRockOn();
+
 	// ターゲットオブジェクトの終了処理
 	UninitTargetObj();
 
@@ -270,7 +277,7 @@ void UninitGameSky(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitTree();
+	UninitFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -357,7 +364,7 @@ void UpdateGameSky(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateTree();
+	UpdateFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();
@@ -419,6 +426,9 @@ void UpdateGameSky(void)
 	// ターゲットオブジェクトの更新処理
 	UpdateTargetObj();
 
+	// ロックオンアイコンの更新処理
+	UpdateRockOn();
+
 }
 
 //=============================================================================
@@ -462,7 +472,7 @@ void DrawGameSky0(void)
 	DrawMeshWall();
 
 	// 木の描画処理
-	DrawTree();
+	DrawFieldObj();
 
 	// スカイドームの描画処理
 	//DrawSky();
@@ -479,7 +489,11 @@ void DrawGameSky0(void)
 	// 攻撃範囲の描画処理
 	DrawAttackR();
 
+	// ターゲットオブジェクトの描画処理
+	DrawTargetObj();
 
+	// ロックオンアイコンの描画処理
+	DrawRockOn();
 
 	// 2Dの物を描画する処理
 	// Z比較なし

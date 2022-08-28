@@ -72,7 +72,7 @@ static BOOL				g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitTree(void)
+HRESULT InitFieldObj(void)
 {
 	LoadModel(MODEL_BUILDING, &g_Bilding[0].model);
 	LoadModel(MODEL_HOUSE, &g_House[0].model);
@@ -247,7 +247,7 @@ HRESULT InitTree(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitTree(void)
+void UninitFieldObj(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -276,7 +276,7 @@ void UninitTree(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateTree(void)
+void UpdateFieldObj(void)
 {
 	// ビルの処理
 	for (int i = 0; i < MAX_FOBJ; i++)
@@ -467,7 +467,7 @@ void UpdateTree(void)
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawTree(void)
+void DrawFieldObj(void)
 {
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 

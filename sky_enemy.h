@@ -58,6 +58,8 @@ struct SKY_ENEMY
 	int stay_count;
 	int move_count;
 
+	BOOL				target;
+
 	int spawn;
 };
 
@@ -70,3 +72,4 @@ void UpdateSkyEnemy(void);
 void DrawSkyEnemy(void);
 
 SKY_ENEMY *GetSkyEnemy(void);
+BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
