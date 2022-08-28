@@ -68,7 +68,7 @@ char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 
 #endif
 
-int	g_Mode = MODE_GAME_SKY;					// 起動時の画面を設定
+int	g_Mode = MODE_GAME_CITY;					// 起動時の画面を設定
 
 int g_Stage = stage0;							// 現在のステージ
 
@@ -647,7 +647,7 @@ float RamdomFloat(int digits, float max, float min)
 //=============================================================================
 int GetStage(void)
 {
-	return g_Mode;
+	return g_Stage;
 }
 
 

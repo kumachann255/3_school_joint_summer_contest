@@ -265,6 +265,8 @@ void UpdatePlayer(void)
 		if (GetKeyboardTrigger(DIK_L))
 		{
 			SetS_Meteor(g_Player.pos,g_Player.rot.y);
+			SetTimingText(GetNoteTiming());
+
 		}
 
 	}
@@ -290,6 +292,7 @@ void UpdatePlayer(void)
 		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
 		{
 			g_Player.action = TRUE;
+			SetTimingText(GetNoteTiming());
 
 			SetBom();
 		}
