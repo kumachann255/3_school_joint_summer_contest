@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // エネミーモデル処理 [enemy.cpp]
-// Author : 熊澤義弘＋エナ
+// Author : 熊澤義弘＋エナ 
 //
 //=============================================================================
 #include "main.h"
@@ -21,15 +21,16 @@
 #include "tutorial.h"
 #include "timeUI.h"
 #include "target.h"
+#include "targetObj.h"
 
 #include "sound.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY			"data/MODEL/patoka-.obj"		// 読み込むモデル名
-#define	MODEL_ENEMY_01		"data/MODEL/sirobai.obj"		// 読み込むモデル名
-#define	MODEL_ENEMY_COLLISION		"data/MODEL/collisionBox.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY				"data/MODEL/patoka-.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_01			"data/MODEL/sirobai.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 
 #define ENEMY_TYPE_MAX		(2)							// エネミータイプの最大数
@@ -45,17 +46,17 @@
 #define ENEMY_GOAL_Z		(70.0f)						// エネミーのゴール基準位置(z座標)
 #define ENEMY_GOAL_Z_OFFSET	(60)						// エネミーのゴール位置の乱数
 
-#define STAGE0_POP_COUNT			(100)				// エネミーのポップ間隔
-#define STAGE0_MAX_POP				(20)				// 最大、場に何体エネミーを出すか
+#define STAGE0_POP_COUNT	(100)						// エネミーのポップ間隔
+#define STAGE0_MAX_POP		(20)						// 最大、場に何体エネミーを出すか
 
-#define STAGE1_POP_COUNT			(70)				// エネミーのポップ間隔
-#define STAGE1_MAX_POP				(25)				// 最大、場に何体エネミーを出すか
+#define STAGE1_POP_COUNT	(70)						// エネミーのポップ間隔
+#define STAGE1_MAX_POP		(25)						// 最大、場に何体エネミーを出すか
 
-#define STAGE2_POP_COUNT			(50)				// エネミーのポップ間隔
-#define STAGE2_MAX_POP				(30)				// 最大、場に何体エネミーを出すか
+#define STAGE2_POP_COUNT	(50)						// エネミーのポップ間隔
+#define STAGE2_MAX_POP		(30)						// 最大、場に何体エネミーを出すか
 
-#define STAGE3_POP_COUNT			(30)				// エネミーのポップ間隔
-#define STAGE3_MAX_POP				(45)				// 最大、場に何体エネミーを出すか
+#define STAGE3_POP_COUNT	(30)						// エネミーのポップ間隔
+#define STAGE3_MAX_POP		(45)						// 最大、場に何体エネミーを出すか
 
 
 #define ENEMY_HIT_MOVE		(5.0f)						// 当たり判定後アニメーション用移動量
@@ -132,6 +133,10 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].liveCount = 0;		// 生存時間をリセット
 		g_Enemy[i].type = 0;			// エネミータイプ
 
+		g_Enemy[i].cupHit = FALSE;									// TRUE:当たってる
+		g_Enemy[i].cupRot = FALSE;									// TRUE:当たってる
+		g_Enemy[i].radian = 0.0f;									// 回転量
+
 		g_Enemy[i].fuchi = FALSE;
 
 
@@ -183,6 +188,8 @@ void UninitEnemy(void)
 //=============================================================================
 void UpdateEnemy(void)
 {
+	//return;
+
 	if (g_Stage == tutorial)
 	{	// チュートリアル様に1体出す
 		count++;
@@ -439,12 +446,12 @@ void UpdateEnemy(void)
 			}
 
 			CAMERA *camera = GetCamera();
-			PLAYER *player = GetPlayer();
+			TARGETOBJ *targetObj = GetTargetObj();
 
 			// レイキャストして足元の高さを求める
 			XMFLOAT3 hitPosition;								// 交点
 			hitPosition = g_Enemy[i].pos;	// 外れた時用に初期化しておく
-			bool ans = RayHitEnemy(player->pos, camera->pos, &hitPosition, i);
+			bool ans = RayHitEnemy(targetObj[0].pos, camera->pos, &hitPosition, i);
 
 			if (ans)
 			{
@@ -602,6 +609,7 @@ void SetEnemy(void)
 			g_Enemy[i].pos.z = ENEMY_POP_Z;
 			g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
 			g_Enemy[i].isHit = FALSE;
+			g_Enemy[i].cupHit = FALSE;
 			g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 			// x座標はランダム
