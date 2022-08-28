@@ -33,8 +33,10 @@
 #include "dome.h"
 #include "timingBar.h"
 #include "timingtext.h"
+#include "timingEffect.h"
 #include "target.h"
 #include "targetObj.h"
+#include "rockOn.h"
 
 
 //*****************************************************************************
@@ -112,6 +114,8 @@ HRESULT InitGameSky(void)
 	//InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_DOWN), XMFLOAT3(0.0f, 0.0f, 0.0f),
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
+	// 木を生やす
+	InitFieldObj();
 
 	//// 弾の初期化
 	//InitBullet();
@@ -158,11 +162,17 @@ HRESULT InitGameSky(void)
 	// タイミングテキストの初期化
 	InitTimingText();
 
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	// ターゲットアイコンの初期化
 	InitTarget();
 
 	// ターゲットオブジェクトの初期化
 	InitTargetObj();
+
+	// ロックオンアイコンの初期化
+	InitRockOn();
 
 	g_Stage = GetStage();
 
@@ -195,6 +205,12 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
+
+	// ロックオンアイコンの終了処理
+	UninitRockOn();
+
 	// ターゲットオブジェクトの終了処理
 	UninitTargetObj();
 
@@ -249,8 +265,8 @@ void UninitGameSky(void)
 	//// スカイドームの終了処理
 	//UninitSky();
 
-	//// 木の終了処理
-	//UninitTree();
+	// 木の終了処理
+	UninitFieldObj();
 
 	//// 壁の終了処理
 	//UninitMeshWall();
@@ -336,9 +352,8 @@ void UpdateGameSky(void)
 	//// 壁処理の更新
 	//UpdateMeshWall();
 
-	//// 木の更新処理
-	//UpdateTree();
-
+	// 木の更新処理
+	UpdateFieldObj();
 
 	// ドームの更新処理
 	UpdateDome();
@@ -391,11 +406,17 @@ void UpdateGameSky(void)
 	// タイミングテキストの更新処理
 	UpdateTimingText();
 
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
 
 	// ターゲットオブジェクトの更新処理
 	UpdateTargetObj();
+
+	// ロックオンアイコンの更新処理
+	UpdateRockOn();
 
 }
 
@@ -439,8 +460,8 @@ void DrawGameSky0(void)
 	//// 壁の描画処理
 	//DrawMeshWall();
 
-	//// 木の描画処理
-	//DrawTree();
+	// 木の描画処理
+	DrawFieldObj();
 
 	// スカイドームの描画処理
 	//DrawSky();
@@ -457,7 +478,11 @@ void DrawGameSky0(void)
 	//// 攻撃範囲の描画処理
 	//DrawAttackR();
 
+	// ターゲットオブジェクトの描画処理
+	DrawTargetObj();
 
+	// ロックオンアイコンの描画処理
+	DrawRockOn();
 
 	// 2Dの物を描画する処理
 	// Z比較なし
@@ -492,6 +517,9 @@ void DrawGameSky0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
 
 	// タイミングバーの描画処理
 	DrawTImingBar();

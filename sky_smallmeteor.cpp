@@ -7,6 +7,7 @@
 #include <time.h>
 #include "main.h"
 #include "renderer.h"
+#include "debugproc.h"
 #include "camera.h"
 #include "input.h"
 #include "model.h"
@@ -15,7 +16,8 @@
 #include "player.h"
 #include "attackRange.h"
 #include "blast.h"
-
+#include "target.h"
+#include "sky_enemy.h"
 #include "sound.h"
 
 
@@ -24,11 +26,12 @@
 //*****************************************************************************
 #define	MODEL_BOM			"data/MODEL/m.obj"		// 読み込むモデル名
 
-#define	VALUE_MOVE			(5.0f)						// 移動量
+#define	VALUE_MOVE				(5.0f)				// 移動量
 
-#define S_METEOR_SPEED			(0.015f)						// ボムの速度
+#define S_METEOR_SPEED			(0.015f)			// ボムの速度
 
-
+#define S_METEOR_SPEED_MAX		(100.0f)				// 何フレームでメテオがエネミーにぶつかるか
+#define S_METEOR_SPEED_MIN		(70.0f)				// 何フレームでメテオがエネミーにぶつかるか
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -60,7 +63,7 @@ HRESULT InitS_Meteor(void)
 
 		g_sMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_sMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_sMeteor[i].scl = XMFLOAT3(0.5f, 0.5f, 0.5f);
+		g_sMeteor[i].scl = XMFLOAT3(1.5f, 1.5f, 1.5f);
 
 		g_sMeteor[i].speed = S_METEOR_SPEED;			// 移動スピードクリア
 		g_sMeteor[i].time = 0.0f;
@@ -108,15 +111,24 @@ void UninitS_Meteor(void)
 //=============================================================================
 void UpdateS_Meteor(void)
 {
+	TARGET *target = GetTarget();
+
 	for (int i = 0; i < MAX_S_METEOR; i++)
 	{
 		if (g_sMeteor[i].use == TRUE)			// この攻撃範囲が使われている？
 		{									// Yes
 
 			g_sMeteor[i].pos.x += g_sMeteor[i].randMove.x;
-			g_sMeteor[i].pos.y -= g_sMeteor[i].randMove.y;
 			g_sMeteor[i].pos.z += g_sMeteor[i].randMove.z;
+			g_sMeteor[i].pos.y += g_sMeteor[i].randMove.y;
 
+			//g_sMeteor[i].pos.x += (target[0].targetPos[i].x - g_sMeteor[i].pos.x) * 0.9f;
+			//g_sMeteor[i].pos.x += (target[0].targetPos[i].z - g_sMeteor[i].pos.z) * 0.9f;
+			//g_sMeteor[i].pos.x += (target[0].targetPos[i].y - g_sMeteor[i].pos.y) * 0.9f;
+
+			//g_sMeteor[i].pos.x = target[0].targetPos[i].x;
+			//g_sMeteor[i].pos.x = target[0].targetPos[i].z;
+			//g_sMeteor[i].pos.x = target[0].targetPos[i].y;
 
 			if (g_sMeteor[i].pos.y < -300.0f)
 			{
@@ -129,7 +141,9 @@ void UpdateS_Meteor(void)
 			g_sMeteor[i].rot.y += rot.y;
 
 
-
+#ifdef _DEBUG	// デバッグ情報を表示する
+			PrintDebugProc("g_sMeteor[%d]:X:%f Y:%f Z:%f\n", i, g_sMeteor[i].pos.x, g_sMeteor[i].pos.y, g_sMeteor[i].pos.z);
+#endif
 		}
 	}
 
@@ -185,28 +199,40 @@ void DrawS_Meteor(void)
 
 void SetS_Meteor(XMFLOAT3 pos, float rot)
 {
-	for (int i = 0; i < MAX_S_METEOR; i++)
+	TARGET *target = GetTarget();
+	SKY_ENEMY *enemy = GetSkyEnemy();
+
+	for (int i = 0; i < target->count; i++)
 	{
 		if (!g_sMeteor[i].use)
 		{
 			g_sMeteor[i].use = TRUE;
 
-			g_sMeteor[i].randMove.x = RamdomFloat(2, 2.0f, -2.0f);
-			g_sMeteor[i].randMove.z = RamdomFloat(2, 2.0f, -2.0f);
-			g_sMeteor[i].randMove.y = RamdomFloat(2, 6.0f, 4.0f);
-
-			g_sMeteor[i].pos.y = 300.0f;
-
-
-			//				どの向きに　どれくらいの距離で		さらにそこからランダムでどのくらい移動するか
-
+			// 発生位置を規定位置から少しランダム要素を加える
 			g_sMeteor[i].pos.x = (pos.x - sinf(rot) * 100.0f) + RamdomFloat(2, 50.0f, -50.0f);
 			g_sMeteor[i].pos.z = (pos.z + cosf(rot) * 100.0f) + RamdomFloat(2, 50.0f, -50.0f);
+			g_sMeteor[i].pos.y = 300.0f;
+
+			//g_sMeteor[i].randMove.x = RamdomFloat(2, 2.0f, -2.0f);
+			//g_sMeteor[i].randMove.z = RamdomFloat(2, 2.0f, -2.0f);
+			//g_sMeteor[i].randMove.y = RamdomFloat(2, 6.0f, 4.0f);
+
+			float time = RamdomFloat(2, S_METEOR_SPEED_MAX, S_METEOR_SPEED_MIN);
+			g_sMeteor[i].randMove.x = (enemy[target[0].enemyNum[i]].pos.x - g_sMeteor[i].pos.x) / time;
+			g_sMeteor[i].randMove.z = (enemy[target[0].enemyNum[i]].pos.z - g_sMeteor[i].pos.z) / time;
+			g_sMeteor[i].randMove.y = (enemy[target[0].enemyNum[i]].pos.y - g_sMeteor[i].pos.y) / time;
+			//g_sMeteor[i].randMove.y = RamdomFloat(2, 6.0f, 4.0f);
+			//g_sMeteor[i].randMove.y = RamdomFloat(2, 2.0f, 1.0f);
+
+
 
 			//return;
 		}
 
 	}
+
+	target[0].count = 0;
+	//target[0].use = FALSE;
 }
 
 

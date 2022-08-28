@@ -42,6 +42,7 @@
 #include "timingtext.h"
 #include "target.h"
 #include "targetObj.h"
+#include "timingEffect.h"
 
 
 //*****************************************************************************
@@ -122,7 +123,7 @@ HRESULT InitGameSea(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitTree();
+	InitFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -165,6 +166,9 @@ HRESULT InitGameSea(void)
 
 	// タイミングテキストの初期化
 	InitTimingText();
+
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
 
 	// ターゲットアイコンの初期化
 	InitTarget();
@@ -209,6 +213,9 @@ void UninitGameSea(void)
 	// ターゲットアイコンの終了処理
 	UninitTarget();
 
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
+
 	// タイミングテキストの終了処理
 	UninitTimingText();
 
@@ -252,7 +259,7 @@ void UninitGameSea(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitTree();
+	UninitFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -333,7 +340,7 @@ void UpdateGameSea(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateTree();
+	UpdateFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();
@@ -382,6 +389,9 @@ void UpdateGameSea(void)
 
 	// タイミングテキストの更新処理
 	UpdateTimingText();
+
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
 
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
@@ -477,6 +487,9 @@ void DrawGameSea0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
 
 	// タイミングバーの描画処理
 	DrawTImingBar();

@@ -1,12 +1,12 @@
 //=============================================================================
 //
-// タイミングテキストの処理 [timingtext.cpp]
+// タイミングエフェクトの処理 [timingEffect.cpp]
 // Author : 熊澤義弘
 //
 //=============================================================================
 #include "main.h"
 #include "renderer.h"
-#include "timingtext.h"
+#include "timingEffect.h"
 #include "sprite.h"
 #include "model.h"
 #include "player.h"
@@ -19,13 +19,14 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_WIDTH				(100)	// キャラサイズ
-#define TEXTURE_HEIGHT				(35)	// 
-#define TEXTURE_MAX					(3)		// テクスチャの数
+#define TEXTURE_WIDTH				(30)	// キャラサイズ
+#define TEXTURE_HEIGHT				(30)	// 
+#define TEXTURE_WIDTH_MAX			(100)	// キャラサイズ
+#define TEXTURE_HEIGHT_MAX			(100)	// 
+#define TEXTURE_MAX					(TEFFECT_TYPE_MAX)		// テクスチャの数
 
-#define START_X						(TARGET_X)	// テキストの最初の表示位置
-#define START_Y						(TARGET_Y + 10.0f)	// テキストの最初の表示位置
-#define END_Y						(START_Y - 50.0f)	// テキストの最終的な表示位置
+#define SIZE_BIG_SPEED				(0.5f)	// サイズの大きくなるスピード
+
 #define LIFE_MAX					(30)	// 表示するフレーム
 
 
@@ -41,9 +42,9 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/did_it.png",
-	"data/TEXTURE/good_job.png",
-	"data/TEXTURE/fantastic.png",
+	"data/TEXTURE/timingEffect_0.png",
+	"data/TEXTURE/timingEffect_1.png",
+	"data/TEXTURE/timingEffect_2.png",
 };
 
 
@@ -51,7 +52,7 @@ static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
 static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
-static TIMINGTEXT				g_Text[TTEXT_MAX];		// 音符
+static TIMINGEFFECT				g_Effect[TEFFECT_MAX];			// 音符
 
 static BOOL						g_Load = FALSE;
 
@@ -59,7 +60,7 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitTimingText(void)
+HRESULT InitTimingEffect(void)
 {
 	ID3D11Device *pDevice = GetDevice();
 
@@ -76,13 +77,16 @@ HRESULT InitTimingText(void)
 	}
 	
 	// タイミングテキストの初期化
-	for (int i = 0; i < TTEXT_MAX; i++)
+	for (int i = 0; i < TEFFECT_MAX; i++)
 	{
-		g_Text[i].pos.x = START_X;
-		g_Text[i].pos.y = START_Y;
-		g_Text[i].use = FALSE;
-		g_Text[i].texNum = 0;
-		g_Text[i].life = LIFE_MAX;
+		g_Effect[i].pos.x = TARGET_X;
+		g_Effect[i].pos.y = TARGET_Y;
+		g_Effect[i].use = FALSE;		
+		g_Effect[i].size.x = TEXTURE_WIDTH;
+		g_Effect[i].size.y = TEXTURE_HEIGHT;
+
+		g_Effect[i].texNum = 0;
+		g_Effect[i].life = LIFE_MAX;
 	}
 
 	// 頂点バッファ生成
@@ -103,7 +107,7 @@ HRESULT InitTimingText(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitTimingText(void)
+void UninitTimingEffect(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -128,18 +132,19 @@ void UninitTimingText(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateTimingText(void)
+void UpdateTimingEffect(void)
 {
-	for (int i = 0; i < NOTE_MAX; i++)
+	for (int i = 0; i < TEFFECT_MAX; i++)
 	{
-		if (g_Text[i].use)
+		if (g_Effect[i].use)
 		{
 			// 最終位置へ移動させる
-			g_Text[i].pos.y -= (g_Text[i].pos.y - END_Y) * 0.9f;
+			g_Effect[i].size.x += (TEXTURE_WIDTH_MAX - g_Effect[i].size.x) * SIZE_BIG_SPEED;
+			g_Effect[i].size.y += (TEXTURE_HEIGHT_MAX - g_Effect[i].size.y) * SIZE_BIG_SPEED;
 
 			// 寿命を減らす
-			g_Text[i].life--;
-			if (g_Text[i].life < 0) g_Text[i].use = FALSE;
+			g_Effect[i].life--;
+			if (g_Effect[i].life < 0) g_Effect[i].use = FALSE;
 		}
 	}
 }
@@ -147,7 +152,7 @@ void UpdateTimingText(void)
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawTimingText(void)
+void DrawTimingEffect(void)
 {
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
@@ -167,16 +172,16 @@ void DrawTimingText(void)
 	SetMaterial(material);
 
 
-	// テキストの描画
-	for (int i = 0; i < TTEXT_MAX; i++)
+	// エフェクトの描画
+	for (int i = 0; i < TEFFECT_MAX; i++)
 	{
-		if (g_Text[i].use)
+		if (g_Effect[i].use)
 		{
 			// テクスチャ設定
-			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_Text[i].texNum]);
+			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_Effect[i].texNum]);
 
 			// １枚のポリゴンの頂点とテクスチャ座標を設定
-			SetSpriteColor(g_VertexBuffer, g_Text[i].pos.x, g_Text[i].pos.y, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0.0f, 0.0f, 1.0f, 1.0f,
+			SetSpriteColor(g_VertexBuffer, g_Effect[i].pos.x, g_Effect[i].pos.y, g_Effect[i].size.x, g_Effect[i].size.y, 0.0f, 0.0f, 1.0f, 1.0f,
 				XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 
 			// ポリゴン描画
@@ -186,18 +191,21 @@ void DrawTimingText(void)
 }
 
 
-// 音符の発生
-void SetTimingText(int text)
+// エフェクトの発生
+void SetTimingEffect(int tex)
 {
-	for (int i = 0; i < TTEXT_MAX; i++)
+	for (int i = 0; i < TEFFECT_MAX; i++)
 	{
-		if (!g_Text[i].use)
+		if (!g_Effect[i].use)
 		{
 			// 初期化
-			g_Text[i].use = TRUE;
-			g_Text[i].pos = XMFLOAT2(START_X, START_Y);
-			g_Text[i].texNum = text;
-			g_Text[i].life = LIFE_MAX;
+			g_Effect[i].use = TRUE;
+			g_Effect[i].pos.x = TARGET_X;
+			g_Effect[i].pos.y = TARGET_Y;
+			g_Effect[i].size.x = TEXTURE_WIDTH;
+			g_Effect[i].size.y = TEXTURE_HEIGHT;
+			g_Effect[i].texNum = tex;
+			g_Effect[i].life = LIFE_MAX;
 
 			return;
 		}

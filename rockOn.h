@@ -1,43 +1,41 @@
 //=============================================================================
 //
-// 木の処理 [tree.h]
-// Author : 熊澤義弘
+// ロックオンアイコン処理 [rockOn.h]
+// Author : 
 //
 //=============================================================================
 #pragma once
-
-
-//*****************************************************************************
-// マクロ定義
-//*****************************************************************************
-#define MAX_FOBJ		(20)					// オブジェクトの数
-#define MAX_FOBJ_GUAD	(55)					// オブジェクトの数
-#define MAX_FOBJ_SIGN	(5)						// オブジェクトの数
-
+#define MAX_ROCKON			(20)		// 最大数
 
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
-struct FOBJ
+
+struct ROCKON
 {
 	XMFLOAT4X4			mtxWorld;			// ワールドマトリックス
 	XMFLOAT3			pos;				// モデルの位置
 	XMFLOAT3			rot;				// モデルの向き(回転)
 	XMFLOAT3			scl;				// モデルの大きさ(スケール)
 
-	BOOL				use;
 	BOOL				load;
 	DX11_MODEL			model;				// モデル情報
 	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// モデルの色
+
+	BOOL				use;				// 使うかどうか
 };
+
+
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitFieldObj(void);
-void UninitFieldObj(void);
-void UpdateFieldObj(void);
-void DrawFieldObj(void);
+HRESULT InitRockOn(void);
+void UninitRockOn(void);
+void UpdateRockOn(void);
+void DrawRockOn(void);
 
-FOBJ *GetBilding(void);
+ROCKON *GetRockOn();
+void SetRockOn(void);
+
 

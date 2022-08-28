@@ -12,16 +12,17 @@
 #include "targetObj.h"
 #include "debugproc.h"
 #include "target.h"
+#include "player.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define	MODEL_DOME_CITY			"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
-#define MOVE_VALUE_Y			(3.0f)		// ターゲットが縦に動く速度
-#define MOVE_VALUE_X			(0.01f)		// ターゲットが横に動く速度
+#define MOVE_VALUE_Y			(5.0f)		// ターゲットが縦に動く速度
+#define MOVE_VALUE_X			(0.02f)		// ターゲットが横に動く速度
 
-#define OBJ_DISTANCE			(200.0f)	// カメラからターゲットの距離
+#define OBJ_DISTANCE			(700.0f)	// カメラからターゲットの距離
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -83,28 +84,31 @@ void UninitTargetObj(void)
 //=============================================================================
 void UpdateTargetObj(void)
 {
+	// 攻撃方法がサークルの場合はスキップ
+	if (!GetPlayer()->rockOn) return;
+
 	if (!GetKeyboardPress(DIK_LSHIFT))
 	{
 		// 移動させちゃう
-		if (GetKeyboardPress(DIK_LEFT))
+		if (GetKeyboardPress(DIK_A))
 		{	// 左へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
 			if (GetTargetArea(left)) g_TargetObj.rot.y -= MOVE_VALUE_X;
 		}
-		if (GetKeyboardPress(DIK_RIGHT))
+		if (GetKeyboardPress(DIK_D))
 		{	// 右へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
 			if (GetTargetArea(right)) g_TargetObj.rot.y += MOVE_VALUE_X;
 		}
-		if (GetKeyboardPress(DIK_UP))
+		if (GetKeyboardPress(DIK_W))
 		{	// 上へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
 			if (GetTargetArea(up)) g_TargetObj.pos.y += MOVE_VALUE_Y;
 		}
-		if (GetKeyboardPress(DIK_DOWN))
+		if (GetKeyboardPress(DIK_S))
 		{	// 下へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
@@ -128,6 +132,8 @@ void UpdateTargetObj(void)
 //=============================================================================
 void DrawTargetObj(void)
 {
+#ifdef _DEBUG	// デバッグ時のみ表示
+
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
 	if (g_TargetObj.use == FALSE) return;
@@ -154,7 +160,8 @@ void DrawTargetObj(void)
 
 	// モデル描画
 	DrawModel(&g_TargetObj.model);
-	
+
+#endif
 }
 
 //=============================================================================

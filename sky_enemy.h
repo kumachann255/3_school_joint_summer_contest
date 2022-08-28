@@ -1,7 +1,7 @@
 #pragma once
 //=============================================================================
 //
-// ƒ‚ƒfƒ‹ˆ— [sky_enemy.h]
+// ãƒ¢ãƒ‡ãƒ«å‡¦ç† [sky_enemy.h]
 // Author : 
 //
 //=============================================================================
@@ -9,45 +9,45 @@
 
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒžã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define MAX_SKY_ENEMY		(10)					// ƒGƒlƒ~[‚Ì”
+#define MAX_SKY_ENEMY		(10)					// ã‚¨ãƒãƒŸãƒ¼ã®æ•°
 
-#define	SKY_ENEMY_SIZE		(30.0f)				// “–‚½‚è”»’è‚Ì‘å‚«‚³
+#define	SKY_ENEMY_SIZE		(30.0f)				// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 
 //*****************************************************************************
-// \‘¢‘Ì’è‹`
+// æ§‹é€ ä½“å®šç¾©
 //*****************************************************************************
 struct SKY_ENEMY
 {
-	XMFLOAT3			pos;		// ƒ|ƒŠƒSƒ“‚ÌˆÊ’u
-	XMFLOAT3			rot;		// ƒ|ƒŠƒSƒ“‚ÌŒü‚«(‰ñ“])
-	XMFLOAT3			scl;		// ƒ|ƒŠƒSƒ“‚Ì‘å‚«‚³(ƒXƒP[ƒ‹)
+	XMFLOAT3			pos;		// ãƒãƒªã‚´ãƒ³ã®ä½ç½®
+	XMFLOAT3			rot;		// ãƒãƒªã‚´ãƒ³ã®å‘ã(å›žè»¢)
+	XMFLOAT3			scl;		// ãƒãƒªã‚´ãƒ³ã®å¤§ãã•(ã‚¹ã‚±ãƒ¼ãƒ«)
 
-	XMFLOAT4X4			mtxWorld;	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX
+	XMFLOAT4X4			mtxWorld;	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒžãƒˆãƒªãƒƒã‚¯ã‚¹
 
 	BOOL				load;
-	DX11_MODEL			model;		// ƒ‚ƒfƒ‹î•ñ
+	DX11_MODEL			model;		// ãƒ¢ãƒ‡ãƒ«æƒ…å ±
 
-	float				circle1_spd;		// ˆÚ“®ƒXƒs[ƒh
+	float				circle1_spd;		// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰
 	float				circle2_spd;
-	float				dir;		// Œü‚«
-	float				size;		// “–‚½‚è”»’è‚Ì‘å‚«‚³
-	int					shadowIdx;	// ‰e‚ÌIndex
+	float				dir;		// å‘ã
+	float				size;		// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
+	int					shadowIdx;	// å½±ã®Index
 
 	BOOL				use;
 
-	// ŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“—p‚Ìƒƒ“ƒo[•Ï”
-	INTERPOLATION_DATA	*tbl_adr;	// ƒAƒjƒƒf[ƒ^‚Ìƒe[ƒuƒ‹æ“ªƒAƒhƒŒƒX
-	int					tbl_size;	// “o˜^‚µ‚½ƒe[ƒuƒ‹‚ÌƒŒƒR[ƒh‘”
-	float				move_time;	// ŽÀsŽžŠÔ
+	// éšŽå±¤ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ã®ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•°
+	INTERPOLATION_DATA	*tbl_adr;	// ã‚¢ãƒ‹ãƒ¡ãƒ‡ãƒ¼ã‚¿ã®ãƒ†ãƒ¼ãƒ–ãƒ«å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+	int					tbl_size;	// ç™»éŒ²ã—ãŸãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ¬ã‚³ãƒ¼ãƒ‰ç·æ•°
+	float				move_time;	// å®Ÿè¡Œæ™‚é–“
 
-	// e‚ÍANULLAŽq‹Ÿ‚Íe‚ÌƒAƒhƒŒƒX‚ð“ü‚ê‚é
-	SKY_ENEMY				*parent;	// Ž©•ª‚ªe‚È‚çNULLAŽ©•ª‚ªŽq‹Ÿ‚È‚çe‚ÌplayerƒAƒhƒŒƒX
+	// è¦ªã¯ã€NULLã€å­ä¾›ã¯è¦ªã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å…¥ã‚Œã‚‹
+	SKY_ENEMY				*parent;	// è‡ªåˆ†ãŒè¦ªãªã‚‰NULLã€è‡ªåˆ†ãŒå­ä¾›ãªã‚‰è¦ªã®playerã‚¢ãƒ‰ãƒ¬ã‚¹
 
-	// ƒNƒH[ƒ^ƒjƒIƒ“
-	XMFLOAT4			quaternion;	// ƒNƒH[ƒ^ƒjƒIƒ“
-	XMFLOAT3			upVector;	// Ž©•ª‚ª—§‚Á‚Ä‚¢‚éŠ
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	XMFLOAT4			quaternion;	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	XMFLOAT3			upVector;	// è‡ªåˆ†ãŒç«‹ã£ã¦ã„ã‚‹æ‰€
 
 	float angle1;
 	float angle2;
@@ -58,21 +58,23 @@ struct SKY_ENEMY
 	int stay_count;
 	int move_count;
 
+	BOOL				target;
+
 	int spawn;
 
 	int EnemyType;
 
-	BOOL				isHit;				// “–‚½‚Á‚Ä‚éƒtƒ‰ƒO TRUE:“–‚½‚Á‚Ä‚¢‚é
-	int					hitTime;			// ˆÚ“®ŽžŠÔ
-	int					liveCount;			// ƒ|ƒbƒv‚µ‚Ä‚©‚ç‚ÌŽžŠÔ‚ðŠÇ—
+	BOOL				isHit;				// å½“ãŸã£ã¦ã‚‹ãƒ•ãƒ©ã‚° TRUE:å½“ãŸã£ã¦ã„ã‚‹
+	int					hitTime;			// ç§»å‹•æ™‚é–“
+	int					liveCount;			// ãƒãƒƒãƒ—ã—ã¦ã‹ã‚‰ã®æ™‚é–“ã‚’ç®¡ç†
 
-	int					type;				// ƒGƒlƒ~[‚Ìƒ^ƒCƒvi0:ƒpƒgƒJ[A1:”’ƒoƒC
-	BOOL				fuchi;				// ƒŠƒ€ƒ‰ƒCƒg‚ÌƒIƒ“ƒIƒt
+	int					type;				// ã‚¨ãƒãƒŸãƒ¼ã®ã‚¿ã‚¤ãƒ—ï¼ˆ0:ãƒ‘ãƒˆã‚«ãƒ¼ã€1:ç™½ãƒã‚¤
+	BOOL				fuchi;				// ãƒªãƒ ãƒ©ã‚¤ãƒˆã®ã‚ªãƒ³ã‚ªãƒ•
 
 };
 
 //*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
 HRESULT InitSkyEnemy(void);
 void UninitSkyEnemy(void);
@@ -81,3 +83,4 @@ void DrawSkyEnemy(void);
 
 SKY_ENEMY *GetSkyEnemy(void);
 void SetSkyEnemy(void);
+BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);

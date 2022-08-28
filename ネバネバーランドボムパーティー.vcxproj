@@ -170,6 +170,7 @@
     <ClCompile Include="playerHP.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
+    <ClCompile Include="rockOn.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="sea_meshfield.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="targetObj.cpp" />
     <ClCompile Include="timeUI.cpp" />
     <ClCompile Include="timingBar.cpp" />
+    <ClCompile Include="timingEffect.cpp" />
     <ClCompile Include="timingtext.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
@@ -225,6 +227,7 @@
     <ClInclude Include="playerHP.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
+    <ClInclude Include="rockOn.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="sea_meshfield.h" />
     <ClInclude Include="shadow.h" />
@@ -239,6 +242,7 @@
     <ClInclude Include="targetObj.h" />
     <ClInclude Include="timeUI.h" />
     <ClInclude Include="timingBar.h" />
+    <ClInclude Include="timingEffect.h" />
     <ClInclude Include="timingtext.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
