@@ -51,7 +51,7 @@ HRESULT InitTargetObj(void)
 	g_TargetObj.use = TRUE;
 
 	g_TargetObj.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_TargetObj.rot = XMFLOAT3(0.0f, 3.14f, 0.0f);
+	g_TargetObj.rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_TargetObj.scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	// モデルのディフューズを保存しておく。色変え対応の為。
@@ -169,8 +169,8 @@ void DrawTargetObj(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 	// プレイヤーを親とする
-	PLAYER *player = GetPlayer();
-	mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&player->mtxWorld));
+	//PLAYER *player = GetPlayer();
+	//mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&player->mtxWorld));
 
 
 	// ワールドマトリックスの設定

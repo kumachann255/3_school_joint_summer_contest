@@ -54,6 +54,15 @@
 #define ENEMY_BLINKING0		(50)						// 点滅の間隔
 #define ENEMY_BLINKING1		(14)						// 点滅の間隔
 
+#define ENEMY_ANGLE_SHRINK		(1.5f)					// 相手が近づいてくる速度
+#define ENEMY_DISTANCE_CIRCLE	(200.0f)				// 近づいてくる限界
+#define ENEMY_SHINK_SPEED_Y		(0.01f)					// プレイヤーの周りを回転する際の回転速度(Y軸)
+#define ENEMY_SHINK_SPEED_X		(0.05f)					// プレイヤーの周りを回転する際の回転速度(X軸)
+
+#define ENEMY_POP_DEISTANCE			(500)				// エネミーのポップする距離(ベース)
+#define ENEMY_POP_DEISTANCE_RAND	(300)				// エネミーのポップする距離(乱数)
+
+
 
 
 //*****************************************************************************
@@ -120,27 +129,20 @@ HRESULT InitSkyEnemy(void)
 
 
 		// エネミーが出現する初期位置
-		g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
-							  -150.0f,	// Y
-							  g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
-
+		g_SkyEnemy[i].pos = { 0.0f, 0.0f, 0.0f };
 		g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };
 		g_SkyEnemy[i].scl = { 1.0f, 1.0f, 1.0f };
 
-		g_SkyEnemy[i].circle1_spd = (float)((rand() % 2) + 5) / 1000.0f;			// サークル1を移動するスピード rand関数はint型なのでfloat型にキャストしている
-		g_SkyEnemy[i].circle2_spd = (float)((rand() % 1) + 3) / 100.0f;			// サークル2を移動するスピード rand関数はint型なのでfloat型にキャストしている
+		// 一定範囲内に入った際の回転速度の初期化
+		g_SkyEnemy[i].circle1_spd = RamdomFloat(2, ENEMY_SHINK_SPEED_Y, -ENEMY_SHINK_SPEED_Y);
+		g_SkyEnemy[i].circle2_spd = RamdomFloat(2, ENEMY_SHINK_SPEED_X, -ENEMY_SHINK_SPEED_X);
 
 
 		g_SkyEnemy[i].size = SKY_ENEMY_SIZE;	// 当たり判定の大きさ
-
 		g_SkyEnemy[i].use = FALSE;
-
 		g_SkyEnemy[i].spawn = 0;
-
 		g_SkyEnemy[i].move_count = 0;
-
 		g_SkyEnemy[i].EnemyType = 0;
-
 		g_SkyEnemy[i].target = FALSE;
 
 
@@ -150,55 +152,10 @@ HRESULT InitSkyEnemy(void)
 		g_Collision[i].use = FALSE;			// TRUE:生きてる
 
 
-		// ここでプレイヤー用の影を作成している
-		XMFLOAT3 pos = g_SkyEnemy[i].pos;
-		pos.y -= (SKY_ENEMY_OFFSET_Y - 0.1f);
-		g_SkyEnemy[i].shadowIdx = CreateShadow(pos, SKY_ENEMY_SHADOW_SIZE, SKY_ENEMY_SHADOW_SIZE);
-		//          ↑
-		//        このメンバー変数が生成した影のIndex番号
-
 		// 階層アニメーション用の初期化処理
 		g_SkyEnemy[i].parent = NULL;			// 本体（親）なのでNULLを入れる
 		g_Parts[i][0].parent = &g_SkyEnemy[i];		// 親をセット
 		g_Parts[i][1].parent = &g_SkyEnemy[i];		// 親をセット
-
-
-
-		//// パーツの初期化
-		//for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
-		//{
-		//	g_Parts[i][j].use = FALSE;
-
-		//	// 位置・回転・スケールの初期設定
-		//	g_Parts[i][j].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		//	g_Parts[i][j].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		//	g_Parts[i][j].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-
-		//	// 親子関係
-		//	g_Parts[i][j].parent = &g_SkyEnemy[i];		// ← ここに親のアドレスを入れる
-		////	g_Parts[腕].parent= &g_Player;		// 腕だったら親は本体（プレイヤー）
-		////	g_Parts[手].parent= &g_Paerts[腕];	// 指が腕の子供だった場合の例
-
-		//	// 階層アニメーション用のメンバー変数の初期化
-		//	g_Parts[i][j].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
-		//	g_Parts[i][j].move_time = 0.0f;	// 実行時間をクリア
-		//	g_Parts[i][j].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
-
-		//	// パーツの読み込みはまだしていない
-		//	g_Parts[i][j].load = 0;
-		//}
-
-		//g_Parts[i][0].use = TRUE;
-		//g_Parts[i][0].tbl_adr = move_tbl_right;	// 再生するアニメデータの先頭アドレスをセット
-		//g_Parts[i][0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
-		//g_Parts[i][0].load = 1;
-		//LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][0].model);
-
-		//g_Parts[i][1].use = TRUE;
-		//g_Parts[i][1].tbl_adr = move_tbl_left;	// 再生するアニメデータの先頭アドレスをセット
-		//g_Parts[i][1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
-		//g_Parts[i][1].load = 1;
-		//LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][1].model);
 
 		g_Load = TRUE;
 	}
@@ -239,7 +196,6 @@ void UninitSkyEnemy(void)
 			UnloadModel(&g_SkyEnemy[i].model);
 			g_SkyEnemy[i].load = FALSE;
 		}
-
 	}
 
 	g_Load = FALSE;
@@ -252,7 +208,6 @@ void UpdateSkyEnemy(void)
 {
 
 	CAMERA *cam = GetCamera();
-
 
 	g_count++;
 	int useCount = 0;
@@ -271,19 +226,8 @@ void UpdateSkyEnemy(void)
 	}
 
 
-
 	for (int i = 0; i < MAX_SKY_ENEMY; i++)
 	{
-		//if (g_SkyEnemy[i].use)
-		//{
-
-		//	g_SkyEnemy[i].spawn++;
-
-		//	if (g_SkyEnemy[i].spawn == 100 * i)
-		//	{
-		//		g_SkyEnemy[i].use = TRUE;
-		//	}
-
 		g_SkyEnemy[i].move_count++;
 
 
@@ -302,15 +246,14 @@ void UpdateSkyEnemy(void)
 		second_circle.y = sinf(g_SkyEnemy[i].angle2) * 50;								// サインカーブ　＊　この半径を元に
 
 
-
-		if (g_SkyEnemy[i].radius1 >= 150)					// サークル1の範囲外にいる場合
+		// サークル1の範囲外にいる場合
+		if (g_SkyEnemy[i].radius1 >= ENEMY_DISTANCE_CIRCLE)					
 		{
-			g_SkyEnemy[i].radius1 -= 0.02f;					// サークル1に向かって一直線に来る　エネミーのポップする位置はワールド座標の原点を中心として三角関数で管理しているので、半径を縮めていけばサークル１に向かってくる
+			g_SkyEnemy[i].radius1 -= ENEMY_ANGLE_SHRINK;					// サークル1に向かって一直線に来る　エネミーのポップする位置はワールド座標の原点を中心として三角関数で管理しているので、半径を縮めていけばサークル１に向かってくる
 		}
 		else if (g_SkyEnemy[i].radius1 > 0.0f)				// サークル1の内側（半径が０～１５０）の場合
 		{
 			g_SkyEnemy[i].angle1 += g_SkyEnemy[i].circle1_spd;	// 回転割合
-			g_SkyEnemy[i].radius1 -= 0.02f;					// 半径を短くして行ってプレイヤーに近づいてくるようにしている
 
 			g_SkyEnemy[i].angle2 += g_SkyEnemy[i].circle2_spd;	// 回転割合
 			g_SkyEnemy[i].pos.y = second_circle.y;
@@ -322,12 +265,8 @@ void UpdateSkyEnemy(void)
 
 		if (g_SkyEnemy[i].move_count <= 60)
 		{
-
 			g_SkyEnemy[i].pos.x = first_circle.x;			// カウント中だけY軸中心に円運動
 			g_SkyEnemy[i].pos.z = first_circle.z;			// カウント中だけY軸中心に円運動
-
-
-
 		}
 		else if (g_SkyEnemy[i].move_count >= 60)
 		{
@@ -341,7 +280,7 @@ void UpdateSkyEnemy(void)
 		// 当たり判定ようのボックスと位置を共有する
 		g_Collision[i].pos = g_SkyEnemy[i].pos;
 
-			// エネミーを動かく場合は、影も合わせて動かす事を忘れないようにね！{
+		// エネミーを動かく場合は、影も合わせて動かす事を忘れないようにね！{
 		if (g_SkyEnemy[i].use == TRUE)			// このエネミーが使われている？
 		{									// Yes
 			// 生存時間をカウント
@@ -405,16 +344,16 @@ void UpdateSkyEnemy(void)
 		}
 
 #ifdef _DEBUG
-			if (GetKeyboardPress(DIK_R))
-			{
-				g_SkyEnemy[i].pos.z = g_SkyEnemy[i].pos.x = 0.0f;
-				g_SkyEnemy[i].rot.y = g_SkyEnemy[i].dir = 0.0f;
-			}
+		if (GetKeyboardPress(DIK_R))
+		{
+			g_SkyEnemy[i].pos.z = g_SkyEnemy[i].pos.x = 0.0f;
+			g_SkyEnemy[i].rot.y = g_SkyEnemy[i].dir = 0.0f;
+		}
 #endif
 
 
-			//g_Player.angle += 0.01f;
-			//g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+		//g_Player.angle += 0.01f;
+		//g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 
 		CAMERA *camera = GetCamera();
 		TARGETOBJ *targetObj = GetTargetObj();
@@ -425,7 +364,7 @@ void UpdateSkyEnemy(void)
 		hitPosition = g_SkyEnemy[i].pos;	// 外れた時用に初期化しておく
 		bool ans = RayHitEnemySky(targetObj[0].pos, camera->pos, &hitPosition, i);
 
-		if ((ans) && (!g_SkyEnemy[i].target))
+		if ((ans) && (!g_SkyEnemy[i].target) && (g_SkyEnemy[i].use))
 		{
 			//g_SkyEnemy[i].use = FALSE;
 			g_SkyEnemy[i].target = TRUE;
@@ -436,117 +375,10 @@ void UpdateSkyEnemy(void)
 			SetRockOn();
 		}
 
-
-		//g_Player.angle += 0.01f;
-		//g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
-
-
-			//// 入力のあった方向へプレイヤーを向かせて移動させる
-			//g_Player.pos.z = 0.0f + cosf(g_Player.angle) * 100;
-			//g_Player.pos.x = 0.0f + sinf(g_Player.angle) * 100;
-
-
-
-
-
-			//// レイキャストして足元の高さを求める
-			//XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
-			//XMFLOAT3 hitPosition;								// 交点
-			//hitPosition.y = g_Air.pos.y - AIR_OFFSET_Y;	// 外れた時用に初期化しておく
-			//bool ans = RayHitField(g_Air.pos, &hitPosition, &normal);
-			//g_Air.pos.y = hitPosition.y + AIR_OFFSET_Y;
-			//g_Air.pos.y =AIR_OFFSET_Y;
-
-
-			// 影もプレイヤーの位置に合わせる
-			XMFLOAT3 pos = g_SkyEnemy[i].pos;
-			pos.y -= (SKY_ENEMY_OFFSET_Y - 0.1f);
-			SetPositionShadow(g_SkyEnemy[i].shadowIdx, pos);
-
-
-
-			{	// ポイントライトのテスト
-				LIGHT *light = GetLightData(1);
-				XMFLOAT3 pos = g_SkyEnemy[i].pos;
-				pos.y += 20.0f;
-
-				light->Position = pos;
-				light->Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-				light->Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-				light->Type = LIGHT_TYPE_POINT;
-				light->Enable = TRUE;
-				SetLightData(1, light);
-			}
-
-		//}
-		////////////////////////////////////////////////////////////////////////
-		//// 姿勢制御
-		////////////////////////////////////////////////////////////////////////
-
-		//XMVECTOR vx, nvx, up;
-		//XMVECTOR quat;
-		//float len, angle;
-
-		//// ２つのベクトルの外積を取って任意の回転軸を求める
-		//g_Air.upVector = normal;
-		//up = { 0.0f, 1.0f, 0.0f, 0.0f };
-		//vx = XMVector3Cross(up, XMLoadFloat3(&g_Air.upVector));
-
-		//// 求めた回転軸からクォータニオンを作り出す
-		//nvx = XMVector3Length(vx);
-		//XMStoreFloat(&len, nvx);
-		//nvx = XMVector3Normalize(vx);
-		//angle = asinf(len);
-		//quat = XMQuaternionRotationNormal(nvx, angle);
-
-		//// 前回のクォータニオンから今回のクォータニオンまでの回転を滑らかにする
-		//quat = XMQuaternionSlerp(XMLoadFloat4(&g_Air.quaternion), quat, 0.05f);
-
-		//// 今回のクォータニオンの結果を保存する
-		//XMStoreFloat4(&g_Air.quaternion, quat);
-
-		// 階層アニメーション
-		for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
-		{
-			// 使われているなら処理する
-			if ((g_Parts[i][j].use == TRUE) && (g_Parts[i][j].tbl_adr != NULL))
-			{
-				// 移動処理
-				int		index = (int)g_Parts[i][j].move_time;
-				float	time = g_Parts[i][j].move_time - index;
-				int		size = g_Parts[i][j].tbl_size;
-
-				float dt = 1.0f / g_Parts[i][j].tbl_adr[index].frame;	// 1フレームで進める時間
-				g_Parts[i][j].move_time += dt;					// アニメーションの合計時間に足す
-
-				if (index > (size - 2))	// ゴールをオーバーしていたら、最初へ戻す
-				{
-					g_Parts[i][j].move_time = 0.0f;
-					index = 0;
-				}
-
-		//		float dt = 1.0f / g_Parts[i][j].tbl_adr[index].frame;	// 1フレームで進める時間
-		//		g_Parts[i][j].move_time += dt;					// アニメーションの合計時間に足す
-
-		//		if (index > (size - 2))	// ゴールをオーバーしていたら、最初へ戻す
-		//		{
-		//			g_Parts[i][j].move_time = 0.0f;
-		//			index = 0;
-		//		}
-
-		//		// 座標を求める	X = StartX + (EndX - StartX) * 今の時間
-		//		XMVECTOR p1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].pos);	// 次の場所
-		//		XMVECTOR p0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].pos);	// 現在の場所
-		//		XMVECTOR vec = p1 - p0;
-		//		XMStoreFloat3(&g_Parts[i][j].pos, p0 + vec * time);
-			}
-
 #ifdef _DEBUG	// デバッグ情報を表示する
 		PrintDebugProc("g_SkyEnemy[%d]:X:%f Y:%f Z:%f\n", i, g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
 #endif
 		}
-	}
-
 }
 
 //=============================================================================
@@ -577,10 +409,6 @@ void DrawSkyEnemy(void)
 			// 回転を反映
 			mtxRot = XMMatrixRotationRollPitchYaw(g_SkyEnemy[i].rot.x, g_SkyEnemy[i].rot.y + XM_PI, g_SkyEnemy[i].rot.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-			//// クォータニオンを反映
-			//XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Player.quaternion));
-			//mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
 
 			// 移動を反映
 			mtxTranslate = XMMatrixTranslation(g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
@@ -645,12 +473,11 @@ void SetSkyEnemy(void)
 		if (!g_SkyEnemy[i].use)
 		{
 			g_SkyEnemy[i].use = TRUE;
-			g_SkyEnemy[i].EnemyType = rand() % 3;
-			g_SkyEnemy[i].radius1 = (float)(150 + rand() % 250);					// サークル１の半径	rand関数はint型なのでfloat型にキャストしている
+			g_SkyEnemy[i].EnemyType = rand() % 2;
+			g_SkyEnemy[i].radius1 = (float)(ENEMY_POP_DEISTANCE + rand() % ENEMY_POP_DEISTANCE_RAND);				// サークル１の半径	rand関数はint型なのでfloat型にキャストしている
 
 			g_SkyEnemy[i].angle1 = (float)(rand() % 360) * (XM_2PI / 360);		// サークル１の角度	rand関数はint型なのでfloat型にキャストしている
 			g_SkyEnemy[i].angle2 = (float)(rand() % 360) * (XM_2PI / 360);		// サークル２の角度 rand関数はint型なのでfloat型にキャストしている
-
 
 			// エネミーが出現する初期位置
 			g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
@@ -660,8 +487,9 @@ void SetSkyEnemy(void)
 			g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };
 			g_SkyEnemy[i].scl = { 1.0f, 1.0f, 1.0f };
 
-			g_SkyEnemy[i].circle1_spd = (float)((rand() % 2) + 5) / 1000.0f;			// サークル1を移動するスピード rand関数はint型なのでfloat型にキャストしている
-			g_SkyEnemy[i].circle2_spd = (float)((rand() % 1) + 3) / 100.0f;			// サークル2を移動するスピード rand関数はint型なのでfloat型にキャストしている
+			// 一定範囲内に入った際の回転速度の初期化
+			g_SkyEnemy[i].circle1_spd = RamdomFloat(5, ENEMY_SHINK_SPEED_Y, -ENEMY_SHINK_SPEED_Y);
+			g_SkyEnemy[i].circle2_spd = RamdomFloat(3, ENEMY_SHINK_SPEED_X, -ENEMY_SHINK_SPEED_X);
 
 			return;
 		}

@@ -186,27 +186,27 @@ void UpdatePlayer(void)
 
 	if (!GetKeyboardPress(DIK_LSHIFT))
 	{
-		// 移動させちゃう
-		if (GetKeyboardPress(DIK_LEFT))
-		{	// 左へ移動
-			g_Player.spd = VALUE_MOVE;
-				g_Player.dir = XM_PI / 2;
-		}
-		if (GetKeyboardPress(DIK_RIGHT))
-		{	// 右へ移動
-			g_Player.spd = VALUE_MOVE;
-				g_Player.dir = -XM_PI / 2;
-		}
-		if (GetKeyboardPress(DIK_UP))
-		{	// 上へ移動
-			g_Player.spd = VALUE_MOVE;
-			g_Player.dir = XM_PI;
-		}
-		if (GetKeyboardPress(DIK_DOWN))
-		{	// 下へ移動
-			g_Player.spd = VALUE_MOVE;
-			g_Player.dir = 0.0f;
-		}
+		//// 移動させちゃう
+		//if (GetKeyboardPress(DIK_LEFT))
+		//{	// 左へ移動
+		//	g_Player.spd = VALUE_MOVE;
+		//		g_Player.dir = XM_PI / 2;
+		//}
+		//if (GetKeyboardPress(DIK_RIGHT))
+		//{	// 右へ移動
+		//	g_Player.spd = VALUE_MOVE;
+		//		g_Player.dir = -XM_PI / 2;
+		//}
+		//if (GetKeyboardPress(DIK_UP))
+		//{	// 上へ移動
+		//	g_Player.spd = VALUE_MOVE;
+		//	g_Player.dir = XM_PI;
+		//}
+		//if (GetKeyboardPress(DIK_DOWN))
+		//{	// 下へ移動
+		//	g_Player.spd = VALUE_MOVE;
+		//	g_Player.dir = 0.0f;
+		//}
 	}
 
 
