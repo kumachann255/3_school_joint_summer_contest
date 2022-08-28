@@ -10,8 +10,10 @@
 #include "camera.h"
 #include "debugproc.h"
 #include "model.h"
+#include "player.h"
 #include "sky_enemy.h"
 #include "shadow.h"
+#include "damageEF.h"
 #include "light.h"
 #include "bullet.h"
 #include "meshfield.h"
@@ -19,8 +21,10 @@
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
 //*****************************************************************************
-#define	MODEL_SKY_ENEMY		"data/MODEL/m.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_SKY_ENEMY_PARTS	"data/MODEL/torus.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
+#define	MODEL_SKY_ENEMY_W	"data/MODEL/enemy04.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
+#define	MODEL_SKY_ENEMY_B	"data/MODEL/enemy05.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
+#define MODEL_SKY_ENEMY_D	"data/MODEL/enemy09.obj"
+
 
 #define	VALUE_MOVE				(2.0f)							// ˆÚ“®—Ê
 #define	VALUE_ROTATE			(XM_PI * 0.02f)					// ‰ñ“]—Ê
@@ -29,6 +33,19 @@
 #define SKY_ENEMY_OFFSET_Y		(30.0f)							// ƒGƒlƒ~[‚Ì‘«Œ³‚ğ‚ ‚í‚¹‚é
 
 #define SKY_ENEMY_PARTS_MAX		(2)								// ƒGƒlƒ~[‚Ìƒp[ƒc‚Ì”
+
+#define STAGE0_POP_COUNT	(300)						// ƒGƒlƒ~[‚Ìƒ|ƒbƒvŠÔŠu
+#define STAGE0_MAX_POP		(40)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
+
+#define ENEMY_HIT_MOVE		(5.0f)						// “–‚½‚è”»’èŒãƒAƒjƒ[ƒVƒ‡ƒ“—pˆÚ“®—Ê
+
+#define ENEMY_ATTACK_0		(300)						// ƒGƒlƒ~[‚ª“_–Å‚·‚é‚Ü‚Å‚ÌŠÔ
+#define ENEMY_ATTACK_1		(120 + ENEMY_ATTACK_0)		// “_–Å‚ª‘‚­‚È‚é‚Ü‚Å‚ÌŠÔ
+#define ENEMY_ATTACK_2		(120 + ENEMY_ATTACK_1)		// UŒ‚‚·‚é‚Ü‚Å‚ÌŠÔ
+
+#define ENEMY_BLINKING0		(50)						// “_–Å‚ÌŠÔŠu
+#define ENEMY_BLINKING1		(14)						// “_–Å‚ÌŠÔŠu
+
 
 
 //*****************************************************************************
@@ -45,7 +62,9 @@ static SKY_ENEMY		g_Parts[MAX_SKY_ENEMY][SKY_ENEMY_PARTS_MAX];		// ƒvƒŒƒCƒ„[‚Ìƒ
 
 static BOOL		g_Load = FALSE;
 
+static int g_count;
 
+static int g_Stage;
 
 
 // ƒvƒŒƒCƒ„[‚ÌŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“ƒf[ƒ^
@@ -73,10 +92,13 @@ HRESULT InitSkyEnemy(void)
 {
 	srand(time(NULL));	// ƒ‰ƒ“ƒ_ƒ€‚Ì’l‚Ì‰Šú‰»
 
+	LoadModel(MODEL_SKY_ENEMY_W, &g_SkyEnemy[0].model);
+	LoadModel(MODEL_SKY_ENEMY_B, &g_SkyEnemy[1].model);
+	LoadModel(MODEL_SKY_ENEMY_D, &g_SkyEnemy[2].model);
+
 	for (int i = 0; i < MAX_SKY_ENEMY; i++)
 	{
 
-		LoadModel(MODEL_SKY_ENEMY, &g_SkyEnemy[i].model);
 		g_SkyEnemy[i].load = TRUE;
 
 		g_SkyEnemy[i].radius1 = (float)(150 + rand() % 250);					// ƒT[ƒNƒ‹‚P‚Ì”¼Œa	randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
@@ -87,8 +109,8 @@ HRESULT InitSkyEnemy(void)
 
 		// ƒGƒlƒ~[‚ªoŒ»‚·‚é‰ŠúˆÊ’u
 		g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
-						 g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle2),	// Y
-						 g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
+							  -150.0f,	// Y
+							  g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
 
 		g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };
 		g_SkyEnemy[i].scl = { 1.0f, 1.0f, 1.0f };
@@ -103,10 +125,9 @@ HRESULT InitSkyEnemy(void)
 
 		g_SkyEnemy[i].spawn = 0;
 
-		g_SkyEnemy[i].stay_count = 0;
 		g_SkyEnemy[i].move_count = 0;
 
-
+		g_SkyEnemy[i].EnemyType = 0;
 
 
 		// ‚±‚±‚ÅƒvƒŒƒCƒ„[—p‚Ì‰e‚ğì¬‚µ‚Ä‚¢‚é
@@ -123,44 +144,47 @@ HRESULT InitSkyEnemy(void)
 
 
 
-		// ƒp[ƒc‚Ì‰Šú‰»
-		for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
-		{
-			g_Parts[i][j].use = FALSE;
+		//// ƒp[ƒc‚Ì‰Šú‰»
+		//for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
+		//{
+		//	g_Parts[i][j].use = FALSE;
 
-			// ˆÊ’uE‰ñ“]EƒXƒP[ƒ‹‚Ì‰Šúİ’è
-			g_Parts[i][j].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-			g_Parts[i][j].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-			g_Parts[i][j].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		//	// ˆÊ’uE‰ñ“]EƒXƒP[ƒ‹‚Ì‰Šúİ’è
+		//	g_Parts[i][j].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		//	g_Parts[i][j].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		//	g_Parts[i][j].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-			// eqŠÖŒW
-			g_Parts[i][j].parent = &g_SkyEnemy[i];		// © ‚±‚±‚Ée‚ÌƒAƒhƒŒƒX‚ğ“ü‚ê‚é
-		//	g_Parts[˜r].parent= &g_Player;		// ˜r‚¾‚Á‚½‚çe‚Í–{‘ÌiƒvƒŒƒCƒ„[j
-		//	g_Parts[è].parent= &g_Paerts[˜r];	// w‚ª˜r‚Ìq‹Ÿ‚¾‚Á‚½ê‡‚Ì—á
+		//	// eqŠÖŒW
+		//	g_Parts[i][j].parent = &g_SkyEnemy[i];		// © ‚±‚±‚Ée‚ÌƒAƒhƒŒƒX‚ğ“ü‚ê‚é
+		////	g_Parts[˜r].parent= &g_Player;		// ˜r‚¾‚Á‚½‚çe‚Í–{‘ÌiƒvƒŒƒCƒ„[j
+		////	g_Parts[è].parent= &g_Paerts[˜r];	// w‚ª˜r‚Ìq‹Ÿ‚¾‚Á‚½ê‡‚Ì—á
 
-			// ŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“—p‚Ìƒƒ“ƒo[•Ï”‚Ì‰Šú‰»
-			g_Parts[i][j].tbl_adr = NULL;		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
-			g_Parts[i][j].move_time = 0.0f;	// ÀsŠÔ‚ğƒNƒŠƒA
-			g_Parts[i][j].tbl_size = 0;		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
+		//	// ŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“—p‚Ìƒƒ“ƒo[•Ï”‚Ì‰Šú‰»
+		//	g_Parts[i][j].tbl_adr = NULL;		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
+		//	g_Parts[i][j].move_time = 0.0f;	// ÀsŠÔ‚ğƒNƒŠƒA
+		//	g_Parts[i][j].tbl_size = 0;		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
 
-			// ƒp[ƒc‚Ì“Ç‚İ‚İ‚Í‚Ü‚¾‚µ‚Ä‚¢‚È‚¢
-			g_Parts[i][j].load = 0;
-		}
+		//	// ƒp[ƒc‚Ì“Ç‚İ‚İ‚Í‚Ü‚¾‚µ‚Ä‚¢‚È‚¢
+		//	g_Parts[i][j].load = 0;
+		//}
 
-		g_Parts[i][0].use = TRUE;
-		g_Parts[i][0].tbl_adr = move_tbl_right;	// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
-		g_Parts[i][0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
-		g_Parts[i][0].load = 1;
-		LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][0].model);
+		//g_Parts[i][0].use = TRUE;
+		//g_Parts[i][0].tbl_adr = move_tbl_right;	// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
+		//g_Parts[i][0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
+		//g_Parts[i][0].load = 1;
+		//LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][0].model);
 
-		g_Parts[i][1].use = TRUE;
-		g_Parts[i][1].tbl_adr = move_tbl_left;	// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
-		g_Parts[i][1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
-		g_Parts[i][1].load = 1;
-		LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][1].model);
+		//g_Parts[i][1].use = TRUE;
+		//g_Parts[i][1].tbl_adr = move_tbl_left;	// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
+		//g_Parts[i][1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// Ä¶‚·‚éƒAƒjƒƒf[ƒ^‚ÌƒŒƒR[ƒh”‚ğƒZƒbƒg
+		//g_Parts[i][1].load = 1;
+		//LoadModel(MODEL_SKY_ENEMY_PARTS, &g_Parts[i][1].model);
 
 		g_Load = TRUE;
 	}
+
+	g_Stage = GetStage();
+
 	return S_OK;
 
 }
@@ -195,14 +219,37 @@ void UpdateSkyEnemy(void)
 {
 
 	CAMERA *cam = GetCamera();
+
+
+	g_count++;
+	int useCount = 0;
+
+	// ¡‰½‘ÌoŒ»‚µ‚Ä‚¢‚é‚©‚ğŠm”F
 	for (int i = 0; i < MAX_SKY_ENEMY; i++)
 	{
-		g_SkyEnemy[i].spawn++;
+		if (g_SkyEnemy[i].use == TRUE) useCount++;
+	}
 
-		if (g_SkyEnemy[i].spawn == 100 * i)
-		{
-			g_SkyEnemy[i].use = TRUE;
-		}
+	// ŠÔŒo‰ß‚ÆƒGƒlƒ~[‚ÌoŒ»”Ÿ‘æ‚Åƒ|ƒbƒv‚·‚é‚©”»’f
+	if ((g_count % STAGE0_POP_COUNT == 0) && (useCount < STAGE0_MAX_POP))
+	{
+
+		SetSkyEnemy();
+	}
+
+
+
+	for (int i = 0; i < MAX_SKY_ENEMY; i++)
+	{
+		//if (g_SkyEnemy[i].use)
+		//{
+
+		//	g_SkyEnemy[i].spawn++;
+
+		//	if (g_SkyEnemy[i].spawn == 100 * i)
+		//	{
+		//		g_SkyEnemy[i].use = TRUE;
+		//	}
 
 		g_SkyEnemy[i].move_count++;
 
@@ -259,60 +306,119 @@ void UpdateSkyEnemy(void)
 
 
 
+			// ƒGƒlƒ~[‚ğ“®‚©‚­ê‡‚ÍA‰e‚à‡‚í‚¹‚Ä“®‚©‚·–‚ğ–Y‚ê‚È‚¢‚æ‚¤‚É‚ËI{
+		if (g_SkyEnemy[i].use == TRUE)			// ‚±‚ÌƒGƒlƒ~[‚ªg‚í‚ê‚Ä‚¢‚éH
+		{									// Yes
+			// ¶‘¶ŠÔ‚ğƒJƒEƒ“ƒg
+			if (g_Stage != tutorial) g_SkyEnemy[i].liveCount++;
+
+			// UŒ‚‚ğH‚ç‚Á‚Ä‚¢‚È‚¯‚ç‚ÎUŒ‚ˆ—
+			if (g_SkyEnemy[i].isHit == FALSE)
+			{
+				// UŒ‚ˆ—
+				if (g_SkyEnemy[i].liveCount > ENEMY_ATTACK_2)
+				{	// UŒ‚‚ğs‚¤
+					// ¶‘¶ŠÔ‚ğƒŠƒZƒbƒg
+					g_SkyEnemy[i].liveCount = 0;
+
+					// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+					g_SkyEnemy[i].fuchi = FALSE;
 
 
+					// UŒ‚
+					SetDamageEF(TRUE);
+					// SetCameraShake(20);
+					SetPlayerDamage(1);
 
+				}
+				else if (g_SkyEnemy[i].liveCount > ENEMY_ATTACK_1)
+				{	// Ô‚¢“_–Å‚ª‘‚­‚È‚é
+
+					if (g_SkyEnemy[i].liveCount % ENEMY_BLINKING1 < ENEMY_BLINKING1 / 2)
+					{	// ƒIƒuƒWƒFƒNƒg‚ğÔ‚­‚·‚é
+
+						// ƒŠƒ€ƒ‰ƒCƒgƒIƒ“
+						g_SkyEnemy[i].fuchi = TRUE;
+					}
+					else
+					{	// ƒIƒuƒWƒFƒNƒg‚ÌF‚ğ–ß‚·
+
+						// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+						g_SkyEnemy[i].fuchi = FALSE;
+					}
+
+
+				}
+				else if (g_SkyEnemy[i].liveCount > ENEMY_ATTACK_0)
+				{	// Ô‚­“_–Å‚·‚é
+
+					if (g_SkyEnemy[i].liveCount % ENEMY_BLINKING0 < ENEMY_BLINKING0 / 2)
+					{	// ƒIƒuƒWƒFƒNƒg‚ğÔ‚­‚·‚é
+
+						// ƒŠƒ€ƒ‰ƒCƒgƒIƒ“
+						g_SkyEnemy[i].fuchi = TRUE;
+					}
+					else
+					{	// ƒIƒuƒWƒFƒNƒg‚ÌF‚ğ–ß‚·
+
+						// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+						g_SkyEnemy[i].fuchi = FALSE;
+					}
+
+				}
+			}
+		}
 
 #ifdef _DEBUG
-		if (GetKeyboardPress(DIK_R))
-		{
-			g_SkyEnemy[i].pos.z = g_SkyEnemy[i].pos.x = 0.0f;
-			g_SkyEnemy[i].rot.y = g_SkyEnemy[i].dir = 0.0f;
-		}
+			if (GetKeyboardPress(DIK_R))
+			{
+				g_SkyEnemy[i].pos.z = g_SkyEnemy[i].pos.x = 0.0f;
+				g_SkyEnemy[i].rot.y = g_SkyEnemy[i].dir = 0.0f;
+			}
 #endif
 
 
-		//g_Player.angle += 0.01f;
-		//g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+			//g_Player.angle += 0.01f;
+			//g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 
-		//// “ü—Í‚Ì‚ ‚Á‚½•ûŒü‚ÖƒvƒŒƒCƒ„[‚ğŒü‚©‚¹‚ÄˆÚ“®‚³‚¹‚é
-		//g_Player.pos.z = 0.0f + cosf(g_Player.angle) * 100;
-		//g_Player.pos.x = 0.0f + sinf(g_Player.angle) * 100;
-
-
+			//// “ü—Í‚Ì‚ ‚Á‚½•ûŒü‚ÖƒvƒŒƒCƒ„[‚ğŒü‚©‚¹‚ÄˆÚ“®‚³‚¹‚é
+			//g_Player.pos.z = 0.0f + cosf(g_Player.angle) * 100;
+			//g_Player.pos.x = 0.0f + sinf(g_Player.angle) * 100;
 
 
 
-		//// ƒŒƒCƒLƒƒƒXƒg‚µ‚Ä‘«Œ³‚Ì‚‚³‚ğ‹‚ß‚é
-		//XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ‚Ô‚Â‚©‚Á‚½ƒ|ƒŠƒSƒ“‚Ì–@üƒxƒNƒgƒ‹iŒü‚«j
-		//XMFLOAT3 hitPosition;								// Œğ“_
-		//hitPosition.y = g_Air.pos.y - AIR_OFFSET_Y;	// ŠO‚ê‚½—p‚É‰Šú‰»‚µ‚Ä‚¨‚­
-		//bool ans = RayHitField(g_Air.pos, &hitPosition, &normal);
-		//g_Air.pos.y = hitPosition.y + AIR_OFFSET_Y;
-		//g_Air.pos.y =AIR_OFFSET_Y;
 
 
-		// ‰e‚àƒvƒŒƒCƒ„[‚ÌˆÊ’u‚É‡‚í‚¹‚é
-		XMFLOAT3 pos = g_SkyEnemy[i].pos;
-		pos.y -= (SKY_ENEMY_OFFSET_Y - 0.1f);
-		SetPositionShadow(g_SkyEnemy[i].shadowIdx, pos);
+			//// ƒŒƒCƒLƒƒƒXƒg‚µ‚Ä‘«Œ³‚Ì‚‚³‚ğ‹‚ß‚é
+			//XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ‚Ô‚Â‚©‚Á‚½ƒ|ƒŠƒSƒ“‚Ì–@üƒxƒNƒgƒ‹iŒü‚«j
+			//XMFLOAT3 hitPosition;								// Œğ“_
+			//hitPosition.y = g_Air.pos.y - AIR_OFFSET_Y;	// ŠO‚ê‚½—p‚É‰Šú‰»‚µ‚Ä‚¨‚­
+			//bool ans = RayHitField(g_Air.pos, &hitPosition, &normal);
+			//g_Air.pos.y = hitPosition.y + AIR_OFFSET_Y;
+			//g_Air.pos.y =AIR_OFFSET_Y;
 
 
-
-		{	// ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ÌƒeƒXƒg
-			LIGHT *light = GetLightData(1);
+			// ‰e‚àƒvƒŒƒCƒ„[‚ÌˆÊ’u‚É‡‚í‚¹‚é
 			XMFLOAT3 pos = g_SkyEnemy[i].pos;
-			pos.y += 20.0f;
-
-			light->Position = pos;
-			light->Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			light->Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			light->Type = LIGHT_TYPE_POINT;
-			light->Enable = TRUE;
-			SetLightData(1, light);
-		}
+			pos.y -= (SKY_ENEMY_OFFSET_Y - 0.1f);
+			SetPositionShadow(g_SkyEnemy[i].shadowIdx, pos);
 
 
+
+			{	// ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ÌƒeƒXƒg
+				LIGHT *light = GetLightData(1);
+				XMFLOAT3 pos = g_SkyEnemy[i].pos;
+				pos.y += 20.0f;
+
+				light->Position = pos;
+				light->Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+				light->Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+				light->Type = LIGHT_TYPE_POINT;
+				light->Enable = TRUE;
+				SetLightData(1, light);
+			}
+
+		//}
 		////////////////////////////////////////////////////////////////////////
 		//// p¨§Œä
 		////////////////////////////////////////////////////////////////////////
@@ -343,46 +449,46 @@ void UpdateSkyEnemy(void)
 
 
 
-		// ŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“
-		for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
-		{
-			// g‚í‚ê‚Ä‚¢‚é‚È‚çˆ—‚·‚é
-			if ((g_Parts[i][j].use == TRUE) && (g_Parts[i][j].tbl_adr != NULL))
-			{
-				// ˆÚ“®ˆ—
-				int		index = (int)g_Parts[i][j].move_time;
-				float	time = g_Parts[i][j].move_time - index;
-				int		size = g_Parts[i][j].tbl_size;
+		//// ŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“
+		//for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
+		//{
+		//	// g‚í‚ê‚Ä‚¢‚é‚È‚çˆ—‚·‚é
+		//	if ((g_Parts[i][j].use == TRUE) && (g_Parts[i][j].tbl_adr != NULL))
+		//	{
+		//		// ˆÚ“®ˆ—
+		//		int		index = (int)g_Parts[i][j].move_time;
+		//		float	time = g_Parts[i][j].move_time - index;
+		//		int		size = g_Parts[i][j].tbl_size;
 
-				float dt = 1.0f / g_Parts[i][j].tbl_adr[index].frame;	// 1ƒtƒŒ[ƒ€‚Åi‚ß‚éŠÔ
-				g_Parts[i][j].move_time += dt;					// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‡ŒvŠÔ‚É‘«‚·
+		//		float dt = 1.0f / g_Parts[i][j].tbl_adr[index].frame;	// 1ƒtƒŒ[ƒ€‚Åi‚ß‚éŠÔ
+		//		g_Parts[i][j].move_time += dt;					// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‡ŒvŠÔ‚É‘«‚·
 
-				if (index > (size - 2))	// ƒS[ƒ‹‚ğƒI[ƒo[‚µ‚Ä‚¢‚½‚çAÅ‰‚Ö–ß‚·
-				{
-					g_Parts[i][j].move_time = 0.0f;
-					index = 0;
-				}
+		//		if (index > (size - 2))	// ƒS[ƒ‹‚ğƒI[ƒo[‚µ‚Ä‚¢‚½‚çAÅ‰‚Ö–ß‚·
+		//		{
+		//			g_Parts[i][j].move_time = 0.0f;
+		//			index = 0;
+		//		}
 
-				// À•W‚ğ‹‚ß‚é	X = StartX + (EndX - StartX) * ¡‚ÌŠÔ
-				XMVECTOR p1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].pos);	// Ÿ‚ÌêŠ
-				XMVECTOR p0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].pos);	// Œ»İ‚ÌêŠ
-				XMVECTOR vec = p1 - p0;
-				XMStoreFloat3(&g_Parts[i][j].pos, p0 + vec * time);
+		//		// À•W‚ğ‹‚ß‚é	X = StartX + (EndX - StartX) * ¡‚ÌŠÔ
+		//		XMVECTOR p1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].pos);	// Ÿ‚ÌêŠ
+		//		XMVECTOR p0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].pos);	// Œ»İ‚ÌêŠ
+		//		XMVECTOR vec = p1 - p0;
+		//		XMStoreFloat3(&g_Parts[i][j].pos, p0 + vec * time);
 
-				// ‰ñ“]‚ğ‹‚ß‚é	R = StartX + (EndX - StartX) * ¡‚ÌŠÔ
-				XMVECTOR r1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].rot);	// Ÿ‚ÌŠp“x
-				XMVECTOR r0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].rot);	// Œ»İ‚ÌŠp“x
-				XMVECTOR rot = r1 - r0;
-				XMStoreFloat3(&g_Parts[i][j].rot, r0 + rot * time);
+		//		// ‰ñ“]‚ğ‹‚ß‚é	R = StartX + (EndX - StartX) * ¡‚ÌŠÔ
+		//		XMVECTOR r1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].rot);	// Ÿ‚ÌŠp“x
+		//		XMVECTOR r0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].rot);	// Œ»İ‚ÌŠp“x
+		//		XMVECTOR rot = r1 - r0;
+		//		XMStoreFloat3(&g_Parts[i][j].rot, r0 + rot * time);
 
-				// scale‚ğ‹‚ß‚é S = StartX + (EndX - StartX) * ¡‚ÌŠÔ
-				XMVECTOR s1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].scl);	// Ÿ‚ÌScale
-				XMVECTOR s0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].scl);	// Œ»İ‚ÌScale
-				XMVECTOR scl = s1 - s0;
-				XMStoreFloat3(&g_Parts[i][j].scl, s0 + scl * time);
+		//		// scale‚ğ‹‚ß‚é S = StartX + (EndX - StartX) * ¡‚ÌŠÔ
+		//		XMVECTOR s1 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 1].scl);	// Ÿ‚ÌScale
+		//		XMVECTOR s0 = XMLoadFloat3(&g_Parts[i][j].tbl_adr[index + 0].scl);	// Œ»İ‚ÌScale
+		//		XMVECTOR scl = s1 - s0;
+		//		XMStoreFloat3(&g_Parts[i][j].scl, s0 + scl * time);
 
-			}
-		}
+		//	}
+		//}
 
 #ifdef _DEBUG	// ƒfƒoƒbƒOî•ñ‚ğ•\¦‚·‚é
 		PrintDebugProc("Player:ª ¨ « ©@Space\n");
@@ -402,6 +508,8 @@ void DrawSkyEnemy(void)
 	{
 		if (g_SkyEnemy[i].use == TRUE)
 		{
+			// ƒŠƒ€ƒ‰ƒCƒg‚Ìİ’è
+			SetFuchi(g_SkyEnemy[i].fuchi);
 
 
 			// ƒJƒŠƒ“ƒO–³Œø
@@ -435,50 +543,53 @@ void DrawSkyEnemy(void)
 
 
 			// ƒ‚ƒfƒ‹•`‰æ
-			DrawModel(&g_SkyEnemy[i].model);
+			DrawModel(&g_SkyEnemy[g_SkyEnemy[i].EnemyType].model);
 
 
 
-			// ƒp[ƒc‚ÌŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“
-			for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
-			{
-				// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
-				mtxWorld = XMMatrixIdentity();
+			//// ƒp[ƒc‚ÌŠK‘wƒAƒjƒ[ƒVƒ‡ƒ“
+			//for (int j = 0; j < SKY_ENEMY_PARTS_MAX; j++)
+			//{
+			//	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+			//	mtxWorld = XMMatrixIdentity();
 
-				// ƒXƒP[ƒ‹‚ğ”½‰f
-				mtxScl = XMMatrixScaling(g_Parts[i][j].scl.x, g_Parts[i][j].scl.y, g_Parts[i][j].scl.z);
-				mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+			//	// ƒXƒP[ƒ‹‚ğ”½‰f
+			//	mtxScl = XMMatrixScaling(g_Parts[i][j].scl.x, g_Parts[i][j].scl.y, g_Parts[i][j].scl.z);
+			//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-				// ‰ñ“]‚ğ”½‰f
-				mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i][j].rot.x, g_Parts[i][j].rot.y, g_Parts[i][j].rot.z);
-				mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+			//	// ‰ñ“]‚ğ”½‰f
+			//	mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i][j].rot.x, g_Parts[i][j].rot.y, g_Parts[i][j].rot.z);
+			//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-				// ˆÚ“®‚ğ”½‰f
-				mtxTranslate = XMMatrixTranslation(g_Parts[i][j].pos.x, g_Parts[i][j].pos.y, g_Parts[i][j].pos.z);
-				mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+			//	// ˆÚ“®‚ğ”½‰f
+			//	mtxTranslate = XMMatrixTranslation(g_Parts[i][j].pos.x, g_Parts[i][j].pos.y, g_Parts[i][j].pos.z);
+			//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-				if (g_Parts[i][j].parent != NULL)	// q‹Ÿ‚¾‚Á‚½‚çe‚ÆŒ‹‡‚·‚é
-				{
-					mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i][j].parent->mtxWorld));
-					// ª
-					// g_Player.mtxWorld‚ğw‚µ‚Ä‚¢‚é
-				}
+			//	if (g_Parts[i][j].parent != NULL)	// q‹Ÿ‚¾‚Á‚½‚çe‚ÆŒ‹‡‚·‚é
+			//	{
+			//		mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i][j].parent->mtxWorld));
+			//		// ª
+			//		// g_Player.mtxWorld‚ğw‚µ‚Ä‚¢‚é
+			//	}
 
-				XMStoreFloat4x4(&g_Parts[i][j].mtxWorld, mtxWorld);
+			//	XMStoreFloat4x4(&g_Parts[i][j].mtxWorld, mtxWorld);
 
-				// g‚í‚ê‚Ä‚¢‚é‚È‚çˆ—‚·‚éB‚±‚±‚Ü‚Åˆ—‚µ‚Ä‚¢‚é——R‚Í‘¼‚Ìƒp[ƒc‚ª‚±‚Ìƒp[ƒc‚ğQÆ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é‚©‚çB
-				if (g_Parts[i][j].use == FALSE) continue;
+			//	// g‚í‚ê‚Ä‚¢‚é‚È‚çˆ—‚·‚éB‚±‚±‚Ü‚Åˆ—‚µ‚Ä‚¢‚é——R‚Í‘¼‚Ìƒp[ƒc‚ª‚±‚Ìƒp[ƒc‚ğQÆ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é‚©‚çB
+			//	if (g_Parts[i][j].use == FALSE) continue;
 
-				// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
-				SetWorldMatrix(&mtxWorld);
+			//	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+			//	SetWorldMatrix(&mtxWorld);
 
 
-				// ƒ‚ƒfƒ‹•`‰æ
-				DrawModel(&g_Parts[i][j].model);
+			//	// ƒ‚ƒfƒ‹•`‰æ
+			//	DrawModel(&g_Parts[i][j].model);
 
-			}
+			//}
 		}
 	}
+
+	// ƒŠƒ€ƒ‰ƒCƒg‚Ìİ’è
+	SetFuchi(FALSE);
 
 	// ƒJƒŠƒ“ƒOİ’è‚ğ–ß‚·
 	SetCullingMode(CULL_MODE_BACK);
@@ -491,4 +602,37 @@ void DrawSkyEnemy(void)
 SKY_ENEMY *GetSkyEnemy(void)
 {
 	return &g_SkyEnemy[0];
+}
+
+
+
+// ‹óƒXƒe[ƒW‚ÌƒGƒlƒ~[‚Ì”­¶
+void SetSkyEnemy(void)
+{
+	for (int i = 0; i < MAX_SKY_ENEMY; i++)
+	{
+		if (!g_SkyEnemy[i].use)
+		{
+			g_SkyEnemy[i].use = TRUE;
+			g_SkyEnemy[i].EnemyType = rand() % 3;
+			g_SkyEnemy[i].radius1 = (float)(150 + rand() % 250);					// ƒT[ƒNƒ‹‚P‚Ì”¼Œa	randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
+
+			g_SkyEnemy[i].angle1 = (float)(rand() % 360) * (XM_2PI / 360);		// ƒT[ƒNƒ‹‚P‚ÌŠp“x	randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
+			g_SkyEnemy[i].angle2 = (float)(rand() % 360) * (XM_2PI / 360);		// ƒT[ƒNƒ‹‚Q‚ÌŠp“x randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
+
+
+			// ƒGƒlƒ~[‚ªoŒ»‚·‚é‰ŠúˆÊ’u
+			g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
+								 -150.0f,	// Y
+								  g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
+
+			g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };
+			g_SkyEnemy[i].scl = { 1.0f, 1.0f, 1.0f };
+
+			g_SkyEnemy[i].circle1_spd = (float)((rand() % 2) + 5) / 1000.0f;			// ƒT[ƒNƒ‹1‚ğˆÚ“®‚·‚éƒXƒs[ƒh randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
+			g_SkyEnemy[i].circle2_spd = (float)((rand() % 1) + 3) / 100.0f;			// ƒT[ƒNƒ‹2‚ğˆÚ“®‚·‚éƒXƒs[ƒh randŠÖ”‚ÍintŒ^‚È‚Ì‚ÅfloatŒ^‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é
+
+			return;
+		}
+	}
 }

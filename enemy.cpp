@@ -190,17 +190,7 @@ void UpdateEnemy(void)
 {
 	//return;
 
-	if (g_Stage == tutorial)
-	{	// チュートリアル様に1体出す
-		count++;
-
-		// 時間になったら1体出す
-		if (count == STAGE0_POP_COUNT)
-		{
-			SetEnemy();
-		}
-	}
-	else
+	
 	{	// pop処理
 		count++;
 		int useCount = 0;

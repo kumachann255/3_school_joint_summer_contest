@@ -59,6 +59,16 @@ struct SKY_ENEMY
 	int move_count;
 
 	int spawn;
+
+	int EnemyType;
+
+	BOOL				isHit;				// 当たってるフラグ TRUE:当たっている
+	int					hitTime;			// 移動時間
+	int					liveCount;			// ポップしてからの時間を管理
+
+	int					type;				// エネミーのタイプ（0:パトカー、1:白バイ
+	BOOL				fuchi;				// リムライトのオンオフ
+
 };
 
 //*****************************************************************************
@@ -70,3 +80,4 @@ void UpdateSkyEnemy(void);
 void DrawSkyEnemy(void);
 
 SKY_ENEMY *GetSkyEnemy(void);
+void SetSkyEnemy(void);

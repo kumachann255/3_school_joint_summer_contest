@@ -25,7 +25,7 @@
 #include "timeUI.h"
 #include "damageEF.h"
 //#include "enemyHeli.h"
-//#include "combo.h"
+#include "combo.h"
 #include "playerHP.h"
 #include "gameUI.h"
 #include "speech.h"
@@ -123,7 +123,7 @@ HRESULT InitGameSky(void)
 	InitScore();
 
 	//// コンボの初期化
-	//InitCombo();
+	InitCombo();
 
 	// UIの初期化
 	InitGameUI();
@@ -481,8 +481,8 @@ void DrawGameSky0(void)
 	// プレイヤーのHPの描画処理
 	DrawPlayerHP();
 
-	// ダメージエフェクトの描画処理
-	// DrawDamageEF();
+	//// ダメージエフェクトの描画処理
+	//// DrawDamageEF();
 
 	// UIの描画処理
 	//DrawGameUI();
@@ -520,7 +520,7 @@ void DrawGameSky(void)
 
 	// プレイヤー視点
 	pos = GetPlayer()->pos;
-	pos.y += 20.0f;			// カメラ酔いを防ぐためにクリアしている
+	pos.y += 30.0f;			// カメラ酔いを防ぐためにクリアしている
 	SetCameraAT(pos);
 	SetCamera();
 

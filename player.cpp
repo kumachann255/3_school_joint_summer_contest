@@ -236,7 +236,7 @@ void UpdatePlayer(void)
 	//================================
 	// 空ステージのプレイヤーの挙動
 	//================================
-	if (GetStage() == MODE_GAME_SKY)
+	if (GetMode() == MODE_GAME_SKY)
 	{
 		if (GetKeyboardPress(DIK_RIGHT))
 		{
