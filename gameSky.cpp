@@ -43,6 +43,7 @@
 #include "dome.h"
 #include "timingBar.h"
 #include "timingtext.h"
+#include "timingEffect.h"
 #include "target.h"
 #include "targetObj.h"
 #include "rockOn.h"
@@ -179,6 +180,9 @@ HRESULT InitGameSky(void)
 	// タイミングテキストの初期化
 	InitTimingText();
 
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	// ターゲットアイコンの初期化
 	InitTarget();
 
@@ -219,6 +223,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
+
 	// ロックオンアイコンの終了処理
 	UninitRockOn();
 
@@ -420,6 +427,9 @@ void UpdateGameSky(void)
 	// タイミングテキストの更新処理
 	UpdateTimingText();
 
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
 
@@ -528,6 +538,9 @@ void DrawGameSky0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
 
 	// タイミングバーの描画処理
 	DrawTImingBar();
