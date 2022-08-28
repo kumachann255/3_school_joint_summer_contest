@@ -11,14 +11,14 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MAX_S_METEOR				(10)		// 小隕石の最大数
-#define S_METEOR_SIZE				(30.0f) // 隕石の当たり判定の大きさ
+#define	MAX_B_METEOR				(1)		// 小隕石の最大数
+#define B_METEOR_SIZE				(100.0f) // 隕石の当たり判定の大きさ
 
 
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
-struct S_METEOR
+struct B_METEOR
 {
 	XMFLOAT4X4			mtxWorld;			// ワールドマトリックス
 	XMFLOAT3			pos;				// モデルの位置
@@ -39,12 +39,13 @@ struct S_METEOR
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitS_Meteor(void);
-void UninitS_Meteor(void);
-void UpdateS_Meteor(void);
-void DrawS_Meteor(void);
+HRESULT InitB_Meteor(void);
+void UninitB_Meteor(void);
+void UpdateB_Meteor(void);
+void DrawB_Meteor(void);
 
-void SetS_Meteor(XMFLOAT3 pos, float rot);
+void SetB_Meteor(XMFLOAT3 pos, float rot);
 
-S_METEOR *GetS_Meteor(void);
+B_METEOR *GetB_Meteor(void);
+#pragma once
 #pragma once

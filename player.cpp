@@ -239,15 +239,15 @@ void UpdatePlayer(void)
 	//================================
 	// 空ステージのプレイヤーの挙動
 	//================================
-	if (GetStage() == MODE_GAME_SKY)
+	if (GetMode() == MODE_GAME_SKY)
 	{
 		if (GetKeyboardPress(DIK_RIGHT))
 		{
 			g_Player.spd = VALUE_MOVE;
 
 				g_Player.angle += 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 100.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 100.0f;
+				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
 				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 			
@@ -258,8 +258,8 @@ void UpdatePlayer(void)
 			g_Player.spd = VALUE_MOVE;
 
 				g_Player.angle -= 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 100.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 100.0f;
+				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
 				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 			
