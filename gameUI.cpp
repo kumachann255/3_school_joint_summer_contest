@@ -227,7 +227,7 @@ void UpdateGameUI(void)
 
 		if (!g_SoundFlag)
 		{
-			PlaySound(SOUND_LABEL_SE_cheers00);
+			//PlaySound(SOUND_LABEL_SE_cheers00);
 			g_SoundFlag = TRUE;
 		}
 	}

@@ -19,8 +19,8 @@
 // マクロ定義
 //*****************************************************************************
 #define	POS_X_CAM			(0.0f)			// カメラの初期位置(X座標)
-#define	POS_Y_CAM			(60.0f)			// カメラの初期位置(Y座標)
-#define	POS_Z_CAM			(-30.0f)		// カメラの初期位置(Z座標)
+#define	POS_Y_CAM			(50.0f)			// カメラの初期位置(Y座標)
+#define	POS_Z_CAM			(0.0f)		// カメラの初期位置(Z座標)
 
 #define CAMERA_OFFSET_Y		(50.0f)			// ATの調整
 
@@ -70,7 +70,7 @@ static XMFLOAT3			g_pos = {0.0f , 15.0f , 25.0f};
 void InitCamera(void)
 {
 	g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
-	g_Camera.at  = { 0.0f, 0.0f, 0.0f };
+	g_Camera.at  = { 0.0f, 0.0f, 20.0f };
 	g_Camera.up  = { 0.0f, 1.0f, 0.0f };
 	g_Camera.rot = { 0.0f, 0.0f, 0.0f };
 
@@ -370,46 +370,57 @@ int GetViewPortType(void)
 //=============================================================================
 // カメラの視点と注視点をセット
 //=============================================================================
+//void SetCameraAT(XMFLOAT3 pos)
+//{
+//	// カメラの注視点をプレイヤーの座標にしてみる
+//
+//	BOM *bom = GetBom();
+//	BLAST *blast = GetBlast();
+//
+//	XMFLOAT3 targetAT;
+//
+//	// 爆弾が使用されていたら爆弾に視線を送る
+//	if (((bom->use) && (bom->time > 0.15f)) || (GetCameraSwitch()))
+//	{
+//		if(bom->use) targetAT = bom->pos;
+//		else targetAT = blast->pos;
+//
+//		{
+//			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE);
+//			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE);
+//			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE);
+//		}
+//	}
+//	else if(g_Move)
+//	{
+//		g_Camera.at = g_pos;
+//	}
+//	else
+//	{
+//		XMFLOAT3 targetAT = pos;
+//
+//		// シーンに応じてATの調整
+//		targetAT.y += CAMERA_OFFSET_Y;
+//
+//		{
+//			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE * 2.0f);
+//			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
+//			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
+//		}
+//
+//
+//	}
+//}
+
 void SetCameraAT(XMFLOAT3 pos)
 {
 	// カメラの注視点をプレイヤーの座標にしてみる
+	g_Camera.at = pos;
 
-	BOM *bom = GetBom();
-	BLAST *blast = GetBlast();
+	// カメラの視点をカメラのY軸回転に対応させている
+	g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
 
-	XMFLOAT3 targetAT;
-
-	// 爆弾が使用されていたら爆弾に視線を送る
-	if (((bom->use) && (bom->time > 0.15f)) || (GetCameraSwitch()))
-	{
-		if(bom->use) targetAT = bom->pos;
-		else targetAT = blast->pos;
-
-		{
-			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE);
-			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE);
-			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE);
-		}
-	}
-	else if(g_Move)
-	{
-		g_Camera.at = g_pos;
-	}
-	else
-	{
-		XMFLOAT3 targetAT = pos;
-
-		// シーンに応じてATの調整
-		targetAT.y += CAMERA_OFFSET_Y;
-
-		{
-			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE * 2.0f);
-			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
-			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
-		}
-
-
-	}
 }
 
 

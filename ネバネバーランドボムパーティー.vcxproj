@@ -224,6 +224,7 @@
     <ClInclude Include="sea_meshfield.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sky.h" />
+    <ClInclude Include="sky_bigmeteor.h" />
     <ClInclude Include="sky_enemy.h" />
     <ClInclude Include="sky_smallmeteor.h" />
     <ClInclude Include="sound.h" />

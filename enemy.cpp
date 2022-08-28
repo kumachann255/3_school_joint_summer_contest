@@ -594,7 +594,7 @@ void SetEnemy(void)
 	{
 		if (g_Enemy[i].use == FALSE)
 		{
-			SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
+			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
 			// SE‚ÌƒZƒbƒg
 			PlaySound(SOUND_LABEL_SE_siren01);
 

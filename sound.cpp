@@ -225,7 +225,7 @@ BOOL InitSound(HWND hWnd)
 
 
 	SetSourceVolume(SOUND_LABEL_SE_booingSound01, 0.5f);
-	SetSourceVolume(SOUND_LABEL_SE_carHorn01, 0.25f);
+	//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 0.25f);
 	SetSourceVolume(SOUND_LABEL_SE_propellerSound01, 0.3f);
 	SetSourceVolume(SOUND_LABEL_SE_siren01, 0.5f);
 	SetSourceVolume(SOUND_LABEL_SE_stickingSound01, 1.5f);

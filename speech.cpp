@@ -254,7 +254,7 @@ void SetStartSpeech(void)
 		if (!g_Speech[i].use)
 		{
 			// SE‚ÌƒZƒbƒg
-			PlaySound(SOUND_LABEL_SE_carHorn01);
+			//PlaySound(SOUND_LABEL_SE_carHorn01);
 
 			g_Speech[i].use = TRUE;
 			g_Speech[i].life = SPEECH_LIFE;
