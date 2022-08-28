@@ -170,6 +170,7 @@
     <ClCompile Include="playerHP.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
+    <ClCompile Include="rockOn.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="sea_meshfield.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="playerHP.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
+    <ClInclude Include="rockOn.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="sea_meshfield.h" />
     <ClInclude Include="shadow.h" />

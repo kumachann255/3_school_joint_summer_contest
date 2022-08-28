@@ -122,7 +122,7 @@ HRESULT InitGameSea(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitTree();
+	InitFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -252,7 +252,7 @@ void UninitGameSea(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitTree();
+	UninitFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -333,7 +333,7 @@ void UpdateGameSea(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateTree();
+	UpdateFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();

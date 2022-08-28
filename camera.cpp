@@ -29,8 +29,8 @@
 //#define	POS_Z_CAM		(-400.0f)		// カメラの初期位置(Z座標)
 
 
-#define	VALUE_MOVE_CAMERA	(2.0f)										// カメラの移動量
-#define	VALUE_ROTATE_CAMERA	(XM_PI * 0.01f)								// カメラの回転量
+#define	VALUE_MOVE_CAMERA	(2.0f)				// カメラの移動量
+#define	VALUE_ROTATE_CAMERA	(XM_PI * 0.01f)		// カメラの回転量
 
 #define CAMERA_OFFSET	(1.0f)				// 補間の許容範囲値
 #define CAMERA_VALUE	(10.0f)				// 補間の速度
