@@ -190,17 +190,7 @@ void UpdateEnemy(void)
 {
 	//return;
 
-	if (g_Stage == tutorial)
-	{	// チュートリアル様に1体出す
-		count++;
-
-		// 時間になったら1体出す
-		if (count == STAGE0_POP_COUNT)
-		{
-			SetEnemy();
-		}
-	}
-	else
+	
 	{	// pop処理
 		count++;
 		int useCount = 0;
@@ -601,7 +591,7 @@ void SetEnemy(void)
 	{
 		if (g_Enemy[i].use == FALSE)
 		{
-			SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
+			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
 			// SEのセット
 			PlaySound(SOUND_LABEL_SE_siren01);
 

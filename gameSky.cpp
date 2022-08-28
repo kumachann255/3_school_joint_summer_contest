@@ -14,27 +14,17 @@
 #include "gameSky.h"
 
 #include "player.h"
-#include "enemy.h"
 #include "sky_enemy.h"
-#include "attackRange.h"
-#include "bom.h"
-#include "blast.h"
-#include "meshfield.h"
-#include "meshfield2.h"
-#include "meshwall.h"
 #include "shadow.h"
-#include "fieldobj.h"
-#include "sky.h"
-#include "bullet.h"
 #include "sky_smallmeteor.h"
+
 #include "score.h"
 #include "particle.h"
-#include "orbit.h"
 #include "collision.h"
 #include "debugproc.h"
 #include "timeUI.h"
 #include "damageEF.h"
-#include "enemyHeli.h"
+//#include "enemyHeli.h"
 #include "combo.h"
 #include "playerHP.h"
 #include "gameUI.h"
@@ -79,11 +69,11 @@ HRESULT InitGameSky(void)
 {
 	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
-	// フィールドの初期化
-	InitMeshField(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 7, 700.0f, 400.0f);
-	//InitMeshField(XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 1, 5000.0f, 5000.0f);
+	//// フィールドの初期化
+	//InitMeshField(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 7, 700.0f, 400.0f);
+	////InitMeshField(XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 1, 5000.0f, 5000.0f);
 
-	InitMeshField2(XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 2, 2000.0f, 2000.0f);
+	//InitMeshField2(XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 1, 2, 2000.0f, 2000.0f);
 
 	// ライトを有効化	// 影の初期化処理
 	InitShadow();
@@ -91,23 +81,18 @@ HRESULT InitGameSky(void)
 	// プレイヤーの初期化
 	InitPlayer();
 
-	//// エネミーの初期化
-	//InitEnemy();
-
-	//// エネミーヘリの初期化
-	//InitEnemyHeli();
 
 	// 空ステージのエネミーの初期化
 	InitSkyEnemy();
 
-	// 攻撃範囲の初期化
-	InitAttackR();
+	//// 攻撃範囲の初期化
+	//InitAttackR();
 
-	// ダイナマイトの初期化
-	InitBom();
+	//// ダイナマイトの初期化
+	//InitBom();
 
-	// 爆破オブジェクトの初期化
-	InitBlast();
+	//// 爆破オブジェクトの初期化
+	//InitBlast();
 
 	//// 壁の初期化
 	//InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_TOP), XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -132,11 +117,8 @@ HRESULT InitGameSky(void)
 	// 木を生やす
 	InitFieldObj();
 
-	// スカイドームの初期化
-	InitSky();
-
-	// 弾の初期化
-	InitBullet();
+	//// 弾の初期化
+	//InitBullet();
 
 	// スモールメテオの初期化
 	InitS_Meteor();
@@ -144,7 +126,7 @@ HRESULT InitGameSky(void)
 	// スコアの初期化
 	InitScore();
 
-	// コンボの初期化
+	//// コンボの初期化
 	InitCombo();
 
 	// UIの初期化
@@ -159,8 +141,8 @@ HRESULT InitGameSky(void)
 	// パーティクルの初期化
 	InitParticle();
 
-	// 軌跡の初期化
-	InitOrbit();
+	//// 軌跡の初期化
+	//InitOrbit();
 
 	// ダメージエフェクトの初期化
 	InitDamageEF();
@@ -195,14 +177,14 @@ HRESULT InitGameSky(void)
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
-	PlaySound(SOUND_LABEL_SE_stirringSound01);
+	//PlaySound(SOUND_LABEL_SE_stirringSound01);
 
 
 	switch (g_Stage)
 	{
 	case tutorial:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
 
 	case stage0:
@@ -210,7 +192,7 @@ HRESULT InitGameSky(void)
 	case stage2:
 	case stage3:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
 	}
 
@@ -253,8 +235,8 @@ void UninitGameSky(void)
 	// ダメージエフェクトの終了処理
 	UninitDamageEF();
 
-	// 軌跡の終了処理
-	UninitOrbit();
+	//// 軌跡の終了処理
+	//UninitOrbit();
 
 	// パーティクルの終了処理
 	UninitParticle();
@@ -268,8 +250,8 @@ void UninitGameSky(void)
 	// UIの終了処理
 	UninitGameUI();
 
-	// コンボの終了処理
-	UninitCombo();
+	//// コンボの終了処理
+	//UninitCombo();
 
 	// スコアの終了処理
 	UninitScore();
@@ -277,30 +259,30 @@ void UninitGameSky(void)
 	// スモールメテオの終了処理
 	UninitS_Meteor();
 
-	// 弾の終了処理
-	UninitBullet();
+	//// 弾の終了処理
+	//UninitBullet();
 
-	// スカイドームの終了処理
-	UninitSky();
+	//// スカイドームの終了処理
+	//UninitSky();
 
 	// 木の終了処理
 	UninitFieldObj();
 
-	// 壁の終了処理
-	UninitMeshWall();
+	//// 壁の終了処理
+	//UninitMeshWall();
 
-	// 地面の終了処理
-	UninitMeshField2();
-	UninitMeshField();
+	//// 地面の終了処理
+	//UninitMeshField2();
+	//UninitMeshField();
 
-	// 爆破オブジェクトの終了処理
-	UninitBlast();
+	//// 爆破オブジェクトの終了処理
+	//UninitBlast();
 
-	// ダイナマイトの終了処理
-	UninitBom();
+	//// ダイナマイトの終了処理
+	//UninitBom();
 
-	// 攻撃範囲の終了処理
-	UninitAttackR();
+	//// 攻撃範囲の終了処理
+	//UninitAttackR();
 
 	// 空ステージのエネミーの終了処理
 	UninitSkyEnemy();
@@ -342,9 +324,9 @@ void UpdateGameSky(void)
 	if(g_bPause == FALSE)
 		return;
 
-	// 地面処理の更新
-	UpdateMeshField();
-	UpdateMeshField2();
+	//// 地面処理の更新
+	//UpdateMeshField();
+	//UpdateMeshField2();
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
@@ -358,29 +340,26 @@ void UpdateGameSky(void)
 	// 空ステージのエネミーの更新処理
 	UpdateSkyEnemy();
 
-	// 攻撃範囲の更新処理
-	UpdateAttackR();
+	//// 攻撃範囲の更新処理
+	//UpdateAttackR();
 
-	// ダイナマイトの更新処理
-	UpdateBom();
+	//// ダイナマイトの更新処理
+	//UpdateBom();
 
-	// 爆破オブジェクトの更新処理
-	UpdateBlast();
+	//// 爆破オブジェクトの更新処理
+	//UpdateBlast();
 
-	// 壁処理の更新
-	UpdateMeshWall();
+	//// 壁処理の更新
+	//UpdateMeshWall();
 
 	// 木の更新処理
 	UpdateFieldObj();
 
-	// スカイドームの更新処理
-	UpdateSky();
-
 	// ドームの更新処理
 	UpdateDome();
 
-	// 弾の更新処理
-	UpdateBullet();
+	//// 弾の更新処理
+	//UpdateBullet();
 
 	// スモールメテオの更新処理
 	UpdateS_Meteor();
@@ -388,8 +367,8 @@ void UpdateGameSky(void)
 	// パーティクルの更新処理
 	UpdateParticle();
 
-	// 軌跡の更新処理
-	UpdateOrbit();
+	//// 軌跡の更新処理
+	//UpdateOrbit();
 
 	// 影の更新処理
 	UpdateShadow();
@@ -400,8 +379,8 @@ void UpdateGameSky(void)
 	// スコアの更新処理
 	UpdateScore();
 
-	// コンボの更新処理
-	UpdateCombo();
+	//// コンボの更新処理
+	//UpdateCombo();
 
 	// UIの更新処理
 	UpdateGameUI();
@@ -466,20 +445,20 @@ void DrawGameSky0(void)
 	// プレイヤーの描画処理
 	DrawPlayer();
 
-	// ダイナマイトの描画処理
-	DrawBom();
+	//// ダイナマイトの描画処理
+	//DrawBom();
 
-	// 爆破オブジェクトの描画処理
-	DrawBlast();
+	//// 爆破オブジェクトの描画処理
+	//DrawBlast();
 
-	// 弾の描画処理
-	DrawBullet();
+	//// 弾の描画処理
+	//DrawBullet();
 
 	// スモールメテオの描画処理
 	DrawS_Meteor();
 
-	// 壁の描画処理
-	DrawMeshWall();
+	//// 壁の描画処理
+	//DrawMeshWall();
 
 	// 木の描画処理
 	DrawFieldObj();
@@ -493,11 +472,11 @@ void DrawGameSky0(void)
 	// パーティクルの描画処理
 	DrawParticle();
 
-	// 軌跡の描画処理
-	DrawOrbit();
+	//// 軌跡の描画処理
+	//DrawOrbit();
 
-	// 攻撃範囲の描画処理
-	DrawAttackR();
+	//// 攻撃範囲の描画処理
+	//DrawAttackR();
 
 	// ターゲットオブジェクトの描画処理
 	DrawTargetObj();
@@ -518,8 +497,8 @@ void DrawGameSky0(void)
 	// スコアの描画処理
 	DrawScore();
 
-	// コンボの描画処理
-	DrawCombo();
+	//// コンボの描画処理
+	//DrawCombo();
 
 	// 時間の描画処理
 	DrawTime();
@@ -527,11 +506,11 @@ void DrawGameSky0(void)
 	// プレイヤーのHPの描画処理
 	DrawPlayerHP();
 
-	// ダメージエフェクトの描画処理
-	// DrawDamageEF();
+	//// ダメージエフェクトの描画処理
+	//// DrawDamageEF();
 
 	// UIの描画処理
-	DrawGameUI();
+	//DrawGameUI();
 
 	// 吹き出しの描画処理
 	// DrawSpeech();
@@ -569,7 +548,7 @@ void DrawGameSky(void)
 
 	// プレイヤー視点
 	pos = GetPlayer()->pos;
-	pos.y = -70.0f;			// カメラ酔いを防ぐためにクリアしている
+	pos.y += 30.0f;			// カメラ酔いを防ぐためにクリアしている
 	SetCameraAT(pos);
 	SetCamera();
 
@@ -586,12 +565,12 @@ void DrawGameSky(void)
 		DrawGameSky0();
 
 		// エネミー視点
-		pos = GetEnemy()->pos;
-		pos.y = 0.0f;
-		SetCameraAT(pos);
-		SetCamera();
-		SetViewPort(TYPE_RIGHT_HALF_SCREEN);
-		DrawGameSky0();
+		//pos = GetEnemy()->pos;
+		//pos.y = 0.0f;
+		//SetCameraAT(pos);
+		//SetCamera();
+		//SetViewPort(TYPE_RIGHT_HALF_SCREEN);
+		//DrawGameSky0();
 		break;
 
 	case TYPE_UP_HALF_SCREEN:
@@ -600,13 +579,13 @@ void DrawGameSky(void)
 		DrawGameSky0();
 
 		// エネミー視点
-		pos = GetEnemy()->pos;
-		pos.y = 0.0f;
-		SetCameraAT(pos);
-		SetCamera();
-		SetViewPort(TYPE_DOWN_HALF_SCREEN);
-		DrawGameSky0();
-		break;
+		//pos = GetEnemy()->pos;
+		//pos.y = 0.0f;
+		//SetCameraAT(pos);
+		//SetCamera();
+		//SetViewPort(TYPE_DOWN_HALF_SCREEN);
+		//DrawGameSky0();
+		//break;
 
 	}
 }
@@ -617,108 +596,34 @@ void DrawGameSky(void)
 //=============================================================================
 void CheckHitSky(void)
 {
-	ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
-	ENEMY_HELI *enemyHeli = GetEnemyHeli();		// エネミーのポインターを初期化
 
 	PLAYER *player = GetPlayer();	// プレイヤーのポインターを初期化
-	BULLET *bullet = GetBullet();	// 弾のポインターを初期化
-	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+	SKY_ENEMY *sky_enemy = GetSkyEnemy();	// エネミーのポインターを初期化
+	S_METEOR *s_meteor = GetS_Meteor();	// スモールメテオのポインターを初期化
 
-	float offsetX;
-	float offsetY;
-	float offsetZ;
 
-	// 敵と爆破オブジェクト
-	for (int i = 0; i < MAX_ENEMY; i++)
+	//==========================================
+	// スモールメテオとエネミーの当たり判定処理
+	//==========================================
+
+	for (int i = 0; i < MAX_S_METEOR; i++)
 	{
-		//敵の有効フラグをチェックする
-		if (enemy[i].use == FALSE || enemy[i].isHit == TRUE)
-			continue;
+		if (s_meteor[i].use == FALSE)	continue;
 
-
-		for (int p = 0; p < MAX_BLAST; p++)
+		for (int j = 0; j < MAX_SKY_ENEMY; j ++)
 		{
-			//爆破オブジェクトの有効フラグをチェックする
-			if (blast[p].use == FALSE)
-				continue;
+			if (sky_enemy[j].use == FALSE)	continue;
 
-			//BCの当たり判定
-			float size = blast[p].size;
-			if (GetMorphing() == 1) size /= 4.0f;
 
-			if (CollisionBC(blast[p].pos, enemy[i].pos, size, enemy[i].size))
+			if (CollisionBC(s_meteor[i].pos,sky_enemy[j].pos,s_meteor[i].size,sky_enemy[j].size))
 			{
-				if (enemy[i].isHit == TRUE) break;
-
-				// 敵キャラクターは倒される
-				enemy[i].isHit = TRUE;
-				enemy[i].hitTime = 15;
-
-				offsetX = RamdomFloat(0, 20.0f, -20.0f);
-				offsetY = RamdomFloat(0, 20.0f, ENEMY_OFFSET_Y);
-				offsetZ = RamdomFloat(0, -10.0f, -20.0f);
-
-				enemy[i].hitPos.x = blast[p].pos.x + offsetX;
-				enemy[i].hitPos.y = blast[p].pos.y + offsetY;
-				enemy[i].hitPos.z = blast[p].pos.z + offsetZ;
-
-				ReleaseShadow(enemy[i].shadowIdx);
-
-				// スコアを足す
-				AddScore(100);
-
-				// コンボを足す
-				AddCombo(1);
-				ResetComboTime();
+				sky_enemy[j].use = FALSE;
 			}
 		}
 	}
 
-	// 敵(ヘリ)と爆破オブジェクト
-	for (int i = 0; i < MAX_ENEMY_HELI; i++)
-	{
-		//敵の有効フラグをチェックする
-		if (enemyHeli[i].use == FALSE || enemyHeli[i].isHit == TRUE)
-			continue;
 
 
-		for (int p = 0; p < MAX_BLAST; p++)
-		{
-			//爆破オブジェクトの有効フラグをチェックする
-			if (blast[p].use == FALSE)
-				continue;
-
-			//BCの当たり判定
-			float size = blast[p].size;
-			if (GetMorphing() == 1) size /= 4.0f;
-
-			if (CollisionBC(blast[p].pos, enemyHeli[i].pos, size, enemyHeli[i].size))
-			{
-				if (enemyHeli[i].isHit == TRUE) break;
-
-				// 敵キャラクターは倒される
-				enemyHeli[i].isHit = TRUE;
-				enemyHeli[i].hitTime = 15;
-
-				offsetX = RamdomFloat(0, 5.0f, -5.0f);
-				offsetY = RamdomFloat(0, 5.0f, ENEMY_HELI_OFFSET_Y - 20.0f);
-				offsetZ = RamdomFloat(0, 0.0f, -5.0f);
-
-				enemyHeli[i].hitPos.x = blast[p].pos.x + offsetX;
-				enemyHeli[i].hitPos.y = blast[p].pos.y + offsetY;
-				enemyHeli[i].hitPos.z = blast[p].pos.z + offsetZ;
-
-				ReleaseShadow(enemyHeli[i].shadowIdx);
-
-				// スコアを足す
-				AddScore(100);
-
-				// コンボを足す
-				AddCombo(1);
-				ResetComboTime();
-			}
-		}
-	}
 
 
 	// プレイヤーのHPが0でゲームオーバー
