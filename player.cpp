@@ -24,6 +24,8 @@
 #include "timingBar.h"
 #include "timingtext.h"
 #include "combo.h"
+#include "enemy.h"
+#include "sky_enemy.h"
 
 
 //*****************************************************************************
@@ -304,7 +306,8 @@ void UpdatePlayer(void)
 	// 弾発射処理
 	if (g_Stage == tutorial)
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
+				&& (!GetTutorialUse()))
 		{
 			g_Player.action = TRUE;
 			SetTimingText(GetNoteTiming());
@@ -314,8 +317,7 @@ void UpdatePlayer(void)
 	}
 	else
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
-			&& (!GetTutorialUse()))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
 		{
 			g_Player.action = TRUE;
 
@@ -334,6 +336,9 @@ void UpdatePlayer(void)
 					SetTimingText(GetNoteTiming());	// ノーツ判定
 				}
 
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
+
 				break;
 
 			case MODE_GAME_SEA:
@@ -349,11 +354,17 @@ void UpdatePlayer(void)
 					SetTimingText(GetNoteTiming());	// ノーツ判定
 				}
 
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
+
 				break;
 
 			case MODE_GAME_SKY:
 				SetS_Meteor(g_Player.pos, g_Player.rot.y);
 				SetTimingText(GetNoteTiming());	// ノーツ判定
+
+				// エネミーのターゲットフラグのリセット
+				ResetSkyEnemyTarget();
 
 				break;
 

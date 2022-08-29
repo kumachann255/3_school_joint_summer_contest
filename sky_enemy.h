@@ -84,3 +84,4 @@ void DrawSkyEnemy(void);
 SKY_ENEMY *GetSkyEnemy(void);
 void SetSkyEnemy(void);
 BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
+void ResetSkyEnemyTarget(void);
