@@ -58,7 +58,7 @@ struct SKY_ENEMY
 	int stay_count;
 	int move_count;
 
-	BOOL				target;
+	BOOL target;
 
 	int spawn;
 

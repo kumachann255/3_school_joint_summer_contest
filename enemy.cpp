@@ -22,6 +22,7 @@
 #include "timeUI.h"
 #include "target.h"
 #include "targetObj.h"
+#include "rockOn.h"
 
 #include "sound.h"
 
@@ -114,6 +115,7 @@ HRESULT InitEnemy(void)
 
 		g_Enemy[i].spd = 0.0f;			// 移動スピードクリア
 		g_Enemy[i].size = ENEMY_SIZE;	// 当たり判定の大きさ
+		g_Enemy[i].target = FALSE;
 
 			// モデルのディフューズを保存しておく。色変え対応の為。
 		GetModelDiffuse(&g_Enemy[i].model, &g_Enemy[i].diffuse[0]);
@@ -437,16 +439,21 @@ void UpdateEnemy(void)
 
 			CAMERA *camera = GetCamera();
 			TARGETOBJ *targetObj = GetTargetObj();
+			TARGET *target = GetTarget();
 
 			// レイキャストして足元の高さを求める
 			XMFLOAT3 hitPosition;								// 交点
 			hitPosition = g_Enemy[i].pos;	// 外れた時用に初期化しておく
 			bool ans = RayHitEnemy(targetObj[0].pos, camera->pos, &hitPosition, i);
 
-			if (ans)
+			if ((ans) && (!g_Enemy[i].target) && (g_Enemy[i].use))
 			{
-				g_Enemy[i].use = FALSE;
+				g_Enemy[i].target = TRUE;
 				g_Collision[i].use = FALSE;
+				target[0].enemyNum[target[0].count] = i;
+				target[0].count++;
+
+				SetRockOn();
 			}
 			////////////////////////////////////////////////////////////////////////
 			//// 姿勢制御
