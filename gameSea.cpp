@@ -43,6 +43,7 @@
 #include "target.h"
 #include "targetObj.h"
 #include "timingEffect.h"
+#include "rockOn.h"
 
 
 //*****************************************************************************
@@ -176,6 +177,9 @@ HRESULT InitGameSea(void)
 	// ターゲットオブジェクトの初期化
 	InitTargetObj();
 
+	// ロックオンアイコンの初期化
+	InitRockOn();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -207,6 +211,9 @@ HRESULT InitGameSea(void)
 //=============================================================================
 void UninitGameSea(void)
 {
+	// ロックオンアイコンの終了処理
+	UninitRockOn();
+
 	// ターゲットオブジェクトの終了処理
 	UninitTargetObj();
 
@@ -399,6 +406,8 @@ void UpdateGameSea(void)
 	// ターゲットオブジェクトの更新処理
 	UpdateTargetObj();
 
+	// ロックオンアイコンの更新処理
+	UpdateRockOn();
 }
 
 //=============================================================================
@@ -451,7 +460,10 @@ void DrawGameSea0(void)
 	DrawAttackR();
 
 	// ターゲットオブジェクトの描画処理
-	//DrawTargetObj();
+	DrawTargetObj();
+
+	// ロックオンアイコンの描画処理
+	DrawRockOn();
 
 
 	// 2Dの物を描画する処理

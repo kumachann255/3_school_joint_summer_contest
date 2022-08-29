@@ -55,6 +55,7 @@ struct ENEMY
 	XMFLOAT4			quaternion;	// クォータニオン
 	XMFLOAT3			upVector;	// 自分が立っている所
 
+	BOOL target;
 
 };
 
