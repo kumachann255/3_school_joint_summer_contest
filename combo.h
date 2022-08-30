@@ -21,6 +21,7 @@
 #define COMBO_BONUS_1_VALUE			(3)			// どのくらいボーナスを加えるか
 #define COMBO_BONUS_2_VALUE			(5)			// どのくらいボーナスを加えるか
 
+#define COMBO_CHANGE_ACTION			(2)		// コンボいくつから攻撃法王を変えるか
 
 
 //*****************************************************************************
@@ -34,5 +35,6 @@ void DrawCombo(void);
 void AddCombo(int add);
 int GetCombo(void);
 void ResetComboTime(void);
+void SetTimingHas(BOOL timing);
 
 

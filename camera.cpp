@@ -18,24 +18,23 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	POS_X_CAM			(0.0f)			// カメラの初期位置(X座標)
-#define	POS_Y_CAM			(60.0f)			// カメラの初期位置(Y座標)
-#define	POS_Z_CAM			(-30.0f)		// カメラの初期位置(Z座標)
+#define	POS_X_CAM_DEFO		(0.0f)			// カメラの初期位置(X座標)
+#define	POS_Y_CAM_DEFO		(60.0f)			// カメラの初期位置(Y座標)
+#define	POS_Z_CAM_DEFO		(-30.0f)		// カメラの初期位置(Z座標)
 
-#define CAMERA_OFFSET_Y		(50.0f)			// ATの調整
+#define	POS_Y_CAM_SKY		(50.0f)			// 空ステージのカメラの初期位置(Y座標)
+#define	POS_X_CAM_SKY		(0.0f)			// 空ステージのカメラの初期位置(X座標)
+#define	POS_Z_CAM_SKY		(0.0f)			// 空ステージのカメラの初期位置(Z座標)
+
+
 
 //#define	POS_X_CAM		(0.0f)			// カメラの初期位置(X座標)
 //#define	POS_Y_CAM		(200.0f)		// カメラの初期位置(Y座標)
 //#define	POS_Z_CAM		(-400.0f)		// カメラの初期位置(Z座標)
 
 
-#define	VIEW_ANGLE		(XMConvertToRadians(70.0f))						// ビュー平面の視野角
-#define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比	
-#define	VIEW_NEAR_Z		(10.0f)											// ビュー平面のNearZ値
-#define	VIEW_FAR_Z		(20000.0f)										// ビュー平面のFarZ値
-
-#define	VALUE_MOVE_CAMERA	(2.0f)										// カメラの移動量
-#define	VALUE_ROTATE_CAMERA	(XM_PI * 0.01f)								// カメラの回転量
+#define	VALUE_MOVE_CAMERA	(2.0f)				// カメラの移動量
+#define	VALUE_ROTATE_CAMERA	(XM_PI * 0.01f)		// カメラの回転量
 
 #define CAMERA_OFFSET	(1.0f)				// 補間の許容範囲値
 #define CAMERA_VALUE	(10.0f)				// 補間の速度
@@ -69,8 +68,8 @@ static XMFLOAT3			g_pos = {0.0f , 15.0f , 25.0f};
 //=============================================================================
 void InitCamera(void)
 {
-	g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
-	g_Camera.at  = { 0.0f, 0.0f, 0.0f };
+	g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
+	g_Camera.at  = { 0.0f, 0.0f, 20.0f };
 	g_Camera.up  = { 0.0f, 1.0f, 0.0f };
 	g_Camera.rot = { 0.0f, 0.0f, 0.0f };
 
@@ -131,12 +130,12 @@ void UpdateCamera(void)
 	}
 	else
 	{
-		SetCameraAT(pPlayer->pos);
-		g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
+		//SetCameraAT(pPlayer->pos);
+		g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
 
-		if (GetMode() == MODE_GAME_SEA)
+		if (GetMode() == MODE_GAME_SKY)
 		{
-			g_Camera.pos = { POS_X_CAM, POS_Y_CAM * 1.0f, POS_Z_CAM * 2.0f };
+			g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
 		}
 	}
 
@@ -379,38 +378,62 @@ void SetCameraAT(XMFLOAT3 pos)
 
 	XMFLOAT3 targetAT;
 
-	// 爆弾が使用されていたら爆弾に視線を送る
-	if (((bom->use) && (bom->time > 0.15f)) || (GetCameraSwitch()))
+	if (GetMode() != MODE_GAME_SKY)
 	{
-		if(bom->use) targetAT = bom->pos;
-		else targetAT = blast->pos;
-
+		// 爆弾が使用されていたら爆弾に視線を送る
+		if (((bom->use) && (bom->time > 0.15f)) || (GetCameraSwitch()))
 		{
-			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE);
-			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE);
-			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE);
+			if (bom->use) targetAT = bom->pos;
+			else targetAT = blast->pos;
+
+			{
+				g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE);
+				g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE);
+				g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE);
+			}
 		}
-	}
-	else if(g_Move)
-	{
-		g_Camera.at = g_pos;
+		else if (g_Move)
+		{
+			g_Camera.at = g_pos;
+		}
+		else
+		{
+			XMFLOAT3 targetAT = pos;
+
+			// シーンに応じてATの調整
+			targetAT.y += CAMERA_OFFSET_Y;
+
+			{
+				g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE * 2.0f);
+				g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
+				g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
+			}
+		}
 	}
 	else
 	{
-		XMFLOAT3 targetAT = pos;
-
-		// シーンに応じてATの調整
-		targetAT.y += CAMERA_OFFSET_Y;
-
-		{
-			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE * 2.0f);
-			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
-			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
-		}
-
-
+		// カメラの注視点をプレイヤーの座標にしてみる
+		g_Camera.at = pos;
+		//g_Camera.at.y += CAMERA_OFFSET_Y;
+		
+		// カメラの視点をカメラのY軸回転に対応させている
+		g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+		g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
 	}
 }
+
+
+//void SetCameraAT(XMFLOAT3 pos)
+//{
+//	// カメラの注視点をプレイヤーの座標にしてみる
+//	g_Camera.at = pos;
+//	//g_Camera.at.y += CAMERA_OFFSET_Y;
+//
+//	// カメラの視点をカメラのY軸回転に対応させている
+//	g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+//	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
+//
+//}
 
 
 //=============================================================================

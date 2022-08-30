@@ -41,9 +41,9 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/did_it.png",
-	"data/TEXTURE/good_job.png",
-	"data/TEXTURE/fantastic.png",
+	"data/TEXTURE/hyouka_miss.png",
+	"data/TEXTURE/hyouka_good.png",
+	"data/TEXTURE/hyouka_perfect.png",
 };
 
 
@@ -51,7 +51,7 @@ static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
 static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
-static TIMINGTEXT				g_Text[TTEXT_MAX];			// 音符
+static TIMINGTEXT				g_Text[TTEXT_MAX];		// 音符
 
 static BOOL						g_Load = FALSE;
 

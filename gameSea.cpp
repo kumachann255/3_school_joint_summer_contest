@@ -41,6 +41,9 @@
 #include "timingBar.h"
 #include "timingtext.h"
 #include "target.h"
+#include "targetObj.h"
+#include "timingEffect.h"
+#include "rockOn.h"
 
 
 //*****************************************************************************
@@ -121,7 +124,7 @@ HRESULT InitGameSea(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitTree();
+	InitFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -165,8 +168,17 @@ HRESULT InitGameSea(void)
 	// タイミングテキストの初期化
 	InitTimingText();
 
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	// ターゲットアイコンの初期化
 	InitTarget();
+
+	// ターゲットオブジェクトの初期化
+	InitTargetObj();
+
+	// ロックオンアイコンの初期化
+	InitRockOn();
 
 	g_Stage = GetStage();
 
@@ -199,8 +211,17 @@ HRESULT InitGameSea(void)
 //=============================================================================
 void UninitGameSea(void)
 {
+	// ロックオンアイコンの終了処理
+	UninitRockOn();
+
+	// ターゲットオブジェクトの終了処理
+	UninitTargetObj();
+
 	// ターゲットアイコンの終了処理
 	UninitTarget();
+
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
 
 	// タイミングテキストの終了処理
 	UninitTimingText();
@@ -245,7 +266,7 @@ void UninitGameSea(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitTree();
+	UninitFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -326,7 +347,7 @@ void UpdateGameSea(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateTree();
+	UpdateFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();
@@ -376,8 +397,17 @@ void UpdateGameSea(void)
 	// タイミングテキストの更新処理
 	UpdateTimingText();
 
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 	// ターゲットアイコンの更新処理
 	UpdateTarget();
+
+	// ターゲットオブジェクトの更新処理
+	UpdateTargetObj();
+
+	// ロックオンアイコンの更新処理
+	UpdateRockOn();
 }
 
 //=============================================================================
@@ -429,6 +459,11 @@ void DrawGameSea0(void)
 	// 攻撃範囲の描画処理
 	DrawAttackR();
 
+	// ターゲットオブジェクトの描画処理
+	DrawTargetObj();
+
+	// ロックオンアイコンの描画処理
+	DrawRockOn();
 
 
 	// 2Dの物を描画する処理
@@ -465,6 +500,9 @@ void DrawGameSea0(void)
 	// チュートリアルの描画処理
 	DrawTutorial();
 
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
+
 	// タイミングバーの描画処理
 	DrawTImingBar();
 
@@ -496,6 +534,7 @@ void DrawGameSea(void)
 	pos.y = 0.0f;			// カメラ酔いを防ぐためにクリアしている
 	SetCameraAT(pos);
 	SetCamera();
+
 
 	switch(g_ViewPortType_Game)
 	{

@@ -21,15 +21,17 @@
 #include "tutorial.h"
 #include "timeUI.h"
 #include "target.h"
+#include "targetObj.h"
+#include "rockOn.h"
 
 #include "sound.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY			"data/MODEL/patoka-.obj"		// 読み込むモデル名
-#define	MODEL_ENEMY_01		"data/MODEL/sirobai.obj"		// 読み込むモデル名
-#define	MODEL_ENEMY_COLLISION		"data/MODEL/collisionBox.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY				"data/MODEL/patoka-.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_01			"data/MODEL/sirobai.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 
 #define ENEMY_TYPE_MAX		(2)							// エネミータイプの最大数
@@ -45,17 +47,17 @@
 #define ENEMY_GOAL_Z		(70.0f)						// エネミーのゴール基準位置(z座標)
 #define ENEMY_GOAL_Z_OFFSET	(60)						// エネミーのゴール位置の乱数
 
-#define STAGE0_POP_COUNT			(100)				// エネミーのポップ間隔
-#define STAGE0_MAX_POP				(20)				// 最大、場に何体エネミーを出すか
+#define STAGE0_POP_COUNT	(100)						// エネミーのポップ間隔
+#define STAGE0_MAX_POP		(20)						// 最大、場に何体エネミーを出すか
 
-#define STAGE1_POP_COUNT			(70)				// エネミーのポップ間隔
-#define STAGE1_MAX_POP				(25)				// 最大、場に何体エネミーを出すか
+#define STAGE1_POP_COUNT	(70)						// エネミーのポップ間隔
+#define STAGE1_MAX_POP		(25)						// 最大、場に何体エネミーを出すか
 
-#define STAGE2_POP_COUNT			(50)				// エネミーのポップ間隔
-#define STAGE2_MAX_POP				(30)				// 最大、場に何体エネミーを出すか
+#define STAGE2_POP_COUNT	(50)						// エネミーのポップ間隔
+#define STAGE2_MAX_POP		(30)						// 最大、場に何体エネミーを出すか
 
-#define STAGE3_POP_COUNT			(30)				// エネミーのポップ間隔
-#define STAGE3_MAX_POP				(45)				// 最大、場に何体エネミーを出すか
+#define STAGE3_POP_COUNT	(30)						// エネミーのポップ間隔
+#define STAGE3_MAX_POP		(45)						// 最大、場に何体エネミーを出すか
 
 
 #define ENEMY_HIT_MOVE		(5.0f)						// 当たり判定後アニメーション用移動量
@@ -113,6 +115,7 @@ HRESULT InitEnemy(void)
 
 		g_Enemy[i].spd = 0.0f;			// 移動スピードクリア
 		g_Enemy[i].size = ENEMY_SIZE;	// 当たり判定の大きさ
+		g_Enemy[i].target = FALSE;
 
 			// モデルのディフューズを保存しておく。色変え対応の為。
 		GetModelDiffuse(&g_Enemy[i].model, &g_Enemy[i].diffuse[0]);
@@ -189,17 +192,7 @@ void UpdateEnemy(void)
 {
 	//return;
 
-	if (g_Stage == tutorial)
-	{	// チュートリアル様に1体出す
-		count++;
-
-		// 時間になったら1体出す
-		if (count == STAGE0_POP_COUNT)
-		{
-			SetEnemy();
-		}
-	}
-	else
+	
 	{	// pop処理
 		count++;
 		int useCount = 0;
@@ -445,17 +438,22 @@ void UpdateEnemy(void)
 			}
 
 			CAMERA *camera = GetCamera();
-			PLAYER *player = GetPlayer();
+			TARGETOBJ *targetObj = GetTargetObj();
+			TARGET *target = GetTarget();
 
 			// レイキャストして足元の高さを求める
 			XMFLOAT3 hitPosition;								// 交点
 			hitPosition = g_Enemy[i].pos;	// 外れた時用に初期化しておく
-			bool ans = RayHitEnemy(player->pos, camera->pos, &hitPosition, i);
+			bool ans = RayHitEnemy(targetObj[0].pos, camera->pos, &hitPosition, i);
 
-			if (ans)
+			if ((ans) && (!g_Enemy[i].target) && (g_Enemy[i].use))
 			{
-				g_Enemy[i].use = FALSE;
+				g_Enemy[i].target = TRUE;
 				g_Collision[i].use = FALSE;
+				target[0].enemyNum[target[0].count] = i;
+				target[0].count++;
+
+				SetRockOn();
 			}
 			////////////////////////////////////////////////////////////////////////
 			//// 姿勢制御
@@ -600,7 +598,7 @@ void SetEnemy(void)
 	{
 		if (g_Enemy[i].use == FALSE)
 		{
-			SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
+			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
 			// SEのセット
 			PlaySound(SOUND_LABEL_SE_siren01);
 
@@ -682,6 +680,16 @@ BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int nu
 	return FALSE;
 }
 
+
+// ロックオンされているかの初期化
+// 攻撃したときに呼び出される
+void ResetEnemyTarget(void)
+{
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		g_Enemy[i].target = FALSE;
+	}
+}
 
 // スクリーン座標をワールド座標へ変換
 //void SetScreenToWorld(void)

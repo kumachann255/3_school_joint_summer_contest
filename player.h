@@ -37,6 +37,7 @@ struct PLAYER
 	int					shadowIdx;	// 影のIndex
 	int					hp;			// ヒットポイント
 	BOOL				use;
+	BOOL				rockOn;		// ロックオンの攻撃方法かどうか
 
 
 	// 階層アニメーション用のメンバー変数
@@ -52,6 +53,8 @@ struct PLAYER
 	XMFLOAT4			quaternion;	// クォータニオン
 	XMFLOAT3			upVector;	// 自分が立っている所
 
+
+	float				angle;		// 空ステージのプレイヤーの円運動 
 
 };
 

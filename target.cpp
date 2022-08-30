@@ -15,6 +15,8 @@
 #include "enemy.h"
 #include "player.h"
 #include "camera.h"
+#include "targetObj.h"
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -25,6 +27,8 @@
 #define	VALUE_MOVE					(4.0f)			// 移動量
 
 #define OFFSET_Y					(20.0f)			// 調整
+#define OFFSET_OBJ					(10.0f)
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -86,7 +90,8 @@ HRESULT InitTarget(void)
 		g_Target[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Target[i].spd = 4.0f;
 		g_Target[i].TexNo = i;
-		g_Target[i].use = FALSE;
+		g_Target[i].use = TRUE;
+		g_Target[i].count = 0;
 	}
 
 	g_Load = TRUE;
@@ -123,61 +128,17 @@ void UninitTarget(void)
 //=============================================================================
 void UpdateTarget(void)
 {
+	// 攻撃方法がサークルの場合はスキップ
+	if (!GetPlayer()->rockOn) return;
+
 	for (int i = 0; i < MAX_TARGET; i++)
 	{
-		g_Target[1].rot.z += 0.036f;
+		if (!g_Target[i].use) return;
 
-		if (GetKeyboardPress(DIK_LSHIFT))
-		{
-			// 移動させるんだぴょーん
-			if (GetKeyboardPress(DIK_LEFT))
-			{	// 左へ移動
-				g_Target[i].pos.x -= g_Target->spd;
-			}
-			if (GetKeyboardPress(DIK_RIGHT))
-			{	// 右へ移動
-				g_Target[i].pos.x += g_Target->spd;
-			}
-			if (GetKeyboardPress(DIK_UP))
-			{	// 上へ移動
-				g_Target[i].pos.y -= g_Target->spd;
-			}
-			if (GetKeyboardPress(DIK_DOWN))
-			{	// 下へ移動
-				g_Target[i].pos.y += g_Target->spd;
-			}
-		}
-
-
-		// スクリーンの外に出たら照準を戻す処理
-		// 右端
-		if (g_Target[i].pos.x + TEXTURE_WIDTH * 0.5f > SCREEN_WIDTH)
-		{
-			g_Target[i].pos.x = SCREEN_WIDTH - TEXTURE_WIDTH * 0.5f;
-		}
-		// 左端
-		if (g_Target[i].pos.x - TEXTURE_WIDTH * 0.5f < 0.0f)
-		{
-			g_Target[i].pos.x = 0.0f + TEXTURE_WIDTH * 0.5f;
-		}
-		// 上端
-		if (g_Target[i].pos.y - TEXTURE_HEIGHT * 0.5f < 0.0f)
-		{
-			g_Target[i].pos.y = 0.0f + TEXTURE_HEIGHT * 0.5f;
-		}
-		// 下端
-		if (g_Target[i].pos.y + TEXTURE_HEIGHT * 0.5f > SCREEN_HEIGHT)
-		{
-			g_Target[i].pos.y = SCREEN_HEIGHT - TEXTURE_HEIGHT * 0.5f;
-		}
-
-		PLAYER *player = GetPlayer();
-
-		XMVECTOR pPos = XMLoadFloat3(&player->pos);
-
+		// ワールド座標をスクリーン座標へ変換
+		TARGETOBJ *targetObj = GetTargetObj();
+		XMVECTOR pPos = XMLoadFloat3(&targetObj->pos);
 		XMVECTOR ans = Screenpos(pPos);
-
-		XMFLOAT3 ansPos;
 
 		XMStoreFloat3(&g_Target[i].pos, ans);
 
@@ -199,6 +160,9 @@ void UpdateTarget(void)
 //=============================================================================
 void DrawTarget(void)
 {
+	// 攻撃方法がサークルの場合はスキップ
+	if (!GetPlayer()->rockOn) return;
+
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
@@ -258,18 +222,21 @@ TARGET *GetTarget(void)
 }
 
 
+//=============================================================================
 // ワールド座標をスクリーン座標へ変換
+//=============================================================================
 XMVECTOR Screenpos(XMVECTOR World_Pos)
 {
 	CAMERA *camera = GetCamera();
 
 	XMVECTOR Eye = XMVectorSet(camera->pos.x, camera->pos.y, camera->pos.z, 0.0f);
-	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y - OFFSET_Y, camera->at.z, 0.0f);
+	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y, camera->at.z, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX g_View = XMMatrixLookAtLH(Eye, At, Up);
 
-	XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 0.1f, 1000.0f);
+	//XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, 0.1f, 1000.0f);
+	XMMATRIX g_Projection = XMMatrixPerspectiveFovLH(VIEW_ANGLE, VIEW_ASPECT, VIEW_NEAR_Z, VIEW_FAR_Z);
 
 	float w = (FLOAT)SCREEN_WIDTH / 2.0f;
 	float h = (FLOAT)SCREEN_HEIGHT / 2.0f;
@@ -290,4 +257,53 @@ XMVECTOR Screenpos(XMVECTOR World_Pos)
 	// スクリーン変換
 	const XMVECTOR view_vec = XMVectorSet(temp.x / temp.z, temp.y / temp.z, 1.0f, 1.0f);
 	return XMVector3Transform(view_vec, viewport);
+}
+
+
+//=============================================================================
+// ターゲットアイコンが画面外に出ていないかを確認
+//=============================================================================
+BOOL GetTargetArea(int type)
+{
+	BOOL ans = TRUE;
+
+	for (int i = 0; i < MAX_TARGET; i++)
+	{
+		switch (type)
+		{
+		case left:
+			if (g_Target[i].pos.x - TEXTURE_WIDTH * 0.5f < 0.0f)
+			{
+				ans = FALSE;
+			}
+
+			break;
+
+		case right:
+			if (g_Target[0].pos.x + TEXTURE_WIDTH * 0.5f > SCREEN_WIDTH)
+			{
+				ans = FALSE;
+			}
+
+			break;
+
+		case up:
+			if (g_Target[i].pos.y - TEXTURE_HEIGHT * 0.5f < 0.0f)
+			{
+				ans = FALSE;
+			}
+
+			break;
+
+		case down:
+			if (g_Target[i].pos.y + TEXTURE_HEIGHT * 0.5f > SCREEN_HEIGHT)
+			{
+				ans = FALSE;
+			}
+
+			break;
+		}
+	}
+
+	return ans;
 }

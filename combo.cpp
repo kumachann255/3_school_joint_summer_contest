@@ -59,6 +59,7 @@ static int						g_time;						// 経過時間
 static int						g_ComboTime;				// コンボの持続
 static BOOL						g_ComboMove;				// コンボに動きがあるか
 static int						g_ComboMoveTime;			// コンボ表示が動く時間
+static BOOL						g_TimingHas;				// タイミングがあっていたかどうか
 
 static BOOL						g_Load = FALSE;
 
@@ -106,6 +107,8 @@ HRESULT InitCombo(void)
 	g_time = 0;
 	g_ComboTime = 0;
 	g_ComboMoveTime = 0;
+
+	g_TimingHas = false;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -263,12 +266,15 @@ void DrawCombo(void)
 //=============================================================================
 void AddCombo(int add)
 {
-	g_Combo_result += add;
-	if (g_Combo_result > COMBO_MAX)
+	// タイミングが合っていた場合のみコンボを増やす
+	if (g_TimingHas)
 	{
-		g_Combo_result = COMBO_MAX;
+		g_Combo_result += add;
+		if (g_Combo_result > COMBO_MAX)
+		{
+			g_Combo_result = COMBO_MAX;
+		}
 	}
-
 }
 
 //=============================================================================
@@ -298,4 +304,13 @@ void SetComboMove(void)
 	//g_ComboMove = TRUE;
 	g_ComboMoveTime = COMBO_MOVE_TIME;
 	g_Pos.y = COMBO_POS_Y + COMBO_MOVE_MAX;
+}
+
+
+//=============================================================================
+// タイミングが合っていたかどうかをセットする
+//=============================================================================
+void SetTimingHas(BOOL timing)
+{
+	g_TimingHas = timing;
 }

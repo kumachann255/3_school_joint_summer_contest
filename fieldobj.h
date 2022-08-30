@@ -34,10 +34,10 @@ struct FOBJ
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitTree(void);
-void UninitTree(void);
-void UpdateTree(void);
-void DrawTree(void);
+HRESULT InitFieldObj(void);
+void UninitFieldObj(void);
+void UpdateFieldObj(void);
+void DrawFieldObj(void);
 
 FOBJ *GetBilding(void);
 

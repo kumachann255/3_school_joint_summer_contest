@@ -40,6 +40,9 @@
 #include "tutorial.h"
 #include "cup.h"
 #include "cracker.h"
+#include "timingBar.h"
+#include "timingtext.h"
+#include "timingEffect.h"
 
 
 //*****************************************************************************
@@ -126,7 +129,7 @@ HRESULT InitGameCity(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitTree();
+	InitFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -164,6 +167,15 @@ HRESULT InitGameCity(void)
 	// チュートリアルの初期化
 	InitTutorial();
 
+	// タイミングバーの初期化
+	InitTImingBar();
+
+	// タイミングテキストの初期化
+	InitTimingText();
+
+	// タイミングエフェクトの初期化
+	InitTimingEffect();
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -195,6 +207,15 @@ HRESULT InitGameCity(void)
 //=============================================================================
 void UninitGameCity(void)
 {
+	// タイミングエフェクトの終了処理
+	UninitTimingEffect();
+
+	// タイミングテキストの終了処理
+	UninitTimingText();
+
+	// タイミングバーの終了処理
+	UninitTImingBar();
+
 	// チュートリアルの終了処理
 	UninitTutorial();
 
@@ -232,7 +253,7 @@ void UninitGameCity(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitTree();
+	UninitFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -325,7 +346,7 @@ void UpdateGameCity(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateTree();
+	UpdateFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();
@@ -368,6 +389,16 @@ void UpdateGameCity(void)
 
 	// チュートリアルの更新処理
 	UpdateTutorial();
+
+	// タイミングバーの更新処理
+	UpdateTImingBar();
+
+	// タイミングテキストの更新処理
+	UpdateTimingText();
+
+	// タイミングエフェクトの更新処理
+	UpdateTimingEffect();
+
 }
 
 
@@ -412,7 +443,7 @@ void DrawGameCity0(void)
 	DrawMeshWall();
 
 	// 木の描画処理
-	DrawTree();
+	DrawFieldObj();
 
 	// スカイドームの描画処理
 	DrawSky();
@@ -458,6 +489,15 @@ void DrawGameCity0(void)
 
 	// チュートリアルの描画処理
 	DrawTutorial();
+
+	// タイミングエフェクトの描画処理
+	DrawTimingEffect();
+
+	// タイミングバーの描画処理
+	DrawTImingBar();
+
+	// タイミングテキストの描画処理
+	DrawTimingText();
 
 
 	// ライティングを有効に

@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // 攻撃範囲処理 [attackRange.cpp]
-// Author : 熊澤義弘
+// Author : 熊澤
 //
 //=============================================================================
 #include "main.h"
@@ -12,6 +12,7 @@
 #include "attackRange.h"
 #include "shadow.h"
 #include "bom.h"
+#include "player.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -90,6 +91,9 @@ void UninitAttackR(void)
 //=============================================================================
 void UpdateAttackR(void)
 {
+	// 攻撃方法がロックオンの場合はスキップ
+	if (GetPlayer()->rockOn) return;
+
 	BOM *bom = GetBom();
 
 	// 攻撃範囲を表示するかどうか
@@ -130,8 +134,10 @@ void UpdateAttackR(void)
 //=============================================================================
 void DrawAttackR(void)
 {
-	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
+	// 攻撃方法がロックオンの場合はスキップ
+	if (GetPlayer()->rockOn) return;
 
+	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);

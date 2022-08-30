@@ -1,20 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="attackRange.cpp" />
+    <ClCompile Include="blast.cpp" />
+    <ClCompile Include="bom.cpp" />
+    <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="collision.cpp" />
+    <ClCompile Include="combo.cpp" />
+    <ClCompile Include="countdown.cpp" />
+    <ClCompile Include="cracker.cpp" />
+    <ClCompile Include="cup.cpp" />
+    <ClCompile Include="damageEF.cpp" />
+    <ClCompile Include="debugproc.cpp" />
+    <ClCompile Include="dome.cpp" />
+    <ClCompile Include="endroll.cpp" />
+    <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="enemyHeli.cpp" />
+    <ClCompile Include="fade.cpp" />
+    <ClCompile Include="fieldobj.cpp" />
+    <ClCompile Include="gameCity.cpp" />
+    <ClCompile Include="gameSea.cpp" />
+    <ClCompile Include="gameSky.cpp" />
+    <ClCompile Include="gameUI.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="light.cpp" />
+    <ClCompile Include="logo.cpp" />
+    <ClCompile Include="logoD.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="meshfield.cpp" />
+    <ClCompile Include="meshfield2.cpp" />
+    <ClCompile Include="meshwall.cpp" />
+    <ClCompile Include="model.cpp" />
+    <ClCompile Include="orbit.cpp" />
+    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="playerHP.cpp" />
+    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="result.cpp" />
+    <ClCompile Include="score.cpp" />
+    <ClCompile Include="sea_meshfield.cpp" />
+    <ClCompile Include="shadow.cpp" />
+    <ClCompile Include="sky.cpp" />
+    <ClCompile Include="sky_enemy.cpp" />
+    <ClCompile Include="sky_smallmeteor.cpp" />
+    <ClCompile Include="sound.cpp" />
+    <ClCompile Include="speech.cpp" />
+    <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="target.cpp" />
+    <ClCompile Include="targetObj.cpp" />
+    <ClCompile Include="timeUI.cpp" />
+    <ClCompile Include="timingBar.cpp" />
+    <ClCompile Include="timingtext.cpp" />
+    <ClCompile Include="title.cpp" />
+    <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="rockOn.cpp" />
+    <ClCompile Include="timingEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
+
     <ClCompile Include="attackRange.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -159,10 +203,14 @@
     <ClCompile Include="dome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+
+    <ClCompile Include="targetObj.cpp">
+
     <ClCompile Include="cracker.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cup.cpp">
+
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="opening.cpp">
@@ -314,14 +362,79 @@
     <ClInclude Include="dome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+
+    <ClInclude Include="targetObj.h">
+
     <ClInclude Include="cracker.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="cup.h">
+
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="opening.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+=======
+    <ClInclude Include="sky_bigmeteor.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="attackRange.h" />
+    <ClInclude Include="blast.h" />
+    <ClInclude Include="bom.h" />
+    <ClInclude Include="bullet.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="collision.h" />
+    <ClInclude Include="combo.h" />
+    <ClInclude Include="countdown.h" />
+    <ClInclude Include="cracker.h" />
+    <ClInclude Include="cup.h" />
+    <ClInclude Include="damageEF.h" />
+    <ClInclude Include="debugproc.h" />
+    <ClInclude Include="dome.h" />
+    <ClInclude Include="endroll.h" />
+    <ClInclude Include="enemy.h" />
+    <ClInclude Include="enemyHeli.h" />
+    <ClInclude Include="fade.h" />
+    <ClInclude Include="fieldobj.h" />
+    <ClInclude Include="gameCity.h" />
+    <ClInclude Include="gameSea.h" />
+    <ClInclude Include="gameSky.h" />
+    <ClInclude Include="gameUI.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="light.h" />
+    <ClInclude Include="logo.h" />
+    <ClInclude Include="logoD.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="meshfield.h" />
+    <ClInclude Include="meshfield2.h" />
+    <ClInclude Include="meshwall.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="orbit.h" />
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="playerHP.h" />
+    <ClInclude Include="renderer.h" />
+    <ClInclude Include="result.h" />
+    <ClInclude Include="score.h" />
+    <ClInclude Include="sea_meshfield.h" />
+    <ClInclude Include="shadow.h" />
+    <ClInclude Include="sky.h" />
+    <ClInclude Include="sky_enemy.h" />
+    <ClInclude Include="sky_smallmeteor.h" />
+    <ClInclude Include="sound.h" />
+    <ClInclude Include="speech.h" />
+    <ClInclude Include="sprite.h" />
+    <ClInclude Include="target.h" />
+    <ClInclude Include="targetObj.h" />
+    <ClInclude Include="timeUI.h" />
+    <ClInclude Include="timingBar.h" />
+    <ClInclude Include="timingtext.h" />
+    <ClInclude Include="title.h" />
+    <ClInclude Include="tutorial.h" />
+    <ClInclude Include="rockOn.h" />
+    <ClInclude Include="timingEffect.h" />
+>>>>>>> da30d664971c24d8df78a97ac2d28546729290b1
   </ItemGroup>
 </Project>

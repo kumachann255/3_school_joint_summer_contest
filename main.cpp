@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// ���C������ [main.cpp]
-// Author : �F�V�`�O
+// メイン処理 [main.cpp]
+// Author : 熊澤義弘
 //
 //=============================================================================
 #include "main.h"
@@ -19,6 +19,7 @@
 #include "fieldobj.h"
 #include "collision.h"
 #include "bullet.h"
+#include "sky_smallmeteor.h"
 #include "score.h"
 #include "sound.h"
 #include "particle.h"
@@ -40,13 +41,13 @@
 
 
 //*****************************************************************************
-// �}�N����`
+// マクロ定義
 //*****************************************************************************
-#define CLASS_NAME		"AppClass"			// �E�C���h�E�̃N���X��
-#define WINDOW_NAME		"�l�o�l�o�[�����h�{���p�[�e�B�["		// �E�C���h�E�̃L���v�V������
+#define CLASS_NAME		"AppClass"			// ウインドウのクラス名
+#define WINDOW_NAME		"ネバネバーランドボムパーティー"		// ウインドウのキャプション名
 
 //*****************************************************************************
-// �v���g�^�C�v�錾
+// プロトタイプ宣言
 //*****************************************************************************
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
@@ -56,35 +57,35 @@ void Draw(void);
 
 
 //*****************************************************************************
-// �O���[�o���ϐ�:
+// グローバル変数:
 //*****************************************************************************
 long g_MouseX = 0;
 long g_MouseY = 0;
 
 
 #ifdef _DEBUG
-int		g_CountFPS;							// FPS�J�E���^
-char	g_DebugStr[2048] = WINDOW_NAME;		// �f�o�b�O�����\���p
+int		g_CountFPS;							// FPSカウンタ
+char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 
 #endif
 
-int	g_Mode = MODE_OPENING;					// �N�����̉�ʂ�ݒ�
+int	g_Mode = MODE_GAME_SEA;					// 起動時の画面を設定
 
-int g_Stage = stage0;							// ���݂̃X�e�[�W
+int g_Stage = stage0;							// 現在のステージ
 
-int g_Score[stage_max] = { 0, 0, 0, 0 };	// �e�X�e�[�W�̃X�R�A��ۑ�
+int g_Score[stage_max] = { 0, 0, 0, 0 };	// 各ステージのスコアを保存
 
-int g_ComboMax = 0;								// �ő�R���{����ۑ�
+int g_ComboMax = 0;								// 最大コンボ数を保存
 
 //=============================================================================
-// ���C���֐�
+// メイン関数
 //=============================================================================
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);	// �����Ă��ǂ����ǁA�x�����o��i���g�p�錾�j
-	UNREFERENCED_PARAMETER(lpCmdLine);		// �����Ă��ǂ����ǁA�x�����o��i���g�p�錾�j
+	UNREFERENCED_PARAMETER(hPrevInstance);	// 無くても良いけど、警告が出る（未使用宣言）
+	UNREFERENCED_PARAMETER(lpCmdLine);		// 無くても良いけど、警告が出る（未使用宣言）
 
-	// ���Ԍv���p
+	// 時間計測用
 	DWORD dwExecLastTime;
 	DWORD dwFPSLastTime;
 	DWORD dwCurrentTime;
@@ -107,49 +108,49 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	HWND		hWnd;
 	MSG			msg;
 	
-	// �E�B���h�E�N���X�̓o�^
+	// ウィンドウクラスの登録
 	RegisterClassEx(&wcex);
 
-	// �E�B���h�E�̍쐬
+	// ウィンドウの作成
 	hWnd = CreateWindow(CLASS_NAME,
 		WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,																		// �E�B���h�E�̍����W
-		CW_USEDEFAULT,																		// �E�B���h�E�̏���W
-		SCREEN_WIDTH + GetSystemMetrics(SM_CXDLGFRAME) * 2,									// �E�B���h�E����
-		SCREEN_HEIGHT + GetSystemMetrics(SM_CXDLGFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION),	// �E�B���h�E�c��
+		CW_USEDEFAULT,																		// ウィンドウの左座標
+		CW_USEDEFAULT,																		// ウィンドウの上座標
+		SCREEN_WIDTH + GetSystemMetrics(SM_CXDLGFRAME) * 2,									// ウィンドウ横幅
+		SCREEN_HEIGHT + GetSystemMetrics(SM_CXDLGFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION),	// ウィンドウ縦幅
 		NULL,
 		NULL,
 		hInstance,
 		NULL);
 
-	// ����������(�E�B���h�E���쐬���Ă���s��)
+	// 初期化処理(ウィンドウを作成してから行う)
 	if(FAILED(Init(hInstance, hWnd, TRUE)))
 	{
 		return -1;
 	}
 
-	// �t���[���J�E���g������
-	timeBeginPeriod(1);	// ����\��ݒ�
-	dwExecLastTime = dwFPSLastTime = timeGetTime();	// �V�X�e���������~���b�P�ʂŎ擾
+	// フレームカウント初期化
+	timeBeginPeriod(1);	// 分解能を設定
+	dwExecLastTime = dwFPSLastTime = timeGetTime();	// システム時刻をミリ秒単位で取得
 	dwCurrentTime = dwFrameCount = 0;
 
-	// �E�C���h�E�̕\��(�����������̌�ɌĂ΂Ȃ��Ƒʖ�)
+	// ウインドウの表示(初期化処理の後に呼ばないと駄目)
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 	
-	// ���b�Z�[�W���[�v
+	// メッセージループ
 	while(1)
 	{
 		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if(msg.message == WM_QUIT)
-			{// PostQuitMessage()���Ă΂ꂽ�烋�[�v�I��
+			{// PostQuitMessage()が呼ばれたらループ終了
 				break;
 			}
 			else
 			{
-				// ���b�Z�[�W�̖|��Ƒ��o
+				// メッセージの翻訳と送出
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
@@ -158,28 +159,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{
 			dwCurrentTime = timeGetTime();
 
-			if ((dwCurrentTime - dwFPSLastTime) >= 1000)	// 1�b���ƂɎ��s
+			if ((dwCurrentTime - dwFPSLastTime) >= 1000)	// 1秒ごとに実行
 			{
 #ifdef _DEBUG
 				g_CountFPS = dwFrameCount;
 #endif
-				dwFPSLastTime = dwCurrentTime;				// FPS�𑪒肵��������ۑ�
-				dwFrameCount = 0;							// �J�E���g���N���A
+				dwFPSLastTime = dwCurrentTime;				// FPSを測定した時刻を保存
+				dwFrameCount = 0;							// カウントをクリア
 			}
 
-			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))	// 1/60�b���ƂɎ��s
+			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))	// 1/60秒ごとに実行
 			{
-				dwExecLastTime = dwCurrentTime;	// ��������������ۑ�
+				dwExecLastTime = dwCurrentTime;	// 処理した時刻を保存
 
-#ifdef _DEBUG	// �f�o�b�O�ł̎�����FPS��\������
+#ifdef _DEBUG	// デバッグ版の時だけFPSを表示する
 				wsprintf(g_DebugStr, WINDOW_NAME);
 				wsprintf(&g_DebugStr[strlen(g_DebugStr)], " FPS:%d", g_CountFPS);
 #endif
 
-				Update();			// �X�V����
-				Draw();				// �`�揈��
+				Update();			// 更新処理
+				Draw();				// 描画処理
 
-#ifdef _DEBUG	// �f�o�b�O�ł̎������\������
+#ifdef _DEBUG	// デバッグ版の時だけ表示する
 				wsprintf(&g_DebugStr[strlen(g_DebugStr)], " MX:%d MY:%d", GetMousePosX(), GetMousePosY());
 				SetWindowText(hWnd, g_DebugStr);
 #endif
@@ -189,19 +190,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 	}
 
-	timeEndPeriod(1);				// ����\��߂�
+	timeEndPeriod(1);				// 分解能を戻す
 
-	// �E�B���h�E�N���X�̓o�^������
+	// ウィンドウクラスの登録を解除
 	UnregisterClass(CLASS_NAME, wcex.hInstance);
 
-	// �I������
+	// 終了処理
 	Uninit();
 
 	return (int)msg.wParam;
 }
 
 //=============================================================================
-// �v���V�[�W��
+// プロシージャ
 //=============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -233,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 //=============================================================================
-// ����������
+// 初期化処理
 //=============================================================================
 HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
@@ -243,275 +244,275 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	InitCamera();
 
-	// ���͏����̏�����
+	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
 
-	// �T�E���h�̏�����
+	// サウンドの初期化
 	InitSound(hWnd);
 
 
-	// ���C�g��L����
+	// ライトを有効化
 	SetLightEnable(TRUE);
 
-	// �w�ʃ|���S�����J�����O
+	// 背面ポリゴンをカリング
 	SetCullingMode(CULL_MODE_BACK);
 
 
-	// �t�F�[�h�̏�����
+	// フェードの初期化
 	InitFade();
 
-	// �ŏ��̃��[�h���Z�b�g
-	SetMode(g_Mode);	// ������SetMode�̂܂܂ŁI
+	// 最初のモードをセット
+	SetMode(g_Mode);	// ここはSetModeのままで！
 
 	return S_OK;
 }
 
 //=============================================================================
-// �I������
+// 終了処理
 //=============================================================================
 void Uninit(void)
 {
-	// �I���̃��[�h���Z�b�g
+	// 終了のモードをセット
 	SetMode(MODE_MAX);
 
 
-	// �T�E���h�I������
+	// サウンド終了処理
 	UninitSound();
 
-	// �J�����̏I������
+	// カメラの終了処理
 	UninitCamera();
 
-	//���͂̏I������
+	//入力の終了処理
 	UninitInput();
 
-	// �����_���[�̏I������
+	// レンダラーの終了処理
 	UninitRenderer();
 }
 
 //=============================================================================
-// �X�V����
+// 更新処理
 //=============================================================================
 void Update(void)
 {
-	// ���͂̍X�V����
+	// 入力の更新処理
 	UpdateInput();
 
-	// ���C�g�̍X�V����
+	// ライトの更新処理
 	UpdateLight();
 
-	// �J�����X�V
+	// カメラ更新
 	UpdateCamera();
 
-	// ���[�h�ɂ���ď����𕪂���
+	// モードによって処理を分ける
 	switch (g_Mode)
 	{
-	case MODE_TITLE_LOGO:	// ���S��ʂ̍X�V
+	case MODE_TITLE_LOGO:	// ロゴ画面の更新
 		UpdateLogo();
 		break;
 
-	case MODE_TITLE_DirectX:// DirectX�ō���Ă܂��A�s��ʂ̍X�V
+	case MODE_TITLE_DirectX:// DirectXで作ってますアピ画面の更新
 		UpdateLogoD();
 		break;
 
-	case MODE_TITLE:		// �^�C�g����ʂ̍X�V
+	case MODE_TITLE:		// タイトル画面の更新
 		UpdateTitle();
 		break;
 
-	case MODE_OPENING:		// �I�[�v�j���O��ʂ̍X�V
+	case MODE_OPENING:		// オープニング画面の更新
 		UpdateOpening();
 		break;
 
-	case MODE_GAME_CITY:	// �Q�[����ʂ̍X�V
+	case MODE_GAME_CITY:	// ゲーム画面の更新
 		UpdateGameCity();
 		break;
 
-	case MODE_GAME_SEA:	// �Q�[����ʂ̍X�V
+	case MODE_GAME_SEA:	// ゲーム画面の更新
 		UpdateGameSea();
 		break;
 
-	case MODE_GAME_SKY:	// �Q�[����ʂ̍X�V
+	case MODE_GAME_SKY:	// ゲーム画面の更新
 		UpdateGameSky();
 		break;
 
-	case MODE_GAME_COUNT:	// ���̃X�e�[�W�܂ł̃J�E���g��ʂ̍X�V
+	case MODE_GAME_COUNT:	// 次のステージまでのカウント画面の更新
 		UpdateCountDown();
 		break;
 
-	case MODE_RESULT:		// ���U���g��ʂ̍X�V
+	case MODE_RESULT:		// リザルト画面の更新
 		UpdateResult();
 		break;
 
-	case MODE_ENDROLL:		// �G���h���[����ʂ̍X�V
+	case MODE_ENDROLL:		// エンドロール画面の更新
 		UpdateEndroll();
 		break;
 	}
 
-	// �t�F�[�h�����̍X�V
+	// フェード処理の更新
 	UpdateFade();
 
 
 }
 
 //=============================================================================
-// �`�揈��
+// 描画処理
 //=============================================================================
 void Draw(void)
 {
-	// �o�b�N�o�b�t�@�N���A
+	// バックバッファクリア
 	Clear();
 
 	SetCamera();
 
-	// ���[�h�ɂ���ď����𕪂���
+	// モードによって処理を分ける
 	switch (g_Mode)
 	{
-	case MODE_TITLE_LOGO:	// ���S��ʂ̕`��
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+	case MODE_TITLE_LOGO:	// ロゴ画面の描画
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawLogo();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_TITLE_DirectX:// DirectX�ō���Ă܂��A�s��ʂ̕`��
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+	case MODE_TITLE_DirectX:// DirectXで作ってますアピ画面の描画
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawLogoD();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_TITLE:		// �^�C�g����ʂ̕`��
+	case MODE_TITLE:		// タイトル画面の描画
 		SetViewPort(TYPE_FULL_SCREEN);
 
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawTitle();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_OPENING:		// �I�[�v�j���O��ʂ̕`��
+	case MODE_OPENING:		// オープニング画面の描画
 		SetViewPort(TYPE_FULL_SCREEN);
 
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawOpening();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_GAME_CITY:			// �Q�[����ʂ̕`��
+	case MODE_GAME_CITY:			// ゲーム画面の描画
 		DrawGameCity();
 		break;
 
-	case MODE_GAME_SEA:			// �Q�[����ʂ̕`��
+	case MODE_GAME_SEA:			// ゲーム画面の描画
 		DrawGameSea();
 		break;
 
-	case MODE_GAME_SKY:			// �Q�[����ʂ̕`��
+	case MODE_GAME_SKY:			// ゲーム画面の描画
 		DrawGameSky();
 		break;
 
-	case MODE_GAME_COUNT:	// ���̃X�e�[�W�܂ł̃J�E���g��ʂ̕`��
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+	case MODE_GAME_COUNT:	// 次のステージまでのカウント画面の描画
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawCountDown();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_RESULT:		// ���U���g��ʂ̕`��
+	case MODE_RESULT:		// リザルト画面の描画
 		SetViewPort(TYPE_FULL_SCREEN);
 
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawResult();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_ENDROLL:		// �G���h���[����ʂ̕`��
-		// 2D�̕���`�悷�鏈��
-		// Z��r�Ȃ�
+	case MODE_ENDROLL:		// エンドロール画面の描画
+		// 2Dの物を描画する処理
+		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ���C�e�B���O�𖳌�
+		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawEndroll();
 
-		// ���C�e�B���O��L����
+		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z��r����
+		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 	}
 
-	// �t�F�[�h�`��
+	// フェード描画
 	DrawFade();
 
 #ifdef _DEBUG
-	// �f�o�b�O�\��
+	// デバッグ表示
 	DrawDebugProc();
 #endif
 
-	// �o�b�N�o�b�t�@�A�t�����g�o�b�t�@����ւ�
+	// バックバッファ、フロントバッファ入れ替え
 	Present();
 }
 
@@ -538,77 +539,77 @@ char* GetDebugStr(void)
 
 
 //=============================================================================
-// ���[�h�̐ݒ�
+// モードの設定
 //=============================================================================
 void SetMode(int mode)
 {
-	// ���[�h��ς���O�ɑS������������������Ⴄ
+	// モードを変える前に全部メモリを解放しちゃう
 
-	// ���S��ʂ̏I������
+	// ロゴ画面の終了処理
 	UninitLogo();
 
-	// DirectX�ō���Ă܂��A�s��ʂ̏I������
+	// DirectXで作ってますアピ画面の終了処理
 	UninitLogoD();
 
-	// �^�C�g����ʂ̏I������
+	// タイトル画面の終了処理
 	UninitTitle();
 
-	// �I�[�v�j���O��ʂ̏I������
+	// オープニング画面の終了処理
 	UninitOpening();
 
-	// �Q�[����ʂ̏I������
+	// ゲーム画面の終了処理
 	UninitGameCity();
 
-	// �Q�[����ʂ̏I������
+	// ゲーム画面の終了処理
 	UninitGameSea();
 
-	// �Q�[����ʂ̏I������
+	// ゲーム画面の終了処理
 	UninitGameSky();
 
-	// ���̃X�e�[�W�܂ł̃J�E���g��ʂ̏I������
+	// 次のステージまでのカウント画面の終了処理
 	UninitCountDown();
 
-	// ���U���g��ʂ̏I������
+	// リザルト画面の終了処理
 	UninitResult();
 
-	// �G���h���[����ʂ̏I������
+	// エンドロール画面の終了処理
 	UninitResult();
 
 
-	g_Mode = mode;	// ���̃��[�h���Z�b�g���Ă���
+	g_Mode = mode;	// 次のモードをセットしている
 
 	switch (g_Mode)
 	{
-	case MODE_TITLE_LOGO:	// ���S��ʂ̏�����
+	case MODE_TITLE_LOGO:	// ロゴ画面の初期化
 		InitLogo();
 		break;
 
-	case MODE_TITLE_DirectX:// DirectX�ō���Ă܂��A�s��ʂ̏�����
+	case MODE_TITLE_DirectX:// DirectXで作ってますアピ画面の初期化
 		InitLogoD();
 		break;
 
 	case MODE_TITLE:
-		// �^�C�g����ʂ̏�����
+		// タイトル画面の初期化
 		InitTitle();
 		break;
 
 	case MODE_OPENING:
-		// �I�[�v�j���O��ʂ̏�����
+		// オープニング画面の初期化
 		InitOpening();
 		break;
 
 	case MODE_GAME_CITY:
-		// �Q�[����ʂ̏�����
+		// ゲーム画面の初期化
 		InitGameCity();
 		break;
 
 	case MODE_GAME_SEA:
-		// �Q�[����ʂ̏�����
+		// ゲーム画面の初期化
 		InitGameSea();
 		break;
 
 	case MODE_GAME_SKY:
-		// �Q�[����ʂ̏�����
+		// ゲーム画面の初期化
 		InitGameSky();
 		break;
 
@@ -617,28 +618,28 @@ void SetMode(int mode)
 		break;
 
 	case MODE_RESULT:
-		// ���U���g��ʂ̏�����
+		// リザルト画面の初期化
 		InitResult();
 		break;
 
 	case MODE_ENDROLL:
-		// �G���h���[����ʂ̏�����
+		// エンドロール画面の初期化
 		InitEndroll();
 		break;
 
-		// �Q�[���I�����̏���
+		// ゲーム終了時の処理
 	case MODE_MAX:
-		// �G�l�~�[�̏I������
+		// エネミーの終了処理
 		UninitEnemy();
 
-		// �v���C���[�̏I������
+		// プレイヤーの終了処理
 		UninitPlayer();
 		break;
 	}
 }
 
 //=============================================================================
-// ���[�h�̎擾
+// モードの取得
 //=============================================================================
 int GetMode(void)
 {
@@ -647,26 +648,26 @@ int GetMode(void)
 
 
 //=============================================================================
-// float�^�ŕ����ɂ��Ή����Ă��郉���_���̒l��Ԃ��֐�
-// digits:�����_�ȉ��̌���(0.01f �� 2), max:�~�����ő�l, min:�~�����ŏ��l
+// float型で負数にも対応しているランダムの値を返す関数
+// digits:小数点以下の桁数(0.01f → 2), max:欲しい最大値, min:欲しい最小値
 //=============================================================================
 float RamdomFloat(int digits, float max, float min)
 {
-	// �����_���������߂̕ϐ����쐬
+	// 小数点を消すための変数を作成
 	int l_digits = 1;
 	for (int i = 0; i < digits; i++)
 	{
 		l_digits *= 10;
 	}
 
-	// ��]�Z���邽�߂̒l���쐬
+	// 剰余算するための値を作成
 	float surplus = (max - min) * l_digits;
 
 	int random = rand() % (int)surplus;
 
 	float ans;
 
-	// �����̃����_���̒l��float�^�փL���X�g�ƕ����̏���
+	// 整数のランダムの値をfloat型へキャストと負数の処理
 	ans = (float)random / l_digits + min;
 
 	return ans;
@@ -674,7 +675,7 @@ float RamdomFloat(int digits, float max, float min)
 
 
 //=============================================================================
-// ���݂̃X�e�[�W���擾
+// 現在のステージを取得
 //=============================================================================
 int GetStage(void)
 {
@@ -683,7 +684,7 @@ int GetStage(void)
 
 
 //=============================================================================
-// �X�e�[�W��ύX
+// ステージを変更
 //=============================================================================
 void SetStage(int stage)
 {
@@ -692,7 +693,7 @@ void SetStage(int stage)
 
 
 //=============================================================================
-// �X�e�[�W���ƂɃX�R�A��ۑ�
+// ステージごとにスコアを保存
 //=============================================================================
 void SetMainScore(int score)
 {
@@ -701,7 +702,7 @@ void SetMainScore(int score)
 
 
 //=============================================================================
-// �X�R�A���擾
+// スコアを取得
 //=============================================================================
 int GetMainScore(int stage)
 {
@@ -710,7 +711,7 @@ int GetMainScore(int stage)
 
 
 //=============================================================================
-// main�X�R�A��������
+// mainスコアを初期化
 //=============================================================================
 void ResetMainScore(void)
 {
@@ -724,7 +725,7 @@ void ResetMainScore(void)
 
 
 //=============================================================================
-// �ő�R���{����ۑ�
+// 最大コンボ数を保存
 //=============================================================================
 void SetComboMax(int combo)
 {
@@ -736,7 +737,7 @@ void SetComboMax(int combo)
 
 
 //=============================================================================
-// �ő�R���{�����擾
+// 最大コンボ数を取得
 //=============================================================================
 int GetComboMax(void)
 {
