@@ -21,26 +21,29 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define SENHU_TEXTURE_WIDTH			(860)	// キャラサイズ
-#define SENHU_TEXTURE_HEIGHT		(150)	// 
+#define SENHU_TEXTURE_WIDTH			(860)	// 五線譜のサイズ
+#define SENHU_TEXTURE_HEIGHT		(80)	// 
 #define TEXTURE_MAX					(10)	// テクスチャの数
 
 #define SENHU_X						(960.0f / 2.0f)	// 五線譜の表示位置
-#define SENHU_Y						(70.0f)	// 五線譜の表示位置
+#define SENHU_Y						(70.0f)			// 五線譜の表示位置
+#define SENHU_ALFA					(0.5f)			// 五線譜の表示位置
 
-#define ONPU_TEXTURE_X				(40.0f)	//音符の幅
-#define ONPU_TEXTURE_Y				(60.0f)//音符の高さ
+
+#define ONPU_TEXTURE_X				(60.0f)		//音符の幅
+#define ONPU_TEXTURE_Y				(60.0f)		//音符の高さ
 #define ONPU_X						(1000.0f)	//音符の表示位置
-#define ONPU_Y						(SENHU_Y)//音符の表示位置
+#define ONPU_Y						(SENHU_Y)	//音符の表示位置
+#define ONPU_Y_RAND					(20.0f)		// 上下の乱数
 
-#define TARGET_TEXTURE_X			(100.0f)	// ターゲットのサイズ
-#define TARGET_TEXTURE_Y			(100.0f)
+#define TARGET_TEXTURE_X			(120.0f)	// ターゲットのサイズ
+#define TARGET_TEXTURE_Y			(120.0f)
 
-#define ONPU_SPEED					(5.0f)	// 音符の速度
+#define ONPU_SPEED					(5.0f)		// 音符の速度
 
-#define DISTANCE_ONPU_CITY			(40)	// 街ステージの音符の間隔(フレーム)
-#define DISTANCE_ONPU_SEA			(40)	// 海ステージの音符の間隔(フレーム)
-#define DISTANCE_ONPU_SKY			(40)	// 空ステージの音符の間隔(フレーム)
+#define DISTANCE_ONPU_CITY			(40)		// 街ステージの音符の間隔(フレーム)
+#define DISTANCE_ONPU_SEA			(40)		// 海ステージの音符の間隔(フレーム)
+#define DISTANCE_ONPU_SKY			(40)		// 空ステージの音符の間隔(フレーム)
 
 
 //*****************************************************************************
@@ -55,14 +58,10 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/flat.png",
-	"data/TEXTURE/sharp.png",
-	"data/TEXTURE/8bu_onpu.png",
-	"data/TEXTURE/16bu_onpu.png",
-	"data/TEXTURE/6bu_onpu_renkou.png",
-	"data/TEXTURE/8bu_onpu_renkou.png",
-	"data/TEXTURE/8bu_kyuufu.png",
-	"data/TEXTURE/16bu_kyuufu.png",
+	"data/TEXTURE/onpu01.png",
+	"data/TEXTURE/onpu02.png",
+	"data/TEXTURE/onpu03.png",
+	"data/TEXTURE/onpu04.png",
 	"data/TEXTURE/gosenhu.png",
 	"data/TEXTURE/onpuTarget.png",
 	
@@ -111,7 +110,7 @@ HRESULT InitTImingBar(void)
 	g_Target.pos.x = TARGET_X;
 	g_Target.pos.y = TARGET_Y;
 	g_Target.use = TRUE;
-	g_Target.texNum = 9;
+	g_Target.texNum = 5;
 
 
 	// 頂点バッファ生成
@@ -235,11 +234,11 @@ void DrawTImingBar(void)
 
 	// 五線譜の描画
 	// テクスチャ設定
-	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[8]);
+	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[4]);
 
 	// １枚のポリゴンの頂点とテクスチャ座標を設定
 	SetSpriteColor(g_VertexBuffer, g_Pos.x, g_Pos.y, g_w, g_h, 0.0f, 0.0f, 1.0f, 1.0f,
-		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+		XMFLOAT4(1.0f, 1.0f, 1.0f, SENHU_ALFA));
 
 	// ポリゴン描画
 	GetDeviceContext()->Draw(4, 0);
@@ -285,7 +284,7 @@ void SetNote(void)
 		{
 			// 初期化
 			g_Note[i].use = TRUE;
-			g_Note[i].pos = XMFLOAT2(ONPU_X, ONPU_Y);
+			g_Note[i].pos = XMFLOAT2(ONPU_X, ONPU_Y + RamdomFloat(2, ONPU_Y_RAND, -ONPU_Y_RAND));
 			g_Note[i].texNum = rand() % NOTE_TEX_MAX;
 			
 			return;
