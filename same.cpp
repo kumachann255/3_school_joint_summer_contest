@@ -14,9 +14,12 @@
 #include "attackRange.h"
 #include "player.h"
 #include "enemy.h"
+#include "shadow.h"
 #include "enemyHeli.h"
 #include "tutorial.h"
 #include "collision.h"
+#include "score.h"
+#include "combo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -246,6 +249,15 @@ void UpdateSame(void)
 				if (CollisionBC(g_Same.pos, enemy[i].pos, g_Same.size, enemy[i].size))
 				{
 					if (enemy[i].isHit == TRUE) break;
+					if (enemy[i].use == TRUE)
+					{
+						// スコアを足す
+						AddScore(100);
+
+						// コンボを足す
+						AddCombo(1);
+						ResetComboTime();
+					}
 					// 敵キャラクターは倒される
 					enemy[i].use = FALSE;
 				}
@@ -260,6 +272,15 @@ void UpdateSame(void)
 				if (CollisionBC(g_Same.pos, enemyheli[j].pos, g_Same.size, enemyheli[j].size))
 				{
 					if (enemyheli[j].isHit == TRUE) break;
+					if (enemyheli[j].use == TRUE)
+					{
+						// スコアを足す
+						AddScore(100);
+
+						// コンボを足す
+						AddCombo(1);
+						ResetComboTime();
+					}
 					// 敵キャラクターは倒される
 					enemyheli[j].use = FALSE;
 				}

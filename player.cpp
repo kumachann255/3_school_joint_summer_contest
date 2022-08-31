@@ -354,11 +354,12 @@ void UpdatePlayer(void)
 			case MODE_GAME_SEA:
 				// コンボ数が一定以下の場合は初期攻撃
 				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
+					//if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
 					// タコ一本釣り
 					SetTako();
 					SetTimingText(GetNoteTiming());	// ノーツ判定
-					g_Player.cooltime = COOLTIME_OCTOPUS;
+					//g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
 					//ResetRockOn();
@@ -368,7 +369,7 @@ void UpdatePlayer(void)
 					SetSame();	// 恐怖のサメ
 					SetTimingText(GetNoteTiming());	// ノーツ判定
 					// 恐怖のサメ
-					g_Player.cooltime = COOLTIME_SHARK;
+					//g_Player.cooltime = COOLTIME_SHARK;
 				}
 
 				// エネミーのターゲットフラグのリセット
