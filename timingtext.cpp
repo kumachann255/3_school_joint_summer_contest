@@ -94,8 +94,6 @@ HRESULT InitTimingText(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
-
 	g_Load = TRUE;
 	return S_OK;
 }

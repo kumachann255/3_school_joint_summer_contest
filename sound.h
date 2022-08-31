@@ -50,6 +50,9 @@ enum
 	SOUND_LABEL_SE_titleClick04,		// タイトルモード選択音4
 	SOUND_LABEL_SE_logo,				// ロゴの環境音
 	SOUND_LABEL_SE_logoD,				// ロゴの環境音
+	SOUND_LABEL_SE_rhythm,				// リズムの音
+	SOUND_LABEL_SE_timing_miss,			// ミスの音
+	SOUND_LABEL_SE_timing_good,			// GOODの音
 
 
 	SOUND_LABEL_MAX,	// MAX

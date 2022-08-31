@@ -38,7 +38,7 @@ struct PLAYER
 	int					hp;			// ヒットポイント
 	BOOL				use;
 	BOOL				rockOn;		// ロックオンの攻撃方法かどうか
-
+	int					cooltime;	// クールタイム
 
 	// 階層アニメーション用のメンバー変数
 	INTERPOLATION_DATA	*tbl_adr;	// アニメデータのテーブル先頭アドレス
