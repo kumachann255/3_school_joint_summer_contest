@@ -356,26 +356,17 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
 					// タコ一本釣り
-<<<<<<< HEAD
 					SetTako();
-					SetTimingText(GetNoteTiming());	// ノーツ判定
-=======
 					g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
 					ResetRockOn();
->>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 
 				}
 				else
 				{	// 派生攻撃
-<<<<<<< HEAD
 					SetSame();	// 恐怖のサメ
-					SetTimingText(GetNoteTiming());	// ノーツ判定
-=======
-					// 恐怖のサメ
 					g_Player.cooltime = COOLTIME_SHARK;
->>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 				}
 
 				// エネミーのターゲットフラグのリセット

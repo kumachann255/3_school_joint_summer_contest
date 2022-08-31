@@ -17,7 +17,7 @@
 //*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)	// ”wŒiƒTƒCƒY
 #define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
-#define TEXTURE_MAX					(5)				// ƒeƒNƒXƒ`ƒƒ‚Ì”
+#define TEXTURE_MAX					(6)				// ƒeƒNƒXƒ`ƒƒ‚Ì”
 
 #define PAGE_FADE_RATE				(0.02f)			// ƒtƒF[ƒhŒW”
 #define NEXT_PAGE					(150)			// ©“®‚ÅŸ‚Ìƒy[ƒW‚É•Ï‚í‚éŠÔ
@@ -35,10 +35,11 @@ static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ƒeƒNƒXƒ`ƒ
 
 static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/fade_black.png",
-	"data/TEXTURE/opening_001.png",
-	"data/TEXTURE/opening_002.png",
-	"data/TEXTURE/opening_003.png",
-	"data/TEXTURE/opening_004.png",
+	"data/TEXTURE/opening01.png",
+	"data/TEXTURE/opening02.png",
+	"data/TEXTURE/opening03.png",
+	"data/TEXTURE/opening04.png",
+	"data/TEXTURE/opening05.png",
 };
 
 
@@ -155,7 +156,6 @@ void UpdateOpening(void)
 					// ƒeƒNƒXƒ`ƒƒ”Ô†‚ğİ’è
 					g_TexNo++;
 				}
-
 			}
 
 			else if (g_PageFade == FADE_IN)
