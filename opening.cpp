@@ -168,7 +168,6 @@ void UpdateOpening(void)
 
 					// フェード処理終了
 					g_PageFade = FADE_NONE;
-					g_Count = 0;
 				}
 			}
 		}
@@ -184,6 +183,7 @@ void UpdateOpening(void)
 			PlaySound(SOUND_LABEL_SE_selectBomb01);
 
 			g_PageFade = FADE_OUT;
+			g_Count = 0;
 
 			if (g_TexNo == (OPENING_PAGE_MAX - 1))
 			{// ラストシーン
@@ -203,6 +203,7 @@ void UpdateOpening(void)
 			PlaySound(SOUND_LABEL_SE_selectBomb01);
 
 			g_PageFade = FADE_OUT;
+			g_Count = 0;
 
 			if (g_TexNo == (OPENING_PAGE_MAX - 1))
 			{// ラストシーン
@@ -225,6 +226,7 @@ void UpdateOpening(void)
 		PlaySound(SOUND_LABEL_SE_selectBomb01);
 
 		g_PageFade = FADE_OUT;
+		g_Count = 0;
 
 		if (g_TexNo == (OPENING_PAGE_MAX - 1))
 		{// ラストシーン
