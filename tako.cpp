@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// モデル処理 [enemy.cpp]
+// モデル処理 [tako.cpp]
 // Author : 
 //
 //=============================================================================
@@ -14,7 +14,12 @@
 #include "enemy.h"
 #include "enemyHeli.h"
 #include "tako.h"
+#include "shadow.h"
 #include "rockOn.h"
+#include "target.h"
+#include "collision.h"
+#include "score.h"
+#include "combo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -64,6 +69,7 @@ HRESULT InitTako(void)
 
 		g_Tako[i].angle = 0.0f;			// 移動スピードクリア
 		g_Tako[i].size = TAKO_SIZE;	// 当たり判定の大きさ
+		g_Tako[i].rockOnNum = 0;
 
 		g_Tako[i].use = FALSE;
 
@@ -121,6 +127,8 @@ void UninitTako(void)
 //=============================================================================
 void UpdateTako(void)
 {
+	//return;
+
 	CAMERA *cam = GetCamera();
 	PLAYER *player = GetPlayer();
 	ENEMY  *enemy = GetEnemy();
@@ -128,89 +136,125 @@ void UpdateTako(void)
 
 	for (int i = 0; i < MAX_TAKO; i++)
 	{
-		if (g_Tako[i].use == TRUE || g_Tako_middle[i].use == TRUE || g_Tako_last[i].use == TRUE)
+		//if (g_Tako[i].use == FALSE)
+		//	continue;
+
+		//サメ爆弾　g_Takoには移動させるサイトを入れる。
+		switch (g_Tako[i].mode)
 		{
-			//サメ爆弾　g_Takoには移動させるサイトを入れる。
-			switch (g_Tako[i].mode)
+		case WAIT:
+			g_Tako[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako[i].pos.y += TAKO_POS_Y;
+			g_Tako_middle[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako_middle[i].pos.y += TAKO_POS_Y;
+			g_Tako_last[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako_last[i].pos.y += TAKO_POS_Y;
+
+			if (GetKeyboardPress(DIK_SPACE) && player->rockOn == TRUE)
 			{
-			case WAIT:
-				g_Tako[i].scl = { TAKO_SCL_INIT, TAKO_SCL_INIT, TAKO_SCL_INIT };
-				g_Tako[i].pos = enemy[i].pos;
-				g_Tako[i].pos.y += TAKO_POS_Y;
-				g_Tako_middle[i].pos = enemy[i].pos;
-				g_Tako_middle[i].pos.y += TAKO_POS_Y;
-				g_Tako_last[i].pos = enemy[i].pos;
-				g_Tako_last[i].pos.y += TAKO_POS_Y;
-
-				if (GetKeyboardTrigger(DIK_RETURN))
-				{
-					g_Tako[i].use = TRUE;
-				}
-
-				if (GetKeyboardPress(DIK_SPACE))
-				{
-					g_Tako[i].use = FALSE;
-					g_Tako_middle[i].use = TRUE;
-					g_Tako[i].mode = ZUZHO;
-				}
-				break;
-
-			case ZUZHO:
-
-				g_Tako[i].pos = enemy[i].pos;
-				g_Tako[i].pos.y += TAKO_POS_CATCH;
-				g_Tako_middle[i].pos = enemy[i].pos;
-				g_Tako_middle[i].pos.y += TAKO_POS_CATCH;
-				g_Tako_last[i].pos = enemy[i].pos;
-				g_Tako_last[i].pos.y += TAKO_POS_CATCH;
-				g_Tako[i].mode = CATCH;
-				break;
-
-			case CATCH:
-				g_Tako[i].pos.x = enemy[i].pos.x;
-				g_Tako[i].pos.y -= TAKO_POS_ADDITION;
-				g_Tako[i].pos.z = enemy[i].pos.z;
-				g_Tako_middle[i].pos.x = enemy[i].pos.x;
-				g_Tako_middle[i].pos.y -= TAKO_POS_ADDITION;
-				g_Tako_middle[i].pos.z = enemy[i].pos.z;
-				g_Tako_last[i].pos.x = enemy[i].pos.x;
-				g_Tako_last[i].pos.y -= TAKO_POS_ADDITION;
-				g_Tako_last[i].pos.z = enemy[i].pos.z;
-
-
-				if (g_Tako[i].pos.y < 0.0f)
-				{
-					g_Tako_middle[i].use = FALSE;
-					g_Tako_last[i].use = TRUE;
-					enemy[i].takoHit = TRUE;
-					g_Tako[i].mode = RELEASE;
-				}
-				break;
-
-			case RELEASE:
-
-				XMVECTOR pos1 = XMLoadFloat3(&cam->pos);
-				XMVECTOR pos2 = XMLoadFloat3(&g_Tako[i].pos);
-				pos2 += (pos1 - pos2) * VALUE_HOMING;
-				XMStoreFloat3(&g_Tako[i].pos, pos2);
-				XMVECTOR pos3 = XMLoadFloat3(&cam->pos);
-				XMVECTOR pos4 = XMLoadFloat3(&g_Tako_last[i].pos);
-				pos2 += (pos1 - pos2) * VALUE_HOMING;
-				XMStoreFloat3(&g_Tako_last[i].pos, pos2);
-
-				if (g_Tako[i].pos.z < cam->pos.z + FRONT_COLLISION)
-				{
-					g_Tako_last[i].use = FALSE;
-					g_Tako[i].use = FALSE;
-					g_Tako[i].mode = WAIT;
-					enemy[i].use = FALSE;
-					rockOn[i].use = FALSE;
-				}
-				break;
+				//g_Tako[i].scl = { TAKO_SCL_INIT, TAKO_SCL_INIT, TAKO_SCL_INIT };
+				g_Tako_middle[i].use = TRUE;
+				g_Tako[i].mode = ZUZHO;
 			}
+			break;
 
+		case ZUZHO:
+
+			g_Tako[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako[i].pos.y += TAKO_POS_CATCH;
+			g_Tako_middle[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako_middle[i].pos.y += TAKO_POS_CATCH;
+			g_Tako_last[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+			g_Tako_last[i].pos.y += TAKO_POS_CATCH;
+			g_Tako[i].mode = CATCH;
+			break;
+
+		case CATCH:
+			g_Tako[i].pos.x = rockOn[g_Tako[i].rockOnNum].pos.x;
+			g_Tako[i].pos.y -= TAKO_POS_ADDITION;
+			g_Tako[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
+			g_Tako_middle[i].pos.x = rockOn[g_Tako[i].rockOnNum].pos.x;
+			g_Tako_middle[i].pos.y -= TAKO_POS_ADDITION;
+			g_Tako_middle[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
+			g_Tako_last[i].pos.x = rockOn[g_Tako[i].rockOnNum].pos.x;
+			g_Tako_last[i].pos.y -= TAKO_POS_ADDITION;
+			g_Tako_last[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
+
+
+			if (g_Tako[i].pos.y < 0.0f)
+			{
+				g_Tako_middle[i].use = FALSE;
+				g_Tako_last[i].use = TRUE;
+				g_Tako[i].mode = RELEASE;
+			}
+			break;
+
+		case RELEASE:
+
+			XMVECTOR pos1 = XMLoadFloat3(&cam->pos);
+			XMVECTOR pos2 = XMLoadFloat3(&g_Tako[i].pos);
+			pos2 += (pos1 - pos2) * VALUE_HOMING;
+			XMStoreFloat3(&g_Tako[i].pos, pos2);
+			XMVECTOR pos3 = XMLoadFloat3(&cam->pos);
+			XMVECTOR pos4 = XMLoadFloat3(&g_Tako_last[i].pos);
+			pos2 += (pos1 - pos2) * VALUE_HOMING;
+			XMStoreFloat3(&g_Tako_last[i].pos, pos2);
+
+			if (g_Tako[i].pos.z < cam->pos.z + FRONT_COLLISION)
+			{
+				g_Tako_last[i].use = FALSE;
+				g_Tako[i].use = FALSE;
+				g_Tako[i].mode = WAIT;
+				ResetRockOn();
+
+				ReleaseShadow(enemy[i].shadowIdx);
+
+				// スコアを足す
+				AddScore(100);
+
+				// コンボを足す
+				AddCombo(1);
+				ResetComboTime();
+
+			}
+			break;
 		}
 
+		// 当たった後エネミーの挙動処理
+		{
+			ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
+			ENEMY_HELI *enemyheli = GetEnemyHeli();		// エネミーのポインターを初期化
+
+			// 他エネミーの処理
+
+			// 敵とサメオブジェクト
+			for (int j = 0; j < MAX_ENEMY; j++)
+			{
+				if (g_Tako[i].mode == RELEASE)
+				{
+					if (CollisionBC(g_Tako[i].pos, enemy[j].pos, g_Tako[i].size, enemy[j].size))
+					{
+						if (enemy[j].isHit == TRUE) break;
+						// 敵キャラクターは倒される
+						enemy[j].use = FALSE;
+					}
+				}
+			}
+
+			// ヘリの処理
+			for (int j = 0; j < MAX_ENEMY_HELI; j++)
+			{
+				if (g_Tako[i].mode == RELEASE)
+				{
+					if (CollisionBC(g_Tako[i].pos, enemyheli[j].pos, g_Tako[i].size, enemyheli[j].size))
+					{
+						if (enemyheli[j].isHit == TRUE) break;
+						// 敵キャラクターは倒される
+						enemyheli[j].use = FALSE;
+					}
+				}
+			}
+		}
 	}
 
 
@@ -350,24 +394,38 @@ TAKO *GetTako(void)
 //=============================================================================
 void SetTako(void)
 {
-	for (int i = 0; i < MAX_TAKO; i++)
-	{
-		if (g_Tako[i].use == FALSE && g_Tako[i].mode == WAIT)
-		{
-			ENEMY *enemy = GetEnemy();
-			ROCKON *rockOn = GetRockOn();
+	ROCKON *rockOn = GetRockOn();
 
-			for (int j = 0; j < MAX_ENEMY; j++)
+	for (int i = 0; i < MAX_ROCKON; i++)
+	{
+		if (rockOn[i].use == TRUE)
+		{
+
+			//for (int j = 0; j < MAX_ROCKON; j++)
+			//{
+			//	if (rockOn[j].use == TRUE)
+			//	{
+			//		g_Tako[i].use = TRUE;
+			//		g_Tako[i].pos = rockOn[j].pos;
+			//		//g_Tako_middle[i].pos = rockOn[j].pos;
+			//		//g_Tako_last[i].pos = rockOn[j].pos;
+			//		break;
+			//	}
+			//}
+			for (int j = 0; j < MAX_TAKO; j++)
 			{
-				g_Tako[i].use = TRUE;
-				if (rockOn[i].use == TRUE)
+				if (g_Tako[j].use == FALSE)
 				{
-					g_Tako[i].pos = enemy[j].pos;
-					g_Tako_middle[i].pos = enemy[j].pos;
-					g_Tako_last[i].pos = enemy[j].pos;
+					g_Tako[j].use = TRUE;
+					g_Tako[j].pos = rockOn[i].pos;
+					g_Tako[j].pos.y += 5.0f;
+					g_Tako[j].rockOnNum = i;
+
+					g_Tako_middle[i].pos = rockOn[j].pos;
+					g_Tako_last[i].pos = rockOn[j].pos;
+					break;
 				}
 			}
-			return;
 		}
 	}
 }

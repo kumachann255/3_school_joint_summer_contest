@@ -354,14 +354,14 @@ void UpdatePlayer(void)
 			case MODE_GAME_SEA:
 				// コンボ数が一定以下の場合は初期攻撃
 				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
+					//if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
 					// タコ一本釣り
 					SetTako();
-					g_Player.cooltime = COOLTIME_OCTOPUS;
+					//g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
-					ResetRockOn();
-
+					//ResetRockOn();
 				}
 				else
 				{	// 派生攻撃

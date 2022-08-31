@@ -613,12 +613,14 @@ void CheckHitSea(void)
 	BULLET *bullet = GetBullet();	// 弾のポインターを初期化
 	//TAKO *tako = GetTako();		// タコオブジェクトの初期化
 	SAME *same = GetSame();		// サメオブジェクトの初期化
+	TAKO *tako = GetTako();		// タコオブジェクトの初期化
 
 	//float offsetX;
 	//float offsetY;
 	//float offsetZ;
 
-		// 敵とタコオブジェクト
+
+	// 敵とタコオブジェクト
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 
@@ -634,13 +636,47 @@ void CheckHitSea(void)
 	// 敵とサメオブジェクト
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
+		if (same->mode == PACKNCYO)
+		{
+			if (CollisionBC(same->pos, enemy[i].pos, same->size, enemy[i].size))
+			{
+				if (enemy[i].isHit == TRUE) break;
+				if (enemy[i].use == TRUE)
+				{
+					// スコアを足す
+					AddScore(100);
 
+					// コンボを足す
+					AddCombo(1);
+					ResetComboTime();
+				}
+				// 敵キャラクターは倒される
+				enemy[i].use = FALSE;
+			}
+		}
 	}
 
 	// 敵(ヘリ)とサメオブジェクト
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
+		if (same->mode == PACKNCYO)
+		{
+			if (CollisionBC(same->pos, enemyHeli[i].pos, same->size, enemyHeli[i].size))
+			{
+				if (enemyHeli[i].isHit == TRUE) break;
+				if (enemyHeli[i].use == TRUE)
+				{
+					// スコアを足す
+					AddScore(100);
 
+					// コンボを足す
+					AddCombo(1);
+					ResetComboTime();
+				}
+				// 敵キャラクターは倒される
+				enemyHeli[i].use = FALSE;
+			}
+		}
 	}
 
 	// プレイヤーのHPが0でゲームオーバー
