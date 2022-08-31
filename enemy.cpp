@@ -17,6 +17,8 @@
 #include "damageEF.h"
 #include "debugproc.h"
 #include "player.h"
+#include "tako.h"
+#include "target.h"
 #include "fade.h"
 #include "tutorial.h"
 #include "timeUI.h"
@@ -137,6 +139,11 @@ HRESULT InitEnemy(void)
 
 		g_Enemy[i].cupHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
 		g_Enemy[i].cupRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+		g_Enemy[i].sameHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+		g_Enemy[i].sameRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+		g_Enemy[i].takoHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+		g_Enemy[i].takoRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+
 		g_Enemy[i].radian = 0.0f;									// ‰ñ“]—Ê
 
 		g_Enemy[i].fuchi = FALSE;
