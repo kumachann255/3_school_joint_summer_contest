@@ -167,6 +167,8 @@
     <ClCompile Include="opening.cpp" />
     <ClCompile Include="orbit.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="particleBase.cpp" />
+    <ClCompile Include="particleMeteor.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="playerHP.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -227,6 +229,8 @@
     <ClInclude Include="opening.h" />
     <ClInclude Include="orbit.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="particleBase.h" />
+    <ClInclude Include="particleMeteor.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="playerHP.h" />
     <ClInclude Include="renderer.h" />

@@ -57,6 +57,10 @@
     <ClCompile Include="timingtext.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="same.cpp" />
+    <ClCompile Include="tako.cpp" />
+    <ClCompile Include="particleMeteor.cpp" />
+    <ClCompile Include="particleBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -116,5 +120,9 @@
     <ClInclude Include="timingtext.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="same.h" />
+    <ClInclude Include="tako.h" />
+    <ClInclude Include="particleMeteor.h" />
+    <ClInclude Include="particleBase.h" />
   </ItemGroup>
 </Project>

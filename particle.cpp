@@ -192,23 +192,6 @@ void UpdateParticle(void)
 				g_Particle[i].scl.x += RamdomFloat(2, 0.2f, 0.1f);
 				g_Particle[i].scl.y += RamdomFloat(2, 0.2f, 0.1f);
 			}
-
-
-
-
-#ifdef DISP_SHADOW
-			if(g_Particle[i].nIdxShadow != -1)
-			{// âeégópíÜ
-				float colA;
-
-				// âeÇÃà íuê›íË
-				SetPositionShadow(g_Particle[i].nIdxShadow, XMFLOAT3(g_Particle[i].pos.x, 0.1f, g_Particle[i].pos.z));
-
-				// âeÇÃêFÇÃê›íË
-				colA = g_Particle[i].material.Diffuse.w;
-				SetColorShadow(g_Particle[i].nIdxShadow, XMFLOAT4(0.5f, 0.5f, 0.5f, colA));
-			}
-#endif
 		}
 	}
 
