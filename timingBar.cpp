@@ -16,6 +16,7 @@
 #include "sound.h"
 #include "combo.h"
 #include "timingEffect.h"
+#include "timingtext.h"
 
 
 //*****************************************************************************
@@ -45,11 +46,16 @@
 #define DISTANCE_ONPU_SEA			(40)		// 海ステージの音符の間隔(フレーム)
 #define DISTANCE_ONPU_SKY			(40)		// 空ステージの音符の間隔(フレーム)
 
+enum {
+	miss,
+	good,
+	just,
+};
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-
+void SetNoteTiming(int timing);
 
 //*****************************************************************************
 // グローバル変数
@@ -76,6 +82,7 @@ static TIMINGNOTE				g_Note[NOTE_MAX];			// 音符
 static TIMINGNOTE				g_Target;					// 音符を押すタイミングのテクスチャ
 static int						g_Time;						// 時間
 static int						g_Distance;
+static int						g_Timing_old;				// 直前に押したタイミングの評価を記録
 
 static BOOL						g_Load = FALSE;
 
@@ -105,13 +112,13 @@ HRESULT InitTImingBar(void)
 		g_Note[i].pos.y = ONPU_Y;
 		g_Note[i].use = FALSE;
 		g_Note[i].texNum = 0;
+		g_Note[i].seDid = FALSE;
 	}
 
 	g_Target.pos.x = TARGET_X;
 	g_Target.pos.y = TARGET_Y;
 	g_Target.use = TRUE;
 	g_Target.texNum = 5;
-
 
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -129,6 +136,7 @@ HRESULT InitTImingBar(void)
 	g_h     = SENHU_TEXTURE_HEIGHT;
 	g_Pos   = { SENHU_X, SENHU_Y, 0.0f };
 	g_TexNo = 0;
+	g_Timing_old = miss;
 
 	// 時間の初期化
 	g_Time = 0;
@@ -194,6 +202,20 @@ void UpdateTImingBar(void)
 			// 左へ移動させる
 			g_Note[i].pos.x -= ONPU_SPEED;
 			if (g_Note[i].pos.x < -50.0f) g_Note[i].use = FALSE;
+
+			// タイミングターゲットに到達した時の処理
+			if ((g_Note[i].pos.x < TARGET_X) && (!g_Note[i].seDid))
+			{
+				// SEをならす
+				PlaySound(SOUND_LABEL_SE_rhythm);
+				g_Note[i].seDid = TRUE;
+
+				// g_Timing_oldがGOOD以上のとき攻撃のクールタイム中は全て押されたことにする
+				if ((GetPlayer()->cooltime > 0) && (g_Timing_old >= good))
+				{
+					SetNoteTiming(g_Timing_old);
+				}
+			}
 
 		}
 	}
@@ -286,7 +308,8 @@ void SetNote(void)
 			g_Note[i].use = TRUE;
 			g_Note[i].pos = XMFLOAT2(ONPU_X, ONPU_Y + RamdomFloat(2, ONPU_Y_RAND, -ONPU_Y_RAND));
 			g_Note[i].texNum = rand() % NOTE_TEX_MAX;
-			
+			g_Note[i].seDid = FALSE;
+
 			return;
 		}
 	}
@@ -326,19 +349,48 @@ int GetNoteTiming(void)
 		}
 	}
 
-	// 最高のタイミングだったら歓声を流す
-	if (ans >= 2) PlaySound(SOUND_LABEL_SE_cheers02);
+	// GOOD以上の場合は小気味よい音を鳴らす
+	if (ans >= good) PlaySound(SOUND_LABEL_SE_timing_good);
+	else PlaySound(SOUND_LABEL_SE_timing_miss);
 
 	// 良い以上の時にエフェクトを発生(エフェクトの種類はランダム)
 	if (ans >= 1) SetTimingEffect(rand() % TEFFECT_TYPE_MAX);
 
 	// 良い以上であればコンボを設定
-	if (ans >= 1) 
+	if (ans >= good)
 	{
 		SetTimingHas(TRUE);
 		ResetComboTime();	// コンボ継続時間もリセット
 	}
 	else SetTimingHas(FALSE);
 
+	g_Timing_old = ans;
+
 	return ans;
+}
+
+
+// 攻撃中のオートモード
+void SetNoteTiming(int timing)
+{
+	for (int i = 0; i < NOTE_MAX; i++)
+	{
+		if (g_Note[i].use)
+		{
+			// 範囲内のノーツを検索
+			if ((g_Note[i].pos.x > g_Target.pos.x - NOTE_TIMING_MISS) && (g_Note[i].pos.x < g_Target.pos.x + NOTE_TIMING_MISS))
+			{
+				g_Note[i].use = FALSE;
+				break;
+			}
+		}
+	}
+
+	// GOOD以上の場合は小気味よい音を鳴らす
+	if (timing >= good) PlaySound(SOUND_LABEL_SE_timing_good);
+	else PlaySound(SOUND_LABEL_SE_timing_miss);
+
+	// エフェクトを発生(エフェクトの種類はランダム)
+	SetTimingEffect(rand() % TEFFECT_TYPE_MAX);
+	SetTimingText(timing);
 }

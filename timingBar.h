@@ -17,8 +17,8 @@
 #define NOTE_TIMING_JUST	(20.0f)		// 最高のタイミングの範囲
 #define NOTE_TIMING_MISS	(70.0f)		// ミスのタイミングの範囲
 
-#define TARGET_X					(150.0f)	// ターゲットの表示位置
-#define TARGET_Y					(70.0f)		// ターゲットの表示位置
+#define TARGET_X			(150.0f)	// ターゲットの表示位置
+#define TARGET_Y			(70.0f)		// ターゲットの表示位置
 
 
 
@@ -28,6 +28,7 @@ struct TIMINGNOTE
 	XMFLOAT2	pos;
 	BOOL		use;
 	int			texNum;
+	BOOL		seDid;
 
 };
 
