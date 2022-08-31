@@ -222,7 +222,7 @@ void UpdateTitle(void)
 			if (start_texno == 3)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 		
 				// mainスコアを初期化
 				ResetMainScore();
@@ -264,7 +264,7 @@ void UpdateTitle(void)
 			if (start_texno == 3)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 			
 				// mainスコアを初期化
 				ResetMainScore();
@@ -283,7 +283,7 @@ void UpdateTitle(void)
 			if (start_texno == 3)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 			
 				// mainスコアを初期化
 				ResetMainScore();
