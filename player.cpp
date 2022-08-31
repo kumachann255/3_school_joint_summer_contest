@@ -29,7 +29,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_PLAYER		"data/MODEL/cone.obj"			// 読み込むモデル名
+#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 
 #define	VALUE_MOVE			(2.0f)							// 移動量
@@ -516,7 +516,7 @@ void DrawPlayer(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y + XM_PI, g_Player.rot.z);
+	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 	// クォータニオンを反映

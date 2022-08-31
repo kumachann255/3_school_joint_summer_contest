@@ -24,7 +24,9 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_BOM			"data/MODEL/m.obj"		// 読み込むモデル名
+#define	MODEL_BOM			"data/MODEL/meteo_01.obj"		// 読み込むモデル名
+#define	MODEL_BOM_1			"data/MODEL/meteo_02.obj"		// 読み込むモデル名
+
 
 #define	VALUE_MOVE				(5.0f)				// 移動量
 
@@ -56,9 +58,11 @@ HRESULT InitS_Meteor(void)
 {
 	//srand(time(NULL));
 
+	LoadModel(MODEL_BOM, &g_sMeteor[0].model);
+	LoadModel(MODEL_BOM_1, &g_sMeteor[1].model);
+
 	for (int i = 0; i < MAX_S_METEOR; i++)
 	{
-		LoadModel(MODEL_BOM, &g_sMeteor[i].model);
 		g_sMeteor[i].load = TRUE;
 
 		g_sMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -69,16 +73,18 @@ HRESULT InitS_Meteor(void)
 		g_sMeteor[i].time = 0.0f;
 
 		// モデルのディフューズを保存しておく。色変え対応の為。
-		GetModelDiffuse(&g_sMeteor[i].model, &g_sMeteor[i].diffuse[0]);
+		//GetModelDiffuse(&g_sMeteor[i].model, &g_sMeteor[i].diffuse[0]);
 
-		// 色を少し変える
-		XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 0.5f };
+		//// 色を少し変える
+		//XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 0.5f };
 
-		// 色をセット
-		SetModelDiffuse(&g_sMeteor[i].model, 0, color);
+		//// 色をセット
+		//SetModelDiffuse(&g_sMeteor[i].model, 0, color);
 
 		g_sMeteor[i].size = S_METEOR_SIZE;
 		g_sMeteor[i].randMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		g_sMeteor[i].ModelPattern = 0;
 
 		g_sMeteor[i].use = FALSE;			// TRUE:生きてる
 
@@ -187,7 +193,7 @@ void DrawS_Meteor(void)
 
 
 		// モデル描画
-		DrawModel(&g_sMeteor[i].model);
+		DrawModel(&g_sMeteor[g_sMeteor[i].ModelPattern].model);
 
 		// カリング設定を戻す
 		SetCullingMode(CULL_MODE_BACK);
@@ -207,6 +213,8 @@ void SetS_Meteor(XMFLOAT3 pos, float rot)
 		if (!g_sMeteor[i].use)
 		{
 			g_sMeteor[i].use = TRUE;
+
+			g_sMeteor[i].ModelPattern = rand() % 2;
 
 			// 発生位置を規定位置から少しランダム要素を加える
 			g_sMeteor[i].pos.x = (pos.x - sinf(rot) * 100.0f) + RamdomFloat(2, 50.0f, -50.0f);

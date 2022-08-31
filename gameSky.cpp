@@ -37,6 +37,7 @@
 #include "target.h"
 #include "targetObj.h"
 #include "rockOn.h"
+#include "fieldobj.h"
 
 
 //*****************************************************************************
@@ -461,7 +462,7 @@ void DrawGameSky0(void)
 	//DrawMeshWall();
 
 	// 木の描画処理
-	DrawFieldObj();
+	//DrawFieldObj();
 
 	// スカイドームの描画処理
 	//DrawSky();
