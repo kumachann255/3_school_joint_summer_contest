@@ -475,6 +475,7 @@ void SetSkyEnemy(void)
 			g_SkyEnemy[i].use = TRUE;
 			g_SkyEnemy[i].EnemyType = rand() % 2;
 			g_SkyEnemy[i].radius1 = (float)(ENEMY_POP_DEISTANCE + rand() % ENEMY_POP_DEISTANCE_RAND);				// サークル１の半径	rand関数はint型なのでfloat型にキャストしている
+			g_SkyEnemy[i].target = FALSE;
 
 			g_SkyEnemy[i].angle1 = (float)(rand() % 360) * (XM_2PI / 360);		// サークル１の角度	rand関数はint型なのでfloat型にキャストしている
 			g_SkyEnemy[i].angle2 = (float)(rand() % 360) * (XM_2PI / 360);		// サークル２の角度 rand関数はint型なのでfloat型にキャストしている
@@ -534,4 +535,15 @@ BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int
 	// 何処にも当たっていなかった時
 	*HitPosition = org;
 	return FALSE;
+}
+
+
+// ロックオンされているかの初期化
+// 攻撃したときに呼び出される
+void ResetSkyEnemyTarget(void)
+{
+	for (int i = 0; i < MAX_SKY_ENEMY; i++)
+	{
+		g_SkyEnemy[i].target = FALSE;
+	}
 }

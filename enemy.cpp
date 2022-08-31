@@ -688,6 +688,16 @@ BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int nu
 }
 
 
+// ロックオンされているかの初期化
+// 攻撃したときに呼び出される
+void ResetEnemyTarget(void)
+{
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		g_Enemy[i].target = FALSE;
+	}
+}
+
 // スクリーン座標をワールド座標へ変換
 //void SetScreenToWorld(void)
 //{

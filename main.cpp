@@ -25,6 +25,7 @@
 #include "particle.h"
 
 #include "title.h"
+#include "opening.h"
 #include "gameCity.h"
 #include "gameSea.h"
 #include "gameSky.h"
@@ -68,7 +69,7 @@ char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 
 #endif
 
-int	g_Mode = MODE_GAME_SEA;					// 起動時の画面を設定
+int	g_Mode = MODE_GAME_SKY;					// 起動時の画面を設定
 
 int g_Stage = stage0;							// 現在のステージ
 
@@ -317,6 +318,10 @@ void Update(void)
 		UpdateTitle();
 		break;
 
+	case MODE_OPENING:		// オープニング画面の更新
+		UpdateOpening();
+		break;
+
 	case MODE_GAME_CITY:	// ゲーム画面の更新
 		UpdateGameCity();
 		break;
@@ -406,6 +411,25 @@ void Draw(void)
 		SetLightEnable(FALSE);
 
 		DrawTitle();
+
+		// ライティングを有効に
+		SetLightEnable(TRUE);
+
+		// Z比較あり
+		SetDepthEnable(TRUE);
+		break;
+
+	case MODE_OPENING:		// オープニング画面の描画
+		SetViewPort(TYPE_FULL_SCREEN);
+
+		// 2Dの物を描画する処理
+		// Z比較なし
+		SetDepthEnable(FALSE);
+
+		// ライティングを無効
+		SetLightEnable(FALSE);
+
+		DrawOpening();
 
 		// ライティングを有効に
 		SetLightEnable(TRUE);
@@ -530,6 +554,9 @@ void SetMode(int mode)
 	// タイトル画面の終了処理
 	UninitTitle();
 
+	// オープニング画面の終了処理
+	UninitOpening();
+
 	// ゲーム画面の終了処理
 	UninitGameCity();
 
@@ -564,6 +591,11 @@ void SetMode(int mode)
 	case MODE_TITLE:
 		// タイトル画面の初期化
 		InitTitle();
+		break;
+
+	case MODE_OPENING:
+		// オープニング画面の初期化
+		InitOpening();
 		break;
 
 	case MODE_GAME_CITY:

@@ -37,5 +37,6 @@ void DrawRockOn(void);
 
 ROCKON *GetRockOn();
 void SetRockOn(void);
+void ResetRockOn(void);
 
 

@@ -190,3 +190,13 @@ void SetRockOn(void)
 		}
 	}
 }
+
+
+// ロックオンターゲットの一括削除
+void ResetRockOn(void)
+{
+	for (int i = 0; i < MAX_ROCKON; i++)
+	{
+		g_RockOn[i].use = FALSE;
+	}
+}

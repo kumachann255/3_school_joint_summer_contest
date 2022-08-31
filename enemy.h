@@ -74,4 +74,6 @@ void DrawEnemy(void);
 
 ENEMY *GetEnemy(void);
 BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
+void ResetEnemyTarget(void);
+
 

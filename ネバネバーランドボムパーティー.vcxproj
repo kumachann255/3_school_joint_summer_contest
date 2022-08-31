@@ -48,7 +48,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -164,6 +164,7 @@
     <ClCompile Include="meshfield2.cpp" />
     <ClCompile Include="meshwall.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="opening.cpp" />
     <ClCompile Include="orbit.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="meshfield2.h" />
     <ClInclude Include="meshwall.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="opening.h" />
     <ClInclude Include="orbit.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />

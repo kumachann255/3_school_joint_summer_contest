@@ -27,7 +27,8 @@
 #include "timingtext.h"
 #include "combo.h"
 #include "rockon.h"
-
+#include "enemy.h"
+#include "sky_enemy.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -43,7 +44,11 @@
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
-
+#define COOLTIME_BOM		(180)		// ボムのクールタイム
+#define COOLTIME_CUP		(180)		// カップのクールタイム
+#define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
+#define COOLTIME_SHARK		(180)		// サメのクールタイム
+#define COOLTIME_METEOR		(180)		// メテオのクールタイム
 
 
 //*****************************************************************************
@@ -97,17 +102,13 @@ HRESULT InitPlayer(void)
 
 	g_Player.spd = 0.0f;			// 移動スピードクリア
 	g_Player.size = PLAYER_SIZE;	// 当たり判定の大きさ
-
 	g_Player.hp = PLAYER_MAX_HP;
-
 	g_Player.action = FALSE;
-
 	g_Player.use = TRUE;
-
 	g_Player.angle = 0.0f;
-
 	g_Player.rockOn = FALSE;
-
+	g_Player.cooltime = 0;
+	
 	g_Stage = GetStage();
 
 
@@ -186,6 +187,9 @@ void UninitPlayer(void)
 void UpdatePlayer(void)
 {
 	CAMERA *cam = GetCamera();
+
+	// クールタイムの処理
+	if(g_Player.cooltime > 0) g_Player.cooltime--;
 
 	if (!GetKeyboardPress(DIK_LSHIFT))
 	{
@@ -310,7 +314,8 @@ void UpdatePlayer(void)
 	// 弾発射処理
 	if (g_Stage == tutorial)
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
+				&& (!GetTutorialUse()))
 		{
 			g_Player.action = TRUE;
 			SetTimingText(GetNoteTiming());
@@ -320,10 +325,11 @@ void UpdatePlayer(void)
 	}
 	else
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
-			&& (!GetTutorialUse()))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) &&
+			(g_Player.cooltime == 0))
 		{
 			g_Player.action = TRUE;
+			SetTimingText(GetNoteTiming());	// ノーツ判定
 
 			switch (GetMode())
 			{
@@ -332,13 +338,16 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION)
 				{
 					SetBom();	// ガム爆弾
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					g_Player.cooltime = COOLTIME_BOM;
 				}
 				else
 				{	// 派生攻撃
 					SetCup();	// コーヒーカップ
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					g_Player.cooltime = COOLTIME_CUP;
 				}
+
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
 
 				break;
 
@@ -347,21 +356,42 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
 					// タコ一本釣り
+<<<<<<< HEAD
 					SetTako();
 					SetTimingText(GetNoteTiming());	// ノーツ判定
+=======
+					g_Player.cooltime = COOLTIME_OCTOPUS;
+
+					// ロックオンターゲットのリセット
+					ResetRockOn();
+>>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 
 				}
 				else
 				{	// 派生攻撃
+<<<<<<< HEAD
 					SetSame();	// 恐怖のサメ
 					SetTimingText(GetNoteTiming());	// ノーツ判定
+=======
+					// 恐怖のサメ
+					g_Player.cooltime = COOLTIME_SHARK;
+>>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 				}
+
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
 
 				break;
 
 			case MODE_GAME_SKY:
 				SetS_Meteor(g_Player.pos, g_Player.rot.y);
-				SetTimingText(GetNoteTiming());	// ノーツ判定
+				g_Player.cooltime = COOLTIME_METEOR;
+
+				// エネミーのターゲットフラグのリセット
+				ResetSkyEnemyTarget();
+
+				// ロックオンターゲットのリセット
+				ResetRockOn();
 
 				break;
 

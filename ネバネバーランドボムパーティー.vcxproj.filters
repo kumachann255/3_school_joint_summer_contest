@@ -32,6 +32,7 @@
     <ClCompile Include="meshfield2.cpp" />
     <ClCompile Include="meshwall.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="opening.cpp" />
     <ClCompile Include="orbit.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
@@ -56,8 +57,6 @@
     <ClCompile Include="timingtext.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
-    <ClCompile Include="same.cpp" />
-    <ClCompile Include="tako.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -91,6 +90,7 @@
     <ClInclude Include="meshfield2.h" />
     <ClInclude Include="meshwall.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="opening.h" />
     <ClInclude Include="orbit.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />
@@ -116,7 +116,5 @@
     <ClInclude Include="timingtext.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
-    <ClInclude Include="same.h" />
-    <ClInclude Include="tako.h" />
   </ItemGroup>
 </Project>

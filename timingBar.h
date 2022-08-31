@@ -12,13 +12,13 @@
 //*****************************************************************************
 #define NOTE_MAX			(10)		// 音符の最大数
 #define NOTE_DIS			(10)		// 音符の間隔(秒)
-#define NOTE_TEX_MAX		(8)			// 音符の種類
+#define NOTE_TEX_MAX		(4)			// 音符の種類
 #define NOTE_TIMING_GOOD	(50.0f)		// 良いのタイミングの範囲
 #define NOTE_TIMING_JUST	(20.0f)		// 最高のタイミングの範囲
 #define NOTE_TIMING_MISS	(70.0f)		// ミスのタイミングの範囲
 
-#define TARGET_X					(150.0f)	// ターゲットの表示位置
-#define TARGET_Y					(70.0f)		// ターゲットの表示位置
+#define TARGET_X			(150.0f)	// ターゲットの表示位置
+#define TARGET_Y			(70.0f)		// ターゲットの表示位置
 
 
 
@@ -28,6 +28,7 @@ struct TIMINGNOTE
 	XMFLOAT2	pos;
 	BOOL		use;
 	int			texNum;
+	BOOL		seDid;
 
 };
 
