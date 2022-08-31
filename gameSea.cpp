@@ -15,6 +15,9 @@
 
 #include "player.h"
 #include "enemy.h"
+#include "same.h"
+#include "tako.h"
+
 #include "attackRange.h"
 #include "bom.h"
 #include "blast.h"
@@ -44,7 +47,6 @@
 #include "targetObj.h"
 #include "timingEffect.h"
 #include "rockOn.h"
-
 
 //*****************************************************************************
 // マクロ定義
@@ -102,6 +104,12 @@ HRESULT InitGameSea(void)
 
 	// 爆破オブジェクトの初期化
 	InitBlast();
+
+	// サメオブジェクトの初期化
+	InitSame();
+
+	// タコオブジェクトの初期化
+	InitTako();
 
 	//// 壁の初期化
 	//InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_TOP), XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -275,6 +283,12 @@ void UninitGameSea(void)
 	UninitMeshField2();
 	//UninitSeaMeshField();
 
+	// タコオブジェクトの終了処理
+	UninitTako();
+
+	// サメオブジェクトの終了処理
+	UninitSame();
+
 	// 爆破オブジェクトの終了処理
 	UninitBlast();
 
@@ -342,6 +356,12 @@ void UpdateGameSea(void)
 
 	// 爆破オブジェクトの更新処理
 	UpdateBlast();
+
+	// サメオブジェクトの更新処理
+	UpdateSame();
+
+	// タコオブジェクトの更新処理
+	UpdateTako();
 
 	// 壁処理の更新
 	UpdateMeshWall();
@@ -437,6 +457,12 @@ void DrawGameSea0(void)
 
 	// 爆破オブジェクトの描画処理
 	DrawBlast();
+
+	// サメオブジェクトの描画処理
+	DrawSame();
+
+	// タコオブジェクトの描画処理
+	DrawTako();
 
 	// 弾の描画処理
 	DrawBullet();
@@ -585,104 +611,37 @@ void CheckHitSea(void)
 
 	PLAYER *player = GetPlayer();	// プレイヤーのポインターを初期化
 	BULLET *bullet = GetBullet();	// 弾のポインターを初期化
-	BLAST *blast = GetBlast();		// 爆破オブジェクトの初期化
+	//TAKO *tako = GetTako();		// タコオブジェクトの初期化
+	SAME *same = GetSame();		// サメオブジェクトの初期化
 
-	float offsetX;
-	float offsetY;
-	float offsetZ;
+	//float offsetX;
+	//float offsetY;
+	//float offsetZ;
 
-	// 敵と爆破オブジェクト
+		// 敵とタコオブジェクト
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
-		//敵の有効フラグをチェックする
-		if (enemy[i].use == FALSE || enemy[i].isHit == TRUE)
-			continue;
 
-
-		for (int p = 0; p < MAX_BLAST; p++)
-		{
-			//爆破オブジェクトの有効フラグをチェックする
-			if (blast[p].use == FALSE)
-				continue;
-
-			//BCの当たり判定
-			float size = blast[p].size;
-			if (GetMorphing() == 1) size /= 4.0f;
-
-			if (CollisionBC(blast[p].pos, enemy[i].pos, size, enemy[i].size))
-			{
-				if (enemy[i].isHit == TRUE) break;
-
-				// 敵キャラクターは倒される
-				enemy[i].isHit = TRUE;
-				enemy[i].hitTime = 15;
-
-				offsetX = RamdomFloat(0, 20.0f, -20.0f);
-				offsetY = RamdomFloat(0, 20.0f, ENEMY_OFFSET_Y);
-				offsetZ = RamdomFloat(0, -10.0f, -20.0f);
-
-				enemy[i].hitPos.x = blast[p].pos.x + offsetX;
-				enemy[i].hitPos.y = blast[p].pos.y + offsetY;
-				enemy[i].hitPos.z = blast[p].pos.z + offsetZ;
-
-				ReleaseShadow(enemy[i].shadowIdx);
-
-				// スコアを足す
-				AddScore(100);
-
-				// コンボを足す
-				AddCombo(1);
-				ResetComboTime();
-			}
-		}
 	}
 
-	// 敵(ヘリ)と爆破オブジェクト
+	// 敵(ヘリ)とタコオブジェクト
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
-		//敵の有効フラグをチェックする
-		if (enemyHeli[i].use == FALSE || enemyHeli[i].isHit == TRUE)
-			continue;
 
-
-		for (int p = 0; p < MAX_BLAST; p++)
-		{
-			//爆破オブジェクトの有効フラグをチェックする
-			if (blast[p].use == FALSE)
-				continue;
-
-			//BCの当たり判定
-			float size = blast[p].size;
-			if (GetMorphing() == 1) size /= 4.0f;
-
-			if (CollisionBC(blast[p].pos, enemyHeli[i].pos, size, enemyHeli[i].size))
-			{
-				if (enemyHeli[i].isHit == TRUE) break;
-
-				// 敵キャラクターは倒される
-				enemyHeli[i].isHit = TRUE;
-				enemyHeli[i].hitTime = 15;
-
-				offsetX = RamdomFloat(0, 5.0f, -5.0f);
-				offsetY = RamdomFloat(0, 5.0f, ENEMY_HELI_OFFSET_Y - 20.0f);
-				offsetZ = RamdomFloat(0, 0.0f, -5.0f);
-
-				enemyHeli[i].hitPos.x = blast[p].pos.x + offsetX;
-				enemyHeli[i].hitPos.y = blast[p].pos.y + offsetY;
-				enemyHeli[i].hitPos.z = blast[p].pos.z + offsetZ;
-
-				ReleaseShadow(enemyHeli[i].shadowIdx);
-
-				// スコアを足す
-				AddScore(100);
-
-				// コンボを足す
-				AddCombo(1);
-				ResetComboTime();
-			}
-		}
 	}
 
+
+	// 敵とサメオブジェクト
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+
+	}
+
+	// 敵(ヘリ)とサメオブジェクト
+	for (int i = 0; i < MAX_ENEMY_HELI; i++)
+	{
+
+	}
 
 	// プレイヤーのHPが0でゲームオーバー
 	// リザルト画面へ遷移
@@ -691,6 +650,19 @@ void CheckHitSea(void)
 	{
 		SetFade(FADE_OUT, MODE_RESULT);
 	}
+
+#ifdef _DEBUG	// デバッグ情報を表示する
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		PrintDebugProc("enemy_samehit%d\n", enemy[i].sameHit);
+	}
+	for (int i = 0; i < MAX_ENEMY_HELI; i++)
+	{
+		PrintDebugProc("hehi_enemy_samehit%d\n", enemyHeli[i].sameHit);
+	}
+
+#endif
+
 }
 
 

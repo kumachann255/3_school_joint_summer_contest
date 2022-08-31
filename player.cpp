@@ -21,12 +21,14 @@
 #include "sound.h"
 #include "cup.h"
 #include "cracker.h"
+#include "same.h"
+#include "tako.h"
 #include "timingBar.h"
 #include "timingtext.h"
 #include "combo.h"
+#include "rockon.h"
 #include "enemy.h"
 #include "sky_enemy.h"
-#include "rockOn.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -299,7 +301,10 @@ void UpdatePlayer(void)
 	if (((GetMode() == MODE_GAME_SEA) && (GetCombo() < COMBO_CHANGE_ACTION)) ||
 		(GetMode() == MODE_GAME_SKY))
 	{
+		// デバッグ用（場合に応じてTRUEorFALSE変える）
 		g_Player.rockOn = TRUE;
+		// リリース用
+		//g_Player.rockOn = TRUE;
 	}
 	else
 	{
@@ -348,19 +353,29 @@ void UpdatePlayer(void)
 
 			case MODE_GAME_SEA:
 				// コンボ数が一定以下の場合は初期攻撃
-				if (GetCombo() < COMBO_CHANGE_ACTION)
+				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
 					// タコ一本釣り
+<<<<<<< HEAD
+					SetTako();
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+=======
 					g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
 					ResetRockOn();
+>>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 
 				}
 				else
 				{	// 派生攻撃
+<<<<<<< HEAD
+					SetSame();	// 恐怖のサメ
+					SetTimingText(GetNoteTiming());	// ノーツ判定
+=======
 					// 恐怖のサメ
 					g_Player.cooltime = COOLTIME_SHARK;
+>>>>>>> e0a312f7c95411432b9f4422483389dcc924f80a
 				}
 
 				// エネミーのターゲットフラグのリセット

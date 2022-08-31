@@ -172,6 +172,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="rockOn.cpp" />
+    <ClCompile Include="same.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="sea_meshfield.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="speech.cpp" />
     <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="tako.cpp" />
     <ClCompile Include="target.cpp" />
     <ClCompile Include="targetObj.cpp" />
     <ClCompile Include="timeUI.cpp" />
@@ -230,6 +232,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="rockOn.h" />
+    <ClInclude Include="same.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="sea_meshfield.h" />
     <ClInclude Include="shadow.h" />
@@ -240,6 +243,7 @@
     <ClInclude Include="sound.h" />
     <ClInclude Include="speech.h" />
     <ClInclude Include="sprite.h" />
+    <ClInclude Include="tako.h" />
     <ClInclude Include="target.h" />
     <ClInclude Include="targetObj.h" />
     <ClInclude Include="timeUI.h" />
