@@ -144,16 +144,6 @@ void UpdateTarget(void)
 		XMStoreFloat3(&g_Target[i].pos, ans);
 
 	}
-
-
-
-
-#ifdef _DEBUG	// デバッグ情報を表示する
-	//char *str = GetDebugStr();
-	//sprintf(&str[strlen(str)], " PX:%.2f PY:%.2f", g_Pos.x, g_Pos.y);
-	
-#endif
-
 }
 
 //=============================================================================
