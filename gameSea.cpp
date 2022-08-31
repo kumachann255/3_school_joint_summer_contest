@@ -634,13 +634,29 @@ void CheckHitSea(void)
 	// 敵とサメオブジェクト
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
-
+		if (same->mode == PACKNCYO)
+		{
+			if (CollisionBC(same->pos, enemy[i].pos, same->size, enemy[i].size))
+			{
+				if (enemy[i].isHit == TRUE) break;
+				// 敵キャラクターは倒される
+				enemy[i].use = FALSE;
+			}
+		}
 	}
 
 	// 敵(ヘリ)とサメオブジェクト
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
-
+		if (same->mode == PACKNCYO)
+		{
+			if (CollisionBC(same->pos, enemyHeli[i].pos, same->size, enemyHeli[i].size))
+			{
+				if (enemyHeli[i].isHit == TRUE) break;
+				// 敵キャラクターは倒される
+				enemyHeli[i].use = FALSE;
+			}
+		}
 	}
 
 	// プレイヤーのHPが0でゲームオーバー
