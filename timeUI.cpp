@@ -19,12 +19,13 @@
 #define TEXTURE_HEIGHT				(90)	// 
 #define TEXTURE_MAX					(2)		// テクスチャの数
 
-#define TIME_MAX					(99)	// 時間制限
+#define TIME_MAX					(10)	// 時間制限
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 void SetEndTime(void);
+void GetStageClear(int score, int mode, int stage);
 
 
 //*****************************************************************************
@@ -49,6 +50,8 @@ static int						g_Time;						// 残り時間
 static BOOL						g_Load = FALSE;
 
 static int						g_stage;					// 現在のステージ数
+static int						g_Mode_old;					// 直前のモードを記録
+static BOOL						g_Fade;						// フェード中かどうか
 
 static time_t naw_time = 0;		// 現在の時間
 static time_t end_time = 0;		// 終了時間
@@ -93,6 +96,8 @@ HRESULT InitTime(void)
 	g_Time = 0;	// 時間の初期化
 
 	g_stage = GetStage();
+	g_Mode_old = GetMode();
+	g_Fade = FALSE;
 
 	// 終了時間の設定
 	SetEndTime();
@@ -138,46 +143,11 @@ void UpdateTime(void)
 	if (g_Time < 0) g_Time = 0;
 
 	// シーン遷移
-	if (g_Time == 0)
+	// ステージクリアしているときに処理
+	if ((g_Time == 0) && (!g_Fade))
 	{
-		switch (g_stage)
-		{
-		case stage0:
-			if (GetScore() >= SCORE_STAGE0_BORDER)
-			{
-				SetStage(stage1);
-				SetFade(FADE_OUT, MODE_GAME_COUNT);
-			}
-			else SetFade(FADE_OUT, MODE_RESULT);
-
-			break;
-
-		case stage1:
-			if (GetScore() >= SCORE_STAGE1_BORDER)
-			{
-				SetStage(stage2);
-				SetFade(FADE_OUT, MODE_GAME_COUNT);
-			}
-			else SetFade(FADE_OUT, MODE_RESULT);
-
-			break;
-
-		case stage2:
-			if (GetScore() >= SCORE_STAGE2_BORDER)
-			{
-				SetStage(stage3);
-				SetFade(FADE_OUT, MODE_GAME_COUNT);
-			}
-			else SetFade(FADE_OUT, MODE_RESULT);
-
-			break;
-
-		case stage3:
-			SetFade(FADE_OUT, MODE_RESULT);
-
-			break;
-
-		}
+		g_Fade = TRUE;
+		GetStageClear(GetScore(), GetMode(), GetStage());
 	}
 
 	if (g_Time > 10)
@@ -275,4 +245,99 @@ int GetTime(void)
 void SetEndTime(void)
 {
 	end_time = time(NULL) + TIME_MAX;
+}
+
+
+//=============================================================================
+// ゲームクリアしているかを判断とシーン遷移
+//=============================================================================
+void GetStageClear(int score, int mode, int stage)
+{
+	switch (mode)
+	{
+	case MODE_GAME_CITY:
+
+		// ステージごとに判定
+		switch (stage)
+		{
+		case stage0:
+			if (CITY_STAGE0_BORDER < score)
+			{
+				SetStage(stage1);
+				SetFade(FADE_OUT, MODE_GAME_COUNT);
+			}
+			else SetFade(FADE_OUT, MODE_RESULT);
+			return;
+
+		case stage1:
+			if (CITY_STAGE1_BORDER < score)
+			{
+				SetStage(stage2);
+				SetFade(FADE_OUT, MODE_GAME_COUNT);
+			}
+			else SetFade(FADE_OUT, MODE_RESULT);
+
+			return;
+		}
+
+		break;
+
+	case MODE_GAME_SEA:
+
+		// ステージごとに判定
+		switch (stage)
+		{
+		case stage0:
+			if (SEA_STAGE0_BORDER < score)
+			{
+				SetStage(stage1);
+				SetFade(FADE_OUT, MODE_GAME_COUNT);
+			}
+			else SetFade(FADE_OUT, MODE_RESULT);
+
+			break;
+
+		case stage1:
+			if (SEA_STAGE1_BORDER < score)
+			{
+				SetStage(stage2);
+				SetFade(FADE_OUT, MODE_GAME_COUNT);
+			}
+			else SetFade(FADE_OUT, MODE_RESULT);
+
+			break;
+		}
+
+		break;
+
+	case MODE_GAME_SKY:
+
+		// ステージごとに判定
+		switch (stage)
+		{
+		case stage0:
+			if (SKY_STAGE0_BORDER < score)
+			{
+				SetStage(stage1);
+				SetFade(FADE_OUT, MODE_GAME_COUNT);
+			}
+			else SetFade(FADE_OUT, MODE_RESULT);
+
+			break;
+
+		case stage1:
+			SetFade(FADE_OUT, MODE_RESULT);
+
+			break;
+		}
+
+		break;
+	}
+}
+
+
+// 直前のゲームモードを返す
+int GetModeOld(void)
+{
+	return g_Mode_old;
 }

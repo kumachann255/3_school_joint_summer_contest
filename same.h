@@ -26,7 +26,6 @@ enum
 };
 
 
-
 struct SAME
 {
 	XMFLOAT3		pos;		// ƒ|ƒŠƒSƒ“‚ÌˆÊ’u
