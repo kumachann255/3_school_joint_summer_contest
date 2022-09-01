@@ -59,8 +59,7 @@
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="same.cpp" />
     <ClCompile Include="tako.cpp" />
-    <ClCompile Include="particleMeteor.cpp" />
-    <ClCompile Include="particleBase.cpp" />
+    <ClCompile Include="sea_fieldobj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -122,7 +121,6 @@
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="same.h" />
     <ClInclude Include="tako.h" />
-    <ClInclude Include="particleMeteor.h" />
-    <ClInclude Include="particleBase.h" />
+    <ClInclude Include="sea_fieldobj.h" />
   </ItemGroup>
 </Project>

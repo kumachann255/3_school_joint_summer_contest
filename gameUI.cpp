@@ -262,6 +262,8 @@ void UpdateGameUI(void)
 //=============================================================================
 void DrawGameUI(void)
 {
+	return;
+
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;

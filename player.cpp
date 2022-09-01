@@ -242,12 +242,12 @@ void UpdatePlayer(void)
 		g_Player.pos.x -= sinf(g_Player.rot.y) * g_Player.spd;
 		g_Player.pos.z -= cosf(g_Player.rot.y) * g_Player.spd;
 	}
-
 	//================================
 	// 空ステージのプレイヤーの挙動
 	//================================
 	if (GetMode() == MODE_GAME_SKY)
 	{
+
 		if (GetKeyboardPress(DIK_RIGHT))
 		{
 			g_Player.spd = VALUE_MOVE;
@@ -361,7 +361,7 @@ void UpdatePlayer(void)
 					//g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
-					//ResetRockOn();
+					ResetRockOn();
 				}
 				else
 				{	// 派生攻撃

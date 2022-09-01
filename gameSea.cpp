@@ -25,7 +25,7 @@
 #include "meshfield2.h"
 #include "meshwall.h"
 #include "shadow.h"
-#include "fieldobj.h"
+#include "sea_fieldobj.h"
 #include "sky.h"
 #include "bullet.h"
 #include "score.h"
@@ -132,7 +132,7 @@ HRESULT InitGameSea(void)
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	// 木を生やす
-	InitFieldObj();
+	InitSeaFieldObj();
 
 	// スカイドームの初期化
 	InitSky();
@@ -274,7 +274,7 @@ void UninitGameSea(void)
 	UninitSky();
 
 	// 木の終了処理
-	UninitFieldObj();
+	UninitSeaFieldObj();
 
 	// 壁の終了処理
 	UninitMeshWall();
@@ -367,7 +367,7 @@ void UpdateGameSea(void)
 	UpdateMeshWall();
 
 	// 木の更新処理
-	UpdateFieldObj();
+	UpdateSeaFieldObj();
 
 	// スカイドームの更新処理
 	UpdateSky();
@@ -469,6 +469,9 @@ void DrawGameSea0(void)
 
 	// 壁の描画処理
 	DrawMeshWall();
+
+	// 木の描画処理
+	DrawSeaFieldObj();
 
 	// 木の描画処理
 	//DrawTree();
@@ -647,8 +650,8 @@ void CheckHitSea(void)
 					AddScore(100);
 
 					// コンボを足す
-					AddCombo(1);
-					ResetComboTime();
+					//AddCombo(1);
+					//ResetComboTime();
 				}
 				// 敵キャラクターは倒される
 				enemy[i].use = FALSE;
@@ -670,8 +673,8 @@ void CheckHitSea(void)
 					AddScore(100);
 
 					// コンボを足す
-					AddCombo(1);
-					ResetComboTime();
+					//AddCombo(1);
+					//ResetComboTime();
 				}
 				// 敵キャラクターは倒される
 				enemyHeli[i].use = FALSE;
@@ -688,14 +691,14 @@ void CheckHitSea(void)
 	}
 
 #ifdef _DEBUG	// デバッグ情報を表示する
-	for (int i = 0; i < MAX_ENEMY; i++)
-	{
-		PrintDebugProc("enemy_samehit%d\n", enemy[i].sameHit);
-	}
-	for (int i = 0; i < MAX_ENEMY_HELI; i++)
-	{
-		PrintDebugProc("hehi_enemy_samehit%d\n", enemyHeli[i].sameHit);
-	}
+	//for (int i = 0; i < MAX_ENEMY; i++)
+	//{
+	//	PrintDebugProc("enemy_samehit%d\n", enemy[i].sameHit);
+	//}
+	//for (int i = 0; i < MAX_ENEMY_HELI; i++)
+	//{
+	//	PrintDebugProc("hehi_enemy_samehit%d\n", enemyHeli[i].sameHit);
+	//}
 
 #endif
 

@@ -210,10 +210,10 @@ void UpdateTako(void)
 				ReleaseShadow(enemy[i].shadowIdx);
 
 				// スコアを足す
-				AddScore(100);
+				//AddScore(100);
 
 				// コンボを足す
-				AddCombo(1);
+				//AddCombo(1);
 				ResetComboTime();
 
 			}
@@ -416,6 +416,10 @@ void SetTako(void)
 			{
 				if (g_Tako[j].use == FALSE)
 				{
+					// コンボを足す
+					AddCombo(1);
+					ResetComboTime();
+
 					g_Tako[j].use = TRUE;
 					g_Tako[j].pos = rockOn[i].pos;
 					g_Tako[j].pos.y += 5.0f;
