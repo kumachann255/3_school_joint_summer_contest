@@ -360,6 +360,9 @@ void UpdatePlayer(void)
 					SetTako();
 					g_Player.cooltime = COOLTIME_OCTOPUS;
 
+					// エネミーのターゲットフラグのリセット
+					ResetEnemyTarget();
+
 					// ロックオンターゲットのリセット
 					ResetRockOn();
 				}
@@ -369,8 +372,6 @@ void UpdatePlayer(void)
 					g_Player.cooltime = COOLTIME_SHARK;
 				}
 
-				// エネミーのターゲットフラグのリセット
-				ResetEnemyTarget();
 
 				break;
 
