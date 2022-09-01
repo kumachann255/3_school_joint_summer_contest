@@ -33,7 +33,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MODEL_ROCKET		"data/MODEL/rocket.obj"
+#define MODEL_ROCKET		"data/MODEL/tesuri.obj"
 #define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 
@@ -42,6 +42,7 @@
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
 #define PLAYER_OFFSET_Y		(10.0f)							// プレイヤーの足元をあわせる
+#define ROCKET_OFFSET_Y		(-50.0f)
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
@@ -118,9 +119,9 @@ HRESULT InitPlayer(void)
 	
 	g_Stage = GetStage();
 
-	g_Rocket.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
+	g_Rocket.pos = { 0.0f, ROCKET_OFFSET_Y, 0.0f };
 	g_Rocket.rot = { 0.0f, 0.0f, 0.0f };
-	g_Rocket.scl = { 3.0f, 3.0f, 3.0f };
+	g_Rocket.scl = { 6.0f, 6.0f, 6.0f };
 
 
 

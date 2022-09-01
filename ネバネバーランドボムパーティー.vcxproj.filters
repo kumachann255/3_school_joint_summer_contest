@@ -60,6 +60,8 @@
     <ClCompile Include="same.cpp" />
     <ClCompile Include="tako.cpp" />
     <ClCompile Include="sea_fieldobj.cpp" />
+    <ClCompile Include="particleBase.cpp" />
+    <ClCompile Include="particleMeteor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -122,5 +124,7 @@
     <ClInclude Include="same.h" />
     <ClInclude Include="tako.h" />
     <ClInclude Include="sea_fieldobj.h" />
+    <ClInclude Include="particleBase.h" />
+    <ClInclude Include="particleMeteor.h" />
   </ItemGroup>
 </Project>
