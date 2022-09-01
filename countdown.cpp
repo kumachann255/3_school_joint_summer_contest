@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "countdown.h"
+#include "timeUI.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -137,16 +138,15 @@ HRESULT InitCountDown(void)
 	g_Pos2[1].y += TEXTURE_HEIGHT;
 	g_Pos2[2].x += TEXTURE_WIDTH;
 
+	// 次のステージに行っているため1減らす
 	g_Stage = GetStage() - 1;
 	switch (g_Stage)
 	{
-	case stage2:
+	case stage1:
 		g_Use2[2] = TRUE;
 
-	case stage1:
-		g_Use2[1] = TRUE;
-
 	case stage0:
+		g_Use2[1] = TRUE;
 		g_Use2[0] = TRUE;
 	}
 
@@ -224,26 +224,48 @@ void UpdateCountDown(void)
 	{
 		PlaySound(SOUND_LABEL_SE_titleClick04);
 		g_TexNo = TEXTURE_STAGE_MAX * g_Stage + 3;
-		SetFade(FADE_OUT, MODE_GAME_CITY);
+
+		switch (GetModeOld())
+		{
+		case MODE_GAME_CITY:
+			if(GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_CITY);
+			else
+			{
+				SetStage(stage0);
+				SetFade(FADE_OUT, MODE_GAME_SEA);
+			}
+			break;
+
+		case MODE_GAME_SEA:
+			if (GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_SEA);
+			else
+			{
+				SetStage(stage0);
+				SetFade(FADE_OUT, MODE_GAME_SKY);
+			}
+			break;
+
+		case MODE_GAME_SKY:
+			SetFade(FADE_OUT, MODE_GAME_SKY);
+			break;
+		}
 	}
 
 
 	// お祝いテクスチャ
 	switch (g_Stage)
 	{
-	case 2:
+	case 1:
 		if (g_Count >= ADD_TEXTURE_START2)
 		{
 			g_Pos2[2].x += (g_w / 2 - g_Pos2[2].x) / ADD_TEXTURE_SPEED;
 		}
 
-	case 1:
+	case 0:
 		if (g_Count >= ADD_TEXTURE_START1)
 		{
 			g_Pos2[1].y += (g_h / 2 - g_Pos2[1].y) / ADD_TEXTURE_SPEED;
 		}
-
-	case 0:
 		g_Pos2[0].y += (g_h / 2 - g_Pos2[0].y) / ADD_TEXTURE_SPEED;
 		break;
 
