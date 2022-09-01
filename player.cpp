@@ -358,7 +358,6 @@ void UpdatePlayer(void)
 				{
 					// タコ一本釣り
 					SetTako();
-					SetTimingText(GetNoteTiming());	// ノーツ判定
 					//g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
@@ -367,9 +366,7 @@ void UpdatePlayer(void)
 				else
 				{	// 派生攻撃
 					SetSame();	// 恐怖のサメ
-					SetTimingText(GetNoteTiming());	// ノーツ判定
-					// 恐怖のサメ
-					//g_Player.cooltime = COOLTIME_SHARK;
+					g_Player.cooltime = COOLTIME_SHARK;
 				}
 
 				// エネミーのターゲットフラグのリセット

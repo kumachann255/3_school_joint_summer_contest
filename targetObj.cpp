@@ -52,7 +52,7 @@ HRESULT InitTargetObj(void)
 
 	g_TargetObj.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_TargetObj.rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_TargetObj.scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	g_TargetObj.scl = XMFLOAT3(1.0f, 1.5f, 1.0f);
 
 	// モデルのディフューズを保存しておく。色変え対応の為。
 	GetModelDiffuse(&g_TargetObj.model, &g_TargetObj.diffuse[0]);

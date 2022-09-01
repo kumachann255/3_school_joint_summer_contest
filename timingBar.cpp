@@ -26,11 +26,6 @@
 #define SENHU_TEXTURE_HEIGHT		(80)	// 
 #define TEXTURE_MAX					(10)	// テクスチャの数
 
-#define SENHU_X						(960.0f / 2.0f)	// 五線譜の表示位置
-#define SENHU_Y						(70.0f)			// 五線譜の表示位置
-#define SENHU_ALFA					(0.5f)			// 五線譜の表示位置
-
-
 #define ONPU_TEXTURE_X				(60.0f)		//音符の幅
 #define ONPU_TEXTURE_Y				(60.0f)		//音符の高さ
 #define ONPU_X						(1000.0f)	//音符の表示位置
@@ -45,6 +40,12 @@
 #define DISTANCE_ONPU_CITY			(40)		// 街ステージの音符の間隔(フレーム)
 #define DISTANCE_ONPU_SEA			(40)		// 海ステージの音符の間隔(フレーム)
 #define DISTANCE_ONPU_SKY			(40)		// 空ステージの音符の間隔(フレーム)
+
+#define CONDUCTOR_POS_X				(850.0f)	// 指揮者の位置
+#define CONDUCTOR_POS_Y				(SENHU_Y)	// 指揮者の位置
+#define CONDUCTOR_TEXTURE_X			(170.0f)	// ターゲットのサイズ
+#define CONDUCTOR_TEXTURE_Y			(170.0f)
+
 
 enum {
 	miss,
@@ -70,7 +71,8 @@ static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/onpu04.png",
 	"data/TEXTURE/gosenhu.png",
 	"data/TEXTURE/onpuTarget.png",
-	
+	"data/TEXTURE/shiki.png",
+
 };
 
 
@@ -80,6 +82,7 @@ static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
 static TIMINGNOTE				g_Note[NOTE_MAX];			// 音符
 static TIMINGNOTE				g_Target;					// 音符を押すタイミングのテクスチャ
+static TIMINGNOTE				g_Conductor;				// 音符を出す指揮者のテクスチャ
 static int						g_Time;						// 時間
 static int						g_Distance;
 static int						g_Timing_old;				// 直前に押したタイミングの評価を記録
@@ -119,6 +122,12 @@ HRESULT InitTImingBar(void)
 	g_Target.pos.y = TARGET_Y;
 	g_Target.use = TRUE;
 	g_Target.texNum = 5;
+
+	g_Conductor.pos.x = CONDUCTOR_POS_X;
+	g_Conductor.pos.y = CONDUCTOR_POS_Y;
+	g_Conductor.use = TRUE;
+	g_Conductor.texNum = 6;
+
 
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -294,6 +303,18 @@ void DrawTImingBar(void)
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
+
+	// 指揮者の描画
+	// テクスチャ設定
+	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_Conductor.texNum]);
+
+	// １枚のポリゴンの頂点とテクスチャ座標を設定
+	SetSpriteColor(g_VertexBuffer, g_Conductor.pos.x, g_Conductor.pos.y, CONDUCTOR_TEXTURE_X, CONDUCTOR_TEXTURE_Y, 0.0f, 0.0f, 1.0f, 1.0f,
+		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// ポリゴン描画
+	GetDeviceContext()->Draw(4, 0);
+
 }
 
 
@@ -306,7 +327,7 @@ void SetNote(void)
 		{
 			// 初期化
 			g_Note[i].use = TRUE;
-			g_Note[i].pos = XMFLOAT2(ONPU_X, ONPU_Y + RamdomFloat(2, ONPU_Y_RAND, -ONPU_Y_RAND));
+			g_Note[i].pos = XMFLOAT2(CONDUCTOR_POS_X, ONPU_Y + RamdomFloat(2, ONPU_Y_RAND, -ONPU_Y_RAND));
 			g_Note[i].texNum = rand() % NOTE_TEX_MAX;
 			g_Note[i].seDid = FALSE;
 

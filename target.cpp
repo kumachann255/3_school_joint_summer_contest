@@ -26,8 +26,9 @@
 #define TEXTURE_MAX					(2)				// テクスチャの数
 #define	VALUE_MOVE					(4.0f)			// 移動量
 
-#define OFFSET_Y					(20.0f)			// 調整
+#define OFFSET_Y					(6.0f)			// 調整
 #define OFFSET_OBJ					(10.0f)
+
 
 
 //*****************************************************************************
@@ -143,16 +144,6 @@ void UpdateTarget(void)
 		XMStoreFloat3(&g_Target[i].pos, ans);
 
 	}
-
-
-
-
-#ifdef _DEBUG	// デバッグ情報を表示する
-	//char *str = GetDebugStr();
-	//sprintf(&str[strlen(str)], " PX:%.2f PY:%.2f", g_Pos.x, g_Pos.y);
-	
-#endif
-
 }
 
 //=============================================================================
@@ -229,8 +220,12 @@ XMVECTOR Screenpos(XMVECTOR World_Pos)
 {
 	CAMERA *camera = GetCamera();
 
+	// 空ステージの場合は少し調整する
+	float y = camera->at.y;
+	if (GetMode() == MODE_GAME_SKY) y += OFFSET_Y;
+
 	XMVECTOR Eye = XMVectorSet(camera->pos.x, camera->pos.y, camera->pos.z, 0.0f);
-	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y, camera->at.z, 0.0f);
+	XMVECTOR At = XMVectorSet(camera->at.x, y, camera->at.z, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX g_View = XMMatrixLookAtLH(Eye, At, Up);
