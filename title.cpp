@@ -17,7 +17,7 @@
 //*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)	// 背景サイズ
 #define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
-#define TEXTURE_MAX					(6)				// テクスチャの数
+#define TEXTURE_MAX					(title_texture_max)	// テクスチャの数
 
 #define TEXTURE_WIDTH_LOGO			(815 / 2)			// ロゴサイズ
 #define TEXTURE_HEIGHT_LOGO			(296 / 2)			// 
@@ -27,6 +27,17 @@
 
 #define TEXTURE_WIDTH_EXIT			(443 / 2)			// ロゴサイズ
 #define TEXTURE_HEIGHT_EXIT			(178 / 2)			// 
+
+enum {
+	title_notClear,
+	title_clear,
+	title_logo,
+	title_start,
+	title_start_pushed,
+	title_exit,
+	title_exit_pushued,
+	title_texture_max,
+};
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -40,7 +51,8 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/title.png",
+	"data/TEXTURE/title00.png",
+	"data/TEXTURE/title01.png",
 	"data/TEXTURE/title_logo.png",
 	"data/TEXTURE/title_start.png",
 	"data/TEXTURE/title_start_pushed.png",
@@ -67,6 +79,8 @@ static float					exit_w, exit_h;				// 幅と高さ
 static XMFLOAT3					exit_pos;					// ポリゴンの座標
 
 static BOOL						g_Load = FALSE;
+
+static BOOL						g_GameClear = FALSE;		// ゲームをクリアしているか
 
 
 //=============================================================================
@@ -104,18 +118,18 @@ HRESULT InitTitle(void)
 	g_w     = TEXTURE_WIDTH;
 	g_h     = TEXTURE_HEIGHT;
 	g_Pos   = XMFLOAT3(g_w/2, g_h/2, 0.0f);
-	g_TexNo = 0;
+	g_TexNo = title_notClear;
 
 	logo_time = 1.0f;
 	flag_rot = TRUE;
 	logo_rot = XMFLOAT3(0.0f, 0.0f, 0.1f);
 
-	start_texno = 3;
+	start_texno = title_start_pushed;
 	start_w = TEXTURE_WIDTH_START;
 	start_h = TEXTURE_HEIGHT_START;
 	start_pos = XMFLOAT3(g_w / 8, g_h - 60, 0.0f);
 	
-	exit_texno = 4;
+	exit_texno = title_exit;
 	exit_w = TEXTURE_WIDTH_EXIT - (TEXTURE_WIDTH_EXIT / 3);
 	exit_h = TEXTURE_HEIGHT_EXIT - (TEXTURE_HEIGHT_EXIT / 3);
 	exit_pos = XMFLOAT3(g_w / 2.7f, g_h - 40, 0.0f);
@@ -124,7 +138,7 @@ HRESULT InitTitle(void)
 	PlaySound(SOUND_LABEL_BGM_bgm_title);
 
 	// 初期化
-
+	if (g_GameClear) g_TexNo = title_clear;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -160,6 +174,7 @@ void UninitTitle(void)
 //=============================================================================
 void UpdateTitle(void)
 {
+
 	if (flag_rot == TRUE)
 	{
 		logo_time -= 0.02f;
@@ -189,7 +204,7 @@ void UpdateTitle(void)
 			// SEの挿入（切り替え音）
 			PlaySound(SOUND_LABEL_SE_titleClick04);
 
-			if (start_texno == 3)
+			if (start_texno == title_start_pushed)
 			{
 				start_texno--;
 				start_w -= TEXTURE_WIDTH_START / 3;
@@ -201,11 +216,11 @@ void UpdateTitle(void)
 			}
 			else
 			{
-				start_texno = 3;
+				start_texno = title_start_pushed;
 				start_w += TEXTURE_WIDTH_START / 3;
 				start_h += TEXTURE_HEIGHT_START / 3;
 
-				exit_texno = 4;
+				exit_texno = exit_texno = title_exit;
 				exit_w -= TEXTURE_WIDTH_EXIT / 3;
 				exit_h -= TEXTURE_HEIGHT_EXIT / 3;
 
@@ -219,10 +234,10 @@ void UpdateTitle(void)
 			// SEの挿入（モード選択音）
 			PlaySound(SOUND_LABEL_SE_selectBomb01);
 
-			if (start_texno == 3)
+			if (start_texno == title_start_pushed)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 		
 				// mainスコアを初期化
 				ResetMainScore();
@@ -243,15 +258,15 @@ void UpdateTitle(void)
 			// SEの挿入（切り替え音）
 			PlaySound(SOUND_LABEL_SE_titleClick04);
 
-			if (start_texno == 3)
+			if (start_texno == title_start_pushed)
 			{
 				start_texno--;
 				exit_texno++;
 			}
 			else
 			{
-				start_texno = 3;
-				exit_texno = 4;
+				start_texno = title_start_pushed;
+				exit_texno = title_exit;
 			}
 		}
 
@@ -261,10 +276,10 @@ void UpdateTitle(void)
 			// SEの挿入（モード選択音）
 			PlaySound(SOUND_LABEL_SE_selectBomb01);
 
-			if (start_texno == 3)
+			if (start_texno == title_start_pushed)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 			
 				// mainスコアを初期化
 				ResetMainScore();
@@ -280,10 +295,10 @@ void UpdateTitle(void)
 			// SEの挿入（モード選択音）
 			PlaySound(SOUND_LABEL_SE_selectBomb01);
 
-			if (start_texno == 3)
+			if (start_texno == title_start_pushed)
 			{
 				SetStage(tutorial);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
+				SetFade(FADE_OUT, MODE_OPENING);
 			
 				// mainスコアを初期化
 				ResetMainScore();
@@ -322,7 +337,7 @@ void DrawTitle(void)
 	// タイトルの背景を描画
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[0]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, g_w, g_h, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -331,19 +346,19 @@ void DrawTitle(void)
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-	// タイトルのロゴを描画
-	{
-		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[1]);
+	//// タイトルのロゴを描画
+	//{
+	//	// テクスチャ設定
+	//	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[title_logo]);
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-		//	SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f);
-		SetSpriteColorRotation(g_VertexBuffer, g_Pos.x - 200, g_Pos.y - 180, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f,
-						XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), logo_rot.z);
+	//	// １枚のポリゴンの頂点とテクスチャ座標を設定
+	//	//	SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f);
+	//	SetSpriteColorRotation(g_VertexBuffer, g_Pos.x - 200, g_Pos.y - 180, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f,
+	//					XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), logo_rot.z);
 
-		// ポリゴン描画
-		GetDeviceContext()->Draw(4, 0);
-	}
+	//	// ポリゴン描画
+	//	GetDeviceContext()->Draw(4, 0);
+	//}
 
 	// タイトルのメニューを描画
 	{
@@ -370,6 +385,19 @@ void DrawTitle(void)
 }
 
 
+//=============================================================================
+// ゲームをクリアしているかを取得
+//=============================================================================
+BOOL GetGameClear(void)
+{
+	return g_GameClear;
+}
 
 
-
+//=============================================================================
+// ゲームをクリアしているかを設定
+//=============================================================================
+void SetGameClear(BOOL data)
+{
+	g_GameClear = data;
+}

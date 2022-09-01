@@ -113,6 +113,9 @@ HRESULT InitEnemyHeli(void)
 
 		g_EnemyHeli[i].cupHit = FALSE;					// TRUE:“–‚½‚Á‚Ä‚é
 		g_EnemyHeli[i].cupRot = FALSE;					// TRUE:“–‚½‚Á‚Ä‚é
+		g_EnemyHeli[i].sameHit = FALSE;					// TRUE:“–‚½‚Á‚Ä‚é
+		g_EnemyHeli[i].sameRot = FALSE;					// TRUE:“–‚½‚Á‚Ä‚é
+
 		g_EnemyHeli[i].radian = 0.0f;					// ‰ñ“]—Ê
 
 		g_EnemyHeli[i].liveCount = 0;					// ¶‘¶ŠÔ‚ğƒŠƒZƒbƒg

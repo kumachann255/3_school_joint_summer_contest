@@ -10,7 +10,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_PLAYER		(1)					// プレイヤーの数
+#define MAX_PLAYER		(2)					// プレイヤーの数
 
 #define	PLAYER_SIZE		(5.0f)				// 当たり判定の大きさ
 
@@ -38,7 +38,7 @@ struct PLAYER
 	int					hp;			// ヒットポイント
 	BOOL				use;
 	BOOL				rockOn;		// ロックオンの攻撃方法かどうか
-
+	int					cooltime;	// クールタイム
 
 	// 階層アニメーション用のメンバー変数
 	INTERPOLATION_DATA	*tbl_adr;	// アニメデータのテーブル先頭アドレス
@@ -55,6 +55,21 @@ struct PLAYER
 
 
 	float				angle;		// 空ステージのプレイヤーの円運動 
+
+};
+
+struct ROCKET
+{
+	XMFLOAT3			pos;		// ポリゴンの位置
+	XMFLOAT3			rot;		// ポリゴンの向き(回転)
+	XMFLOAT3			scl;		// ポリゴンの大きさ(スケール)
+
+	XMFLOAT4X4			mtxWorld;	// ワールドマトリックス
+
+	BOOL				load;
+	DX11_MODEL			model;		// モデル情報
+
+	BOOL				use;
 
 };
 

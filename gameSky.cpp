@@ -115,9 +115,6 @@ HRESULT InitGameSky(void)
 	//InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_DOWN), XMFLOAT3(0.0f, 0.0f, 0.0f),
 	//	XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
-	// 木を生やす
-	InitFieldObj();
-
 	//// 弾の初期化
 	//InitBullet();
 
@@ -260,39 +257,8 @@ void UninitGameSky(void)
 	// スモールメテオの終了処理
 	UninitS_Meteor();
 
-	//// 弾の終了処理
-	//UninitBullet();
-
-	//// スカイドームの終了処理
-	//UninitSky();
-
-	// 木の終了処理
-	UninitFieldObj();
-
-	//// 壁の終了処理
-	//UninitMeshWall();
-
-	//// 地面の終了処理
-	//UninitMeshField2();
-	//UninitMeshField();
-
-	//// 爆破オブジェクトの終了処理
-	//UninitBlast();
-
-	//// ダイナマイトの終了処理
-	//UninitBom();
-
-	//// 攻撃範囲の終了処理
-	//UninitAttackR();
-
 	// 空ステージのエネミーの終了処理
 	UninitSkyEnemy();
-
-	//// エネミーヘリの終了処理
-	//UninitEnemyHeli();
-
-	//// エネミーの終了処理
-	//UninitEnemy();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -325,51 +291,20 @@ void UpdateGameSky(void)
 	if(g_bPause == FALSE)
 		return;
 
-	//// 地面処理の更新
-	//UpdateMeshField();
-	//UpdateMeshField2();
-
 	// プレイヤーの更新処理
 	UpdatePlayer();
-
-	//// エネミーの更新処理
-	//UpdateEnemy();
-
-	//// エネミーヘリの更新処理
-	//UpdateEnemyHeli();
 
 	// 空ステージのエネミーの更新処理
 	UpdateSkyEnemy();
 
-	//// 攻撃範囲の更新処理
-	//UpdateAttackR();
-
-	//// ダイナマイトの更新処理
-	//UpdateBom();
-
-	//// 爆破オブジェクトの更新処理
-	//UpdateBlast();
-
-	//// 壁処理の更新
-	//UpdateMeshWall();
-
-	// 木の更新処理
-	UpdateFieldObj();
-
 	// ドームの更新処理
 	UpdateDome();
-
-	//// 弾の更新処理
-	//UpdateBullet();
 
 	// スモールメテオの更新処理
 	UpdateS_Meteor();
 
 	// パーティクルの更新処理
 	UpdateParticle();
-
-	//// 軌跡の更新処理
-	//UpdateOrbit();
 
 	// 影の更新処理
 	UpdateShadow();
@@ -380,8 +315,8 @@ void UpdateGameSky(void)
 	// スコアの更新処理
 	UpdateScore();
 
-	//// コンボの更新処理
-	//UpdateCombo();
+	// コンボの更新処理
+	UpdateCombo();
 
 	// UIの更新処理
 	UpdateGameUI();
@@ -426,37 +361,18 @@ void UpdateGameSky(void)
 //=============================================================================
 void DrawGameSky0(void)
 {
-	// 3Dの物を描画する処理
-	// 地面の描画処理
-	// DrawMeshField();
-	// DrawMeshField2();
-
 	// 影の描画処理
 	DrawShadow();
 
 	// 空ステージのエネミーの描画処理
 	DrawSkyEnemy();
 
-	//// エネミーヘリの描画処理
-	//DrawEnemyHeli();
-
-	//// エネミーの描画処理
-	//DrawEnemy();
-
 	// プレイヤーの描画処理
 	DrawPlayer();
 
-	//// ダイナマイトの描画処理
-	//DrawBom();
-
-	//// 爆破オブジェクトの描画処理
-	//DrawBlast();
-
-	//// 弾の描画処理
-	//DrawBullet();
-
 	// スモールメテオの描画処理
 	DrawS_Meteor();
+
 
 	//// 壁の描画処理
 	//DrawMeshWall();
@@ -472,12 +388,6 @@ void DrawGameSky0(void)
 
 	// パーティクルの描画処理
 	DrawParticle();
-
-	//// 軌跡の描画処理
-	//DrawOrbit();
-
-	//// 攻撃範囲の描画処理
-	//DrawAttackR();
 
 	// ターゲットオブジェクトの描画処理
 	DrawTargetObj();
@@ -507,14 +417,14 @@ void DrawGameSky0(void)
 	// プレイヤーのHPの描画処理
 	DrawPlayerHP();
 
-	//// ダメージエフェクトの描画処理
-	//// DrawDamageEF();
+	// ダメージエフェクトの描画処理
+	DrawDamageEF();
 
 	// UIの描画処理
-	//DrawGameUI();
+	DrawGameUI();
 
 	// 吹き出しの描画処理
-	// DrawSpeech();
+	DrawSpeech();
 
 	// チュートリアルの描画処理
 	DrawTutorial();
@@ -622,10 +532,6 @@ void CheckHitSky(void)
 			}
 		}
 	}
-
-
-
-
 
 	// プレイヤーのHPが0でゲームオーバー
 	// リザルト画面へ遷移

@@ -24,8 +24,12 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_BOM			"data/MODEL/meteo_01.obj"		// 読み込むモデル名
-#define	MODEL_BOM_1			"data/MODEL/meteo_02.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_1			"data/MODEL/meteo_01.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_2			"data/MODEL/meteo_02.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_3			"data/MODEL/meteo_03.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_4			"data/MODEL/meteo_04.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_5			"data/MODEL/meteo_05.obj"		// 読み込むモデル名
+#define	MODEL_METEOR_6			"data/MODEL/meteo_06.obj"		// 読み込むモデル名
 
 
 #define	VALUE_MOVE				(5.0f)				// 移動量
@@ -58,8 +62,12 @@ HRESULT InitS_Meteor(void)
 {
 	//srand(time(NULL));
 
-	LoadModel(MODEL_BOM, &g_sMeteor[0].model);
-	LoadModel(MODEL_BOM_1, &g_sMeteor[1].model);
+	LoadModel(MODEL_METEOR_1, &g_sMeteor[0].model);
+	LoadModel(MODEL_METEOR_2, &g_sMeteor[1].model);
+	LoadModel(MODEL_METEOR_3, &g_sMeteor[2].model);
+	LoadModel(MODEL_METEOR_4, &g_sMeteor[3].model);
+	LoadModel(MODEL_METEOR_5, &g_sMeteor[4].model);
+	LoadModel(MODEL_METEOR_6, &g_sMeteor[5].model);
 
 	for (int i = 0; i < MAX_S_METEOR; i++)
 	{

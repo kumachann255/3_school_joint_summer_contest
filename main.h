@@ -73,6 +73,7 @@ enum
 	MODE_TITLE_LOGO = 0,	// ロゴ画面
 	MODE_TITLE_DirectX,		// DirectXで作ってますアピ画面
 	MODE_TITLE,				// タイトル画面
+	MODE_OPENING,			// オープニング画面
 	MODE_TUTORIAL,			// ゲーム説明画面
 	MODE_GAME_CITY,			// ゲーム画面(街ステージ
 	MODE_GAME_SEA,			// ゲーム画面(海ステージ

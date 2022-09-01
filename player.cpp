@@ -21,18 +21,23 @@
 #include "sound.h"
 #include "cup.h"
 #include "cracker.h"
+#include "same.h"
+#include "tako.h"
 #include "timingBar.h"
 #include "timingtext.h"
 #include "combo.h"
-
+#include "rockon.h"
+#include "enemy.h"
+#include "sky_enemy.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define MODEL_ROCKET		"data/MODEL/rocket.obj"
 #define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 
-#define	VALUE_MOVE			(2.0f)							// 移動量
+#define	VALUE_MOVE			(10.0f)							// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
@@ -40,7 +45,11 @@
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
-
+#define COOLTIME_BOM		(180)		// ボムのクールタイム
+#define COOLTIME_CUP		(180)		// カップのクールタイム
+#define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
+#define COOLTIME_SHARK		(180)		// サメのクールタイム
+#define COOLTIME_METEOR		(180)		// メテオのクールタイム
 
 
 //*****************************************************************************
@@ -52,6 +61,8 @@
 // グローバル変数
 //*****************************************************************************
 static PLAYER		g_Player;						// プレイヤー
+
+static ROCKET		g_Rocket;
 
 static PLAYER		g_Parts[PLAYER_PARTS_MAX];		// プレイヤーのパーツ用
 static int			g_Stage;
@@ -86,7 +97,11 @@ static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
 HRESULT InitPlayer(void)
 {
 	LoadModel(MODEL_PLAYER, &g_Player.model);
+	LoadModel(MODEL_ROCKET, &g_Rocket.model);
+
+
 	g_Player.load = TRUE;
+	g_Rocket.load = TRUE;
 
 	g_Player.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
 	g_Player.rot = { 0.0f, 0.0f, 0.0f };
@@ -94,18 +109,19 @@ HRESULT InitPlayer(void)
 
 	g_Player.spd = 0.0f;			// 移動スピードクリア
 	g_Player.size = PLAYER_SIZE;	// 当たり判定の大きさ
-
 	g_Player.hp = PLAYER_MAX_HP;
-
 	g_Player.action = FALSE;
-
 	g_Player.use = TRUE;
-
 	g_Player.angle = 0.0f;
-
 	g_Player.rockOn = FALSE;
-
+	g_Player.cooltime = 0;
+	
 	g_Stage = GetStage();
+
+	g_Rocket.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
+	g_Rocket.rot = { 0.0f, 0.0f, 0.0f };
+	g_Rocket.scl = { 3.0f, 3.0f, 3.0f };
+
 
 
 	// ここでプレイヤー用の影を作成している
@@ -174,6 +190,14 @@ void UninitPlayer(void)
 		g_Player.load = FALSE;
 	}
 
+	// モデルの解放処理
+	if (g_Rocket.load)
+	{
+		UnloadModel(&g_Rocket.model);
+		g_Rocket.load = FALSE;
+	}
+
+
 	g_Load = FALSE;
 }
 
@@ -183,6 +207,9 @@ void UninitPlayer(void)
 void UpdatePlayer(void)
 {
 	CAMERA *cam = GetCamera();
+
+	// クールタイムの処理
+	if(g_Player.cooltime > 0) g_Player.cooltime--;
 
 	if (!GetKeyboardPress(DIK_LSHIFT))
 	{
@@ -294,7 +321,10 @@ void UpdatePlayer(void)
 	if (((GetMode() == MODE_GAME_SEA) && (GetCombo() < COMBO_CHANGE_ACTION)) ||
 		(GetMode() == MODE_GAME_SKY))
 	{
+		// デバッグ用（場合に応じてTRUEorFALSE変える）
 		g_Player.rockOn = TRUE;
+		// リリース用
+		//g_Player.rockOn = TRUE;
 	}
 	else
 	{
@@ -304,7 +334,8 @@ void UpdatePlayer(void)
 	// 弾発射処理
 	if (g_Stage == tutorial)
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
+				&& (!GetTutorialUse()))
 		{
 			g_Player.action = TRUE;
 			SetTimingText(GetNoteTiming());
@@ -314,10 +345,11 @@ void UpdatePlayer(void)
 	}
 	else
 	{
-		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
-			&& (!GetTutorialUse()))
+		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B))) &&
+			(g_Player.cooltime == 0))
 		{
 			g_Player.action = TRUE;
+			SetTimingText(GetNoteTiming());	// ノーツ判定
 
 			switch (GetMode())
 			{
@@ -326,34 +358,51 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION)
 				{
 					SetBom();	// ガム爆弾
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					g_Player.cooltime = COOLTIME_BOM;
 				}
 				else
 				{	// 派生攻撃
 					SetCup();	// コーヒーカップ
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					g_Player.cooltime = COOLTIME_CUP;
 				}
+
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
 
 				break;
 
 			case MODE_GAME_SEA:
 				// コンボ数が一定以下の場合は初期攻撃
-				if (GetCombo() < COMBO_CHANGE_ACTION)
+				if (GetCombo() < COMBO_CHANGE_ACTION && g_Player.rockOn == TRUE)
 				{
-						// タコ一本釣り
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					// タコ一本釣り
+					SetTako();
+					g_Player.cooltime = COOLTIME_OCTOPUS;
+
+					// ロックオンターゲットのリセット
+					ResetRockOn();
+
 				}
 				else
 				{	// 派生攻撃
-						// 恐怖のサメ
-					SetTimingText(GetNoteTiming());	// ノーツ判定
+					SetSame();	// 恐怖のサメ
+					g_Player.cooltime = COOLTIME_SHARK;
 				}
+
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
 
 				break;
 
 			case MODE_GAME_SKY:
 				SetS_Meteor(g_Player.pos, g_Player.rot.y);
-				SetTimingText(GetNoteTiming());	// ノーツ判定
+				g_Player.cooltime = COOLTIME_METEOR;
+
+				// エネミーのターゲットフラグのリセット
+				ResetSkyEnemyTarget();
+
+				// ロックオンターゲットのリセット
+				ResetRockOn();
 
 				break;
 
@@ -503,6 +552,10 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
+	//============================
+	// プレイヤーの描画
+	//============================
+
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);
 
@@ -535,6 +588,37 @@ void DrawPlayer(void)
 
 	// モデル描画
 	DrawModel(&g_Player.model);
+
+
+	//============================
+	// ロケットの描画
+	//============================
+	// カリング無効
+	SetCullingMode(CULL_MODE_NONE);
+
+	// ワールドマトリックスの初期化
+	mtxWorld = XMMatrixIdentity();
+
+	// スケールを反映
+	mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+	// 回転を反映
+	mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+	// 移動を反映
+	mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+	// ワールドマトリックスの設定
+	SetWorldMatrix(&mtxWorld);
+
+	XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+
+
+	// モデル描画
+	DrawModel(&g_Rocket.model);
 
 
 

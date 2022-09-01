@@ -29,7 +29,7 @@ struct SKY_ENEMY
 	BOOL				load;
 	DX11_MODEL			model;		// モデル情報
 
-	float				circle1_spd;		// 移動スピード
+	float				circle1_spd;// 回転スピード
 	float				circle2_spd;
 	float				dir;		// 向き
 	float				size;		// 当たり判定の大きさ
@@ -58,7 +58,7 @@ struct SKY_ENEMY
 	int stay_count;
 	int move_count;
 
-	BOOL				target;
+	BOOL target;
 
 	int spawn;
 
@@ -84,3 +84,4 @@ void DrawSkyEnemy(void);
 SKY_ENEMY *GetSkyEnemy(void);
 void SetSkyEnemy(void);
 BOOL RayHitEnemySky(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
+void ResetSkyEnemyTarget(void);

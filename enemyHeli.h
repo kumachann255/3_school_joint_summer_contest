@@ -45,6 +45,9 @@ struct ENEMY_HELI
 	
 	BOOL				cupHit;				// 当たってるフラグ TRUE:当たっている
 	BOOL				cupRot;				// パラメーターセット用（カップ）
+	BOOL				sameHit;				// 当たってるフラグ TRUE:当たっている
+	BOOL				sameRot;				// パラメーターセット用（カップ）
+
 	float				radian;				// 回転量
 
 	BOOL				move;				// 奥へ移動するフラグ TRUE:移動する

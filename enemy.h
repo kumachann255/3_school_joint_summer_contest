@@ -43,6 +43,11 @@ struct ENEMY
 	
 	BOOL				cupHit;				// 当たってるフラグ TRUE:当たっている
 	BOOL				cupRot;				// パラメーターセット用（カップ）
+	BOOL				sameHit;				// 当たってるフラグ TRUE:当たっている
+	BOOL				sameRot;				// パラメーターセット用（カップ）
+	BOOL				takoHit;				// 当たってるフラグ TRUE:当たっている
+	BOOL				takoRot;				// パラメーターセット用（カップ）
+
 	float				radian;				// 回転量
 
 	int					hitTime;			// 移動時間
@@ -55,6 +60,7 @@ struct ENEMY
 	XMFLOAT4			quaternion;	// クォータニオン
 	XMFLOAT3			upVector;	// 自分が立っている所
 
+	BOOL target;
 
 };
 
@@ -68,4 +74,6 @@ void DrawEnemy(void);
 
 ENEMY *GetEnemy(void);
 BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
+void ResetEnemyTarget(void);
+
 

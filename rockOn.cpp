@@ -13,6 +13,7 @@
 #include "debugproc.h"
 #include "target.h"
 #include "sky_enemy.h"
+#include "enemy.h"
 
 
 //*****************************************************************************
@@ -54,7 +55,7 @@ HRESULT InitRockOn(void)
 
 		g_RockOn[i].load = TRUE;
 
-		g_RockOn[i].use = TRUE;
+		g_RockOn[i].use = FALSE;
 
 		g_RockOn[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_RockOn[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -94,18 +95,39 @@ void UninitRockOn(void)
 void UpdateRockOn(void)
 {
 	TARGET *target = GetTarget();
-	SKY_ENEMY *enemy = GetSkyEnemy();
 
-	for (int i = 0; i < MAX_ROCKON; i++)
+	if (GetMode() != MODE_GAME_SKY)
 	{
-		if (g_RockOn[i].use)
+		ENEMY *enemy = GetEnemy();
+
+		for (int i = 0; i < MAX_ROCKON; i++)
 		{
-			g_RockOn[i].pos = enemy[target[0].enemyNum[i]].pos;
+			if (g_RockOn[i].use)
+			{
+				g_RockOn[i].pos = enemy[target[0].enemyNum[i]].pos;
 
-			g_RockOn[i].rot.x += ROCKON_ROT_SPEED;
-			g_RockOn[i].rot.z += ROCKON_ROT_SPEED;
+				g_RockOn[i].rot.x += ROCKON_ROT_SPEED;
+				g_RockOn[i].rot.z += ROCKON_ROT_SPEED;
 
-			//if (!enemy[target[0].enemyNum[i]].use) g_aRockOn[i].bUse = FALSE;
+				//if (!enemy[target[0].enemyNum[i]].use) g_aRockOn[i].bUse = FALSE;
+			}
+		}
+	}
+	else 
+	{
+		SKY_ENEMY *enemy = GetSkyEnemy();
+
+		for (int i = 0; i < MAX_ROCKON; i++)
+		{
+			if (g_RockOn[i].use)
+			{
+				g_RockOn[i].pos = enemy[target[0].enemyNum[i]].pos;
+
+				g_RockOn[i].rot.x += ROCKON_ROT_SPEED;
+				g_RockOn[i].rot.z += ROCKON_ROT_SPEED;
+
+				//if (!enemy[target[0].enemyNum[i]].use) g_aRockOn[i].bUse = FALSE;
+			}
 		}
 	}
 }
@@ -166,5 +188,15 @@ void SetRockOn(void)
 
 			return;
 		}
+	}
+}
+
+
+// ロックオンターゲットの一括削除
+void ResetRockOn(void)
+{
+	for (int i = 0; i < MAX_ROCKON; i++)
+	{
+		g_RockOn[i].use = FALSE;
 	}
 }
