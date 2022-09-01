@@ -292,11 +292,10 @@ void UpdateSame(void)
 
 
 
-
 #ifdef _DEBUG	// デバッグ情報を表示する
-	PrintDebugProc("g_Same:↑ → ↓ ←　Space\n");
-	PrintDebugProc("g_Same:X:%f Y:%f Z:%f\n", g_Same.pos.x, g_Same.pos.y, g_Same.pos.z);
-	PrintDebugProc("g_Sameangle%f\n", g_Same.angle);
+	//PrintDebugProc("g_Same:↑ → ↓ ←　Space\n");
+	//PrintDebugProc("g_Same:X:%f Y:%f Z:%f\n", g_Same.pos.x, g_Same.pos.y, g_Same.pos.z);
+	//PrintDebugProc("g_Sameangle%f\n", g_Same.angle);
 
 #endif
 }
