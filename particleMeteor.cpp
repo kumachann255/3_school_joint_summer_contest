@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// パーティクル処理 [particle.cpp]
-// Author : 熊澤義弘＋エナ
+// メテオのパーティクル処理 [particleMeteor.cpp]
+// Author : 熊澤義弘
 //
 //=============================================================================
 #include "main.h"
@@ -11,28 +11,38 @@
 #include "model.h"
 #include "shadow.h"
 #include "particle.h"
-#include "cup.h"
+#include "particleMeteor.h"
+#include "sky_smallmeteor.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_MAX			(1)			// テクスチャの数
 
-#define	PARTICLE_SIZE_X		(30.0f)		// 頂点サイズ・パーティクルサイズ
-#define	PARTICLE_SIZE_Y		(30.0f)		// 頂点サイズ・パーティクルサイズ
+#define	PARTICLE_SIZE_X		(15.0f)		// 頂点サイズ・パーティクルサイズ
+#define	PARTICLE_SIZE_Y		(15.0f)		// 頂点サイズ・パーティクルサイズ
 
-#define	MAX_PARTICLE		(512)		// パーティクル最大数
+#define	MAX_PARTICLE		(1024)		// パーティクル最大数
 
-#define	MAX_PARTICLE_CUP	(10)			// パーティクル最大数(カップ)
+#define METEOR_POP_RAND		(10.0f)		// 発生位置の乱数
 
-#define	DISP_SHADOW						// 影の表示
-#undef DISP_SHADOW
+#define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
+#define METEOR_MOVE_XY		(5.0f)		// xy軸の移動量の乱数
 
+#define MAX_METEOR_COLOR	(0.5f)		// カラーの乱数
+#define MIN_METEOR_COLOR	(0.2f)		// カラーの乱数
+
+#define MAX_METEOR_LIFE		(50)		// カラーの乱数
+#define MIN_METEOR_LIFE		(50)		// カラーの乱数
+
+#define METEOR_LIFE_ALFA	(20)		// カラーの乱数
+
+#define METEOR_FLAM_NUM		(3)			// 1フレームに何個出すか
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT MakeVertexParticle(void);
+HRESULT MakeVertexParticleMeteor(void);
 
 //*****************************************************************************
 // グローバル変数
@@ -42,11 +52,11 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;					// テクスチャ番号
 
-static PARTICLE					g_Particle[MAX_PARTICLE];		// パーティクルワーク
+static PARTICLE						g_ParticleMeteor[MAX_PARTICLE];		// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/effect000.png",
+	"data/TEXTURE/effect000.jpg",
 };
 
 static BOOL						g_Load = FALSE;
@@ -54,10 +64,10 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitParticle(void)
+HRESULT InitParticleMeteor(void)
 {
 	// 頂点情報の作成
-	MakeVertexParticle();
+	MakeVertexParticleMeteor();
 
 	// テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -76,19 +86,18 @@ HRESULT InitParticle(void)
 	// パーティクルワークの初期化
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		g_Particle[i].type = PARTICLE_TYPE_CUP;
-		g_Particle[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Particle[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Particle[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		g_Particle[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleMeteor[i].type = 0;
+		g_ParticleMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleMeteor[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_ParticleMeteor[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		ZeroMemory(&g_Particle[i].material, sizeof(g_Particle[i].material));
-		g_Particle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		ZeroMemory(&g_ParticleMeteor[i].material, sizeof(g_ParticleMeteor[i].material));
+		g_ParticleMeteor[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		g_Particle[i].nIdxShadow = -1;
-		g_Particle[i].life = 0;
-		g_Particle[i].pop = 0.0f;
-		g_Particle[i].use = FALSE;
+		g_ParticleMeteor[i].life = 0;
+		g_ParticleMeteor[i].pop = 0.0f;
+		g_ParticleMeteor[i].use = FALSE;
 	}
 
 
@@ -99,7 +108,7 @@ HRESULT InitParticle(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitParticle(void)
+void UninitParticleMeteor(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -126,142 +135,83 @@ void UninitParticle(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateParticle(void)
+void UpdateParticleMeteor(void)
 {
-	//PLAYER *pPlayer = GetPlayer();
-	//g_posBase = pPlayer->pos;
-	
+	S_METEOR *meteorS = GetS_Meteor();
+
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
 		// パーティクルワーク処理
-		if(g_Particle[i].use == TRUE)		// 使用中
+		if(g_ParticleMeteor[i].use)		// 使用中
 		{
-			g_Particle[i].life--;
+			g_ParticleMeteor[i].life--;
 			
-			if (g_Particle[i].life <= 10)
+			if (g_ParticleMeteor[i].life <= METEOR_LIFE_ALFA)
 			{	// 寿命が１０フレーム切ったら段々透明になっていく
-				g_Particle[i].material.Diffuse.w -= 0.1f;
-				if (g_Particle[i].material.Diffuse.w < 0.0f)
+				g_ParticleMeteor[i].material.Diffuse.w -= 1.0f / METEOR_LIFE_ALFA;
+				if (g_ParticleMeteor[i].material.Diffuse.w < 0.0f)
 				{
-					g_Particle[i].material.Diffuse.w = 0.0f;
+					g_ParticleMeteor[i].material.Diffuse.w = 0.0f;
 				}
 			}
 
-			if (g_Particle[i].life <= 0)
+			if (g_ParticleMeteor[i].life <= 0)
 			{
-				g_Particle[i].use = FALSE;
-				ReleaseShadow(g_Particle[i].nIdxShadow);
-				g_Particle[i].nIdxShadow = -1;
-			}
-			//else
-			//{
-			//	if(g_Particle[i].life <= 80)
-			//	{
-			//		g_Particle[i].material.Diffuse.x = 0.8f - (float)(80 - g_Particle[i].life) / 80 * 0.8f;
-			//		g_Particle[i].material.Diffuse.y = 0.7f - (float)(80 - g_Particle[i].life) / 80 * 0.7f;
-			//		g_Particle[i].material.Diffuse.z = 0.2f - (float)(80 - g_Particle[i].life) / 80 * 0.2f;
-			//	}
-
-			//	if(g_Particle[i].life <= 20)
-			//	{
-			//		// α値設定
-			//		g_Particle[i].material.Diffuse.w -= 0.05f;
-			//		if(g_Particle[i].material.Diffuse.w < 0.0f)
-			//		{
-			//			g_Particle[i].material.Diffuse.w = 0.0f;
-			//		}
-			//	}
-			//}
-
-			// 表示タイミングの処理
-			if (g_Particle[i].pop > 0.0f)
-			{
-				g_Particle[i].pop--;
+				g_ParticleMeteor[i].use = FALSE;
 			}
 
-
-			// カップの場合の処理
-			if (g_Particle[i].type == PARTICLE_TYPE_CUP)
-			{
-				// 移動させる
-				//g_Particle[i].pos.x += RamdomFloat(2, 3.0f, -3.0f);
-				//g_Particle[i].pos.y += RamdomFloat(2, 3.0f, -3.0f);
-				//g_Particle[i].pos.z += RamdomFloat(2, 3.0f, -3.0f);
-
-				// 拡大処理
-				g_Particle[i].scl.x += RamdomFloat(2, 0.2f, 0.1f);
-				g_Particle[i].scl.y += RamdomFloat(2, 0.2f, 0.1f);
-			}
+			// 移動処理
+			g_ParticleMeteor[i].pos.x += g_ParticleMeteor[i].move.x;
+			g_ParticleMeteor[i].pos.y += g_ParticleMeteor[i].move.y;
+			g_ParticleMeteor[i].pos.z += g_ParticleMeteor[i].move.z;
 		}
 	}
 
 
-	//エフェクトの発生処理（カップ）
+	//エフェクトの発生処理
 	{
-		BOOL particleOn = GetParticleOn();
-
-		if (particleOn == TRUE)
+		for (int i = 0; i < MAX_S_METEOR; i++)
 		{
-			CUP *cup = GetCup();
-
-			for (int j = 0; j < MAX_PARTICLE_CUP; j++)
+			if (meteorS[i].use)
 			{
-				XMFLOAT3 pos;
-				XMFLOAT3 scl;
-				XMFLOAT4 col;
+				for (int p = 0; p < METEOR_FLAM_NUM; p++)
+				{
+					XMFLOAT3 pos, move, scl;
+					XMFLOAT4 col;
+					int life;
 
-				// 発生位置を設定
-				pos.x = cup[0].pos.x + RamdomFloat(2, 40.0f, -40.0f);
-				pos.y = cup[0].pos.y + RamdomFloat(2, 60.0f,  10.0f);
-				pos.z = cup[0].pos.z + RamdomFloat(2, 40.0f, -40.0f);
+					// 発生位置を設定
+					pos.x = meteorS[i].pos.x + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
+					pos.y = meteorS[i].pos.y + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
+					pos.z = meteorS[i].pos.z + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
 
-				// サイズ設定
-				scl.x = RamdomFloat(2, 0.5f, 0.1f);
-				scl.y = RamdomFloat(2, 0.5f, 0.1f);
-				scl.z = RamdomFloat(2, 0.5f, 0.1f);
+					// 移動量を設定
+					move.x = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+					move.z = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+					move.y = meteorS[i].randMove.y * METEOR_MOVE_Y;
 
-				// カラー設定
-				col.x = 1.0f;
-				col.y = RamdomFloat(2, 0.8f, 0.6f);
-				col.z = RamdomFloat(2, 0.7f, 0.3f);
-				col.w = RamdomFloat(2, 1.0f, 0.8f);
+					// カラー設定
+					col.x = 0.8f;
+					col.y = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
+					col.z = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
+					col.w = 1.0f;
 
-				SetParticle(PARTICLE_TYPE_CUP, pos, scl, col, 5.0f,50);
+					// 寿命の設定
+					life = (rand() % MAX_METEOR_LIFE) + MIN_METEOR_LIFE;
+
+					scl = { 1.0f,1.0f,1.0f };
+
+					SetParticleMeteor(pos, scl, move, col, life);
+				}
 			}
 		}
 	}
-
-	//// パーティクル発生
-	//{
-	//	XMFLOAT3 pos;
-	//	XMFLOAT3 move;
-	//	float fAngle, fLength;
-	//	int nLife;
-	//	float fSize;
-
-	//	pos = g_posBase;
-
-	//	fAngle = (float)(rand() % 628 - 314) / 100.0f;
-	//	fLength = rand() % (int)(g_fWidthBase * 200 ) / 100.0f - g_fWidthBase;
-	//	move.x = sinf(fAngle) * fLength;
-	//	move.y = rand() % 300 / 100.0f + g_fHeightBase;
-	//	move.z = cosf(fAngle) * fLength;
-
-	//	nLife = rand() % 100 + 150;  
-
-	//	fSize = (float)(rand() % 30 + 20);
-
-	//	pos.y = fSize / 2;
-
-	//	// ビルボードの設定
-	//	SetParticle(pos, move, XMFLOAT4(0.8f, 0.7f, 0.2f, 0.85f), fSize, fSize, nLife);
-	//}
 }
 
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawParticle(void)
+void DrawParticleMeteor(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
@@ -270,7 +220,7 @@ void DrawParticle(void)
 	SetLightEnable(FALSE);
 
 	// 加算合成に設定
-	//SetBlendState(BLEND_MODE_ADD);
+	SetBlendState(BLEND_MODE_ADD);
 
 	// Z比較無し
 	SetDepthEnable(FALSE);
@@ -291,7 +241,7 @@ void DrawParticle(void)
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(g_Particle[i].use == TRUE && g_Particle[i].pop <= 0.0f)
+		if(g_ParticleMeteor[i].use)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -318,18 +268,18 @@ void DrawParticle(void)
 			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
 
 			// スケールを反映
-			mtxScl = XMMatrixScaling(g_Particle[i].scl.x, g_Particle[i].scl.y, g_Particle[i].scl.z);
+			mtxScl = XMMatrixScaling(g_ParticleMeteor[i].scl.x, g_ParticleMeteor[i].scl.y, g_ParticleMeteor[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_Particle[i].pos.x, g_Particle[i].pos.y, g_Particle[i].pos.z);
+			mtxTranslate = XMMatrixTranslation(g_ParticleMeteor[i].pos.x, g_ParticleMeteor[i].pos.y, g_ParticleMeteor[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 			// ワールドマトリックスの設定
 			SetWorldMatrix(&mtxWorld);
 
 			// マテリアル設定
-			SetMaterial(g_Particle[i].material);
+			SetMaterial(g_ParticleMeteor[i].material);
 
 			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
@@ -353,7 +303,7 @@ void DrawParticle(void)
 //=============================================================================
 // 頂点情報の作成
 //=============================================================================
-HRESULT MakeVertexParticle(void)
+HRESULT MakeVertexParticleMeteor(void)
 {
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -404,42 +354,31 @@ HRESULT MakeVertexParticle(void)
 //=============================================================================
 // マテリアルカラーの設定
 //=============================================================================
-void SetColorParticle(int nIdxParticle, XMFLOAT4 col)
+void SetColorParticleMeteor(int nIdxParticle, XMFLOAT4 col)
 {
-	g_Particle[nIdxParticle].material.Diffuse = col;
+	g_ParticleMeteor[nIdxParticle].material.Diffuse = col;
 }
 
 //=============================================================================
 // パーティクルの発生処理
 //=============================================================================
-int SetParticle(int type, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT4 col, float pop, int life)
+int SetParticleMeteor(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
 {
 	int nIdxParticle = -1;
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(!g_Particle[i].use)
+		if(!g_ParticleMeteor[i].use)
 		{
-			g_Particle[i].type = type;
-			g_Particle[i].pos  = pos;
-			g_Particle[i].rot  = { 0.0f, 0.0f, 0.0f };
-			g_Particle[i].scl  = scl;
-			g_Particle[i].move = { 0.0f, 0.0f, 0.0f };
-			g_Particle[i].material.Diffuse = col;
-			g_Particle[i].life = life;
-			g_Particle[i].pop = pop * i;
-			g_Particle[i].use  = TRUE;
+			g_ParticleMeteor[i].pos  = pos;
+			g_ParticleMeteor[i].rot  = { 0.0f, 0.0f, 0.0f };
+			g_ParticleMeteor[i].scl  = { 1.0f, 1.0f, 1.0f };
+			g_ParticleMeteor[i].move = move;
+			g_ParticleMeteor[i].material.Diffuse = col;
+			g_ParticleMeteor[i].life = life;
+			g_ParticleMeteor[i].use  = TRUE;
 
 			nIdxParticle = i;
-
-#ifdef DISP_SHADOW
-			// 影の設定
-			g_Particle[i].nIdxShadow = CreateShadow(XMFLOAT3(pos.x, 0.1f, pos.z), 0.8f, 0.8f);		// 影の設定
-			if(g_Particle[i].nIdxShadow != -1)
-			{
-				SetColorShadow(g_Particle[i].nIdxShadow, XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-			}
-#endif
 
 			break;
 		}

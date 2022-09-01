@@ -17,8 +17,12 @@
 #define NOTE_TIMING_JUST	(20.0f)		// 最高のタイミングの範囲
 #define NOTE_TIMING_MISS	(70.0f)		// ミスのタイミングの範囲
 
+#define SENHU_X				(960.0f / 2.0f)	// 五線譜の表示位置
+#define SENHU_Y				(370.0f)		// 五線譜の表示位置
+#define SENHU_ALFA			(0.5f)			// 五線譜の表示位置
+
 #define TARGET_X			(150.0f)	// ターゲットの表示位置
-#define TARGET_Y			(70.0f)		// ターゲットの表示位置
+#define TARGET_Y			(SENHU_Y)	// ターゲットの表示位置
 
 
 

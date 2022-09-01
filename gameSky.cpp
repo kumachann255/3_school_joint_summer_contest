@@ -38,6 +38,7 @@
 #include "targetObj.h"
 #include "rockOn.h"
 #include "fieldobj.h"
+#include "particleMeteor.h"
 
 
 //*****************************************************************************
@@ -172,6 +173,10 @@ HRESULT InitGameSky(void)
 	// ロックオンアイコンの初期化
 	InitRockOn();
 
+	// メテオのパーティクルの初期化
+	InitParticleMeteor();
+
+
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
@@ -203,6 +208,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// メテオのパーティクルの終了処理
+	UninitParticleMeteor();
+
 	// タイミングエフェクトの終了処理
 	UninitTimingEffect();
 
@@ -354,6 +362,8 @@ void UpdateGameSky(void)
 	// ロックオンアイコンの更新処理
 	UpdateRockOn();
 
+	// メテオのパーティクルの更新処理
+	UpdateParticleMeteor();
 }
 
 //=============================================================================
@@ -395,6 +405,10 @@ void DrawGameSky0(void)
 	// ロックオンアイコンの描画処理
 	DrawRockOn();
 
+	// メテオのパーティクルの描画処理
+	DrawParticleMeteor();
+
+
 	// 2Dの物を描画する処理
 	// Z比較なし
 	SetDepthEnable(FALSE);
@@ -408,8 +422,8 @@ void DrawGameSky0(void)
 	// スコアの描画処理
 	DrawScore();
 
-	//// コンボの描画処理
-	//DrawCombo();
+	// コンボの描画処理
+	DrawCombo();
 
 	// 時間の描画処理
 	DrawTime();
@@ -476,12 +490,12 @@ void DrawGameSky(void)
 		DrawGameSky0();
 
 		// エネミー視点
-		//pos = GetEnemy()->pos;
-		//pos.y = 0.0f;
-		//SetCameraAT(pos);
-		//SetCamera();
-		//SetViewPort(TYPE_RIGHT_HALF_SCREEN);
-		//DrawGameSky0();
+		pos = GetSkyEnemy()->pos;
+		pos.y = 0.0f;
+		SetCameraAT(pos);
+		SetCamera();
+		SetViewPort(TYPE_RIGHT_HALF_SCREEN);
+		DrawGameSky0();
 		break;
 
 	case TYPE_UP_HALF_SCREEN:
@@ -490,13 +504,13 @@ void DrawGameSky(void)
 		DrawGameSky0();
 
 		// エネミー視点
-		//pos = GetEnemy()->pos;
-		//pos.y = 0.0f;
-		//SetCameraAT(pos);
-		//SetCamera();
-		//SetViewPort(TYPE_DOWN_HALF_SCREEN);
-		//DrawGameSky0();
-		//break;
+		pos = GetSkyEnemy()->pos;
+		pos.y = 0.0f;
+		SetCameraAT(pos);
+		SetCamera();
+		SetViewPort(TYPE_DOWN_HALF_SCREEN);
+		DrawGameSky0();
+		break;
 
 	}
 }

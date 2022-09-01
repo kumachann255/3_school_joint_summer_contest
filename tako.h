@@ -46,7 +46,7 @@ struct TAKO
 	BOOL			use;
 
 	int				mode;
-
+	int				rockOnNum;
 
 };
 

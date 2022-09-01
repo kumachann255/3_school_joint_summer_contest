@@ -14,8 +14,12 @@
 #include "attackRange.h"
 #include "player.h"
 #include "enemy.h"
+#include "shadow.h"
 #include "enemyHeli.h"
 #include "tutorial.h"
+#include "collision.h"
+#include "score.h"
+#include "combo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -175,6 +179,9 @@ void UpdateSame(void)
 
 		if (g_Same.pos.y < MAX_DOWN)
 		{
+			g_Same.pos.x = attackR->pos.x;
+			g_Same.pos.z = attackR->pos.z;
+
 			// 下降最低値までいったらヒレのモデルはFALSEにするがswitch用に他の情報は残す
 			g_Same.rot.y = 0.0f;
 			g_Same.mode = PACKNCYO;
@@ -186,19 +193,19 @@ void UpdateSame(void)
 		break;
 
 	case PACKNCYO:
-		// 上昇噛みつき処理
-		g_Same.pos.x = attackR->pos.x;
+		// 上昇噛みつき処理(上昇してからはその位置で固定)
+		//g_Same.pos.x = attackR->pos.x;
 		g_Same.pos.y += UP_ADDTION;
-		g_Same.pos.z = attackR->pos.z;
+		//g_Same.pos.z = attackR->pos.z;
 
-		g_sAtama.pos.x = attackR->pos.x;
+		//g_sAtama.pos.x = attackR->pos.x;
 		g_sAtama.pos.y += UP_ADDTION;
-		g_sAtama.pos.z = attackR->pos.z;
+		//g_sAtama.pos.z = attackR->pos.z;
 
 		g_sKuchi.rot.x -= KUCHI_ROT_ADDTION;
-		g_sKuchi.pos.x = attackR->pos.x;
+		//g_sKuchi.pos.x = attackR->pos.x;
 		g_sKuchi.pos.y += UP_ADDTION;
-		g_sKuchi.pos.z = attackR->pos.z;
+		//g_sKuchi.pos.z = attackR->pos.z;
 
 
 		if (g_Same.pos.y > MAX_UP)
@@ -233,13 +240,26 @@ void UpdateSame(void)
 		ENEMY_HELI *enemyheli = GetEnemyHeli();		// エネミーのポインターを初期化
 
 		// 他エネミーの処理
-		for (int j = 0; j < MAX_ENEMY; j++)
+
+		// 敵とサメオブジェクト
+		for (int i = 0; i < MAX_ENEMY; i++)
 		{
-			if (enemy[j].sameHit == TRUE)
+			if (g_Same.mode == PACKNCYO)
 			{
-				if (g_Same.use == FALSE)
+				if (CollisionBC(g_Same.pos, enemy[i].pos, g_Same.size, enemy[i].size))
 				{
-					enemy[j].use = FALSE;
+					if (enemy[i].isHit == TRUE) break;
+					if (enemy[i].use == TRUE)
+					{
+						// スコアを足す
+						AddScore(100);
+
+						// コンボを足す
+						AddCombo(1);
+						ResetComboTime();
+					}
+					// 敵キャラクターは倒される
+					enemy[i].use = FALSE;
 				}
 			}
 		}
@@ -247,10 +267,21 @@ void UpdateSame(void)
 		// ヘリの処理
 		for (int j = 0; j < MAX_ENEMY_HELI; j++)
 		{
-			if (enemyheli[j].sameHit == TRUE)
+			if (g_Same.mode == PACKNCYO)
 			{
-				if (g_Same.use == FALSE)
+				if (CollisionBC(g_Same.pos, enemyheli[j].pos, g_Same.size, enemyheli[j].size))
 				{
+					if (enemyheli[j].isHit == TRUE) break;
+					if (enemyheli[j].use == TRUE)
+					{
+						// スコアを足す
+						AddScore(100);
+
+						// コンボを足す
+						AddCombo(1);
+						ResetComboTime();
+					}
+					// 敵キャラクターは倒される
 					enemyheli[j].use = FALSE;
 				}
 			}
@@ -261,11 +292,10 @@ void UpdateSame(void)
 
 
 
-
 #ifdef _DEBUG	// デバッグ情報を表示する
-	PrintDebugProc("g_Same:↑ → ↓ ←　Space\n");
-	PrintDebugProc("g_Same:X:%f Y:%f Z:%f\n", g_Same.pos.x, g_Same.pos.y, g_Same.pos.z);
-	PrintDebugProc("g_Sameangle%f\n", g_Same.angle);
+	//PrintDebugProc("g_Same:↑ → ↓ ←　Space\n");
+	//PrintDebugProc("g_Same:X:%f Y:%f Z:%f\n", g_Same.pos.x, g_Same.pos.y, g_Same.pos.z);
+	//PrintDebugProc("g_Sameangle%f\n", g_Same.angle);
 
 #endif
 }
