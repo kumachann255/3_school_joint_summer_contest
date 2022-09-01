@@ -29,6 +29,8 @@
 #include "rockon.h"
 #include "enemy.h"
 #include "sky_enemy.h"
+#include "targetObj.h"
+
 
 //*****************************************************************************
 // マクロ定義
@@ -49,6 +51,8 @@
 #define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
 #define COOLTIME_SHARK		(180)		// サメのクールタイム
 #define COOLTIME_METEOR		(180)		// メテオのクールタイム
+
+#define PLAYER_MOVE_ROT		(0.01f)		// プレイヤーの左右の移動速度
 
 
 //*****************************************************************************
@@ -247,29 +251,30 @@ void UpdatePlayer(void)
 	//================================
 	if (GetMode() == MODE_GAME_SKY)
 	{
-
 		if (GetKeyboardPress(DIK_RIGHT))
 		{
 			g_Player.spd = VALUE_MOVE;
 
-				g_Player.angle += 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
+			g_Player.angle += PLAYER_MOVE_ROT;
+			g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+			g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
-				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
-			
+			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+
+			GetTargetObj()->rot.y += PLAYER_MOVE_ROT;
 		}
 
 		if (GetKeyboardPress(DIK_LEFT))
 		{
 			g_Player.spd = VALUE_MOVE;
 
-				g_Player.angle -= 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
+			g_Player.angle -= PLAYER_MOVE_ROT;
+			g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+			g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
-				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
-			
+			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+
+			GetTargetObj()->rot.y -= PLAYER_MOVE_ROT;
 		}
 
 		if (GetKeyboardTrigger(DIK_L))
@@ -278,7 +283,6 @@ void UpdatePlayer(void)
 			SetTimingText(GetNoteTiming());
 
 		}
-
 	}
 
 
@@ -289,7 +293,6 @@ void UpdatePlayer(void)
 	bool ans = RayHitSeaField(g_Player.pos, &hitPosition, &normal);
 	g_Player.pos.y = hitPosition.y + PLAYER_OFFSET_Y;
 	//g_Player.pos.y = PLAYER_OFFSET_Y;
-
 
 	// 影もプレイヤーの位置に合わせる
 	XMFLOAT3 pos = g_Player.pos;
@@ -386,8 +389,6 @@ void UpdatePlayer(void)
 				ResetRockOn();
 
 				break;
-
-
 			}
 		}
 	}
