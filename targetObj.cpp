@@ -20,9 +20,6 @@
 //*****************************************************************************
 #define	MODEL_DOME_CITY			"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
-#define MOVE_VALUE_Y			(5.0f)		// ターゲットが縦に動く速度
-#define MOVE_VALUE_X			(0.02f)		// ターゲットが横に動く速度
-
 #define OBJ_DISTANCE			(700.0f)	// カメラからターゲットの距離
 
 //*****************************************************************************
@@ -97,13 +94,13 @@ void UpdateTargetObj(void)
 		{	// 左へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
-			if (GetTargetArea(left)) g_TargetObj.rot.y -= MOVE_VALUE_X;
+			if (GetTargetArea(left)) g_TargetObj.rot.y -= TARGET_MOVE_VALUE_X;
 		}
 		if (GetKeyboardPress(DIK_D))
 		{	// 右へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
-			if (GetTargetArea(right)) g_TargetObj.rot.y += MOVE_VALUE_X;
+			if (GetTargetArea(right)) g_TargetObj.rot.y += TARGET_MOVE_VALUE_X;
 		}
 		if (GetKeyboardPress(DIK_W))
 		{	// 上へ移動
@@ -111,7 +108,7 @@ void UpdateTargetObj(void)
 			// ターゲットアイコンが画面外に出ていないかを確認
 			//if (GetTargetArea(up)) 
 				//g_TargetObj.rot.x -= MOVE_VALUE_X;
-			if (GetTargetArea(up)) g_TargetObj.pos.y += MOVE_VALUE_Y;
+			if (GetTargetArea(up)) g_TargetObj.pos.y += TARGET_MOVE_VALUE_Y;
 		}
 		if (GetKeyboardPress(DIK_S))
 		{	// 下へ移動
@@ -119,7 +116,7 @@ void UpdateTargetObj(void)
 			// ターゲットアイコンが画面外に出ていないかを確認
 			//if (GetTargetArea(down)) 
 				//g_TargetObj.rot.x += MOVE_VALUE_X;
-			if (GetTargetArea(down)) g_TargetObj.pos.y -= MOVE_VALUE_Y;
+			if (GetTargetArea(down)) g_TargetObj.pos.y -= TARGET_MOVE_VALUE_Y;
 		}
 	}
 
