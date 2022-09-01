@@ -14,10 +14,12 @@
 #define SCORE_DIGIT			(5)			// ステージ桁数
 #define COMBO_MAX_DIGIT		(3)			// 最大コンボの桁数
 
-#define SCORE_STAGE0_BORDER	(4000)		// ステージ0のクリアスコア
-#define SCORE_STAGE1_BORDER	(8000)		// ステージ1のクリアスコア
-#define SCORE_STAGE2_BORDER	(16000)		// ステージ2のクリアスコア
-#define SCORE_STAGE3_BORDER	(32000)		// ステージ3のクリアスコア
+#define CITY_STAGE0_BORDER	(4000)		// ステージ0のクリアスコア
+#define CITY_STAGE1_BORDER	(8000)		// ステージ1のクリアスコア
+#define SEA_STAGE0_BORDER	(4000)		// ステージ0のクリアスコア
+#define SEA_STAGE1_BORDER	(8000)		// ステージ1のクリアスコア
+#define SKY_STAGE0_BORDER	(4000)		// ステージ0のクリアスコア
+#define SKY_STAGE1_BORDER	(8000)		// ステージ1のクリアスコア
 
 //#define SCORE_STAGE0_BORDER	(200)		// ステージ0のクリアスコア
 //#define SCORE_STAGE1_BORDER	(200)		// ステージ1のクリアスコア

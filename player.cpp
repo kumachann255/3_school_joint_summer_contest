@@ -358,7 +358,7 @@ void UpdatePlayer(void)
 				{
 					// タコ一本釣り
 					SetTako();
-					//g_Player.cooltime = COOLTIME_OCTOPUS;
+					g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// ロックオンターゲットのリセット
 					ResetRockOn();
