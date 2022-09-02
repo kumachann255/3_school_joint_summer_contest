@@ -37,6 +37,7 @@
 #include "target.h"
 #include "targetObj.h"
 #include "rockOn.h"
+#include "fieldobj.h"
 #include "particleMeteor.h"
 
 
@@ -381,6 +382,13 @@ void DrawGameSky0(void)
 
 	// スモールメテオの描画処理
 	DrawS_Meteor();
+
+
+	//// 壁の描画処理
+	//DrawMeshWall();
+
+	// 木の描画処理
+	//DrawFieldObj();
 
 	// スカイドームの描画処理
 	//DrawSky();
