@@ -67,6 +67,8 @@ static BOOL				g_cameraOn;						// カメラのスイッチ
 
 static int				g_stopTime;						// 爆弾が空中で止まる時間
 
+static BOOL				g_particleOn;					// TRUE:エフェクト発生
+
 
 //=============================================================================
 // 初期化処理
@@ -119,6 +121,8 @@ HRESULT InitBlast(void)
 	g_downCount = 0;
 	g_cameraOn = FALSE;
 	g_stopTime = 0;
+	
+	g_particleOn = FALSE;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -182,12 +186,14 @@ void UpdateBlast(void)
 				case 0:
 					after = g_Blast[i].after;
 					brfore = 0;
+					g_particleOn = TRUE;	// エフェクト有効
 
 					break;
 
 				case 1:
 					after = 0;
 					brfore = g_Blast[i].after;
+					g_particleOn = FALSE;		//エフェクトをオフにする
 
 					break;
 				}
@@ -214,7 +220,6 @@ void UpdateBlast(void)
 				{
 				case 0:
 					if (g_time < 1.0f) g_time += 1.0f / BLAST_MOVE_TIME_0;
-
 					break;
 
 				case 1:
@@ -365,6 +370,8 @@ void SetBlast(XMFLOAT3 pos)
 			g_downCount = 0;
 			g_stopTime = 0;
 
+			g_particleOn = FALSE;
+
 			g_Blast[i].rot.y = RamdomFloat(2, BLASE_ROT, -BLASE_ROT);
 
 			// 吹き出しを表示
@@ -409,4 +416,12 @@ int GetMorphing(void)
 int GetStopTime(void)
 {
 	return g_stopTime;
+}
+
+//=============================================================================
+// エフェクト有効発生フラグを取得
+//=============================================================================
+BOOL GetBlastParticleOn(void)
+{
+	return g_particleOn;
 }
