@@ -60,6 +60,7 @@ void CheckHitSky(void);
 static int	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 static BOOL	g_bPause = TRUE;	// ポーズON/OFF
+static BOOL g_ParticlSwicth;
 
 static int					g_Stage;
 
@@ -199,6 +200,7 @@ HRESULT InitGameSky(void)
 		break;
 	}
 
+	g_ParticlSwicth = FALSE;
 
 	return S_OK;
 }
@@ -543,6 +545,8 @@ void CheckHitSky(void)
 			if (CollisionBC(s_meteor[i].pos,sky_enemy[j].pos,s_meteor[i].size,sky_enemy[j].size))
 			{
 				sky_enemy[j].use = FALSE;
+
+				g_ParticlSwicth = TRUE;
 			}
 		}
 	}
@@ -557,3 +561,7 @@ void CheckHitSky(void)
 }
 
 
+BOOL GetParticalSwicth(void)
+{
+	return g_ParticlSwicth;
+}

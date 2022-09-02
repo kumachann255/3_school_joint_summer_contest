@@ -130,13 +130,13 @@ void UpdateCamera(void)
 	}
 	else
 	{
-		//SetCameraAT(pPlayer->pos);
-		g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
+		////SetCameraAT(pPlayer->pos);
+		//g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
 
-		if (GetMode() == MODE_GAME_SKY)
-		{
-			g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
-		}
+		//if (GetMode() == MODE_GAME_SKY)
+		//{
+		//	g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
+		//}
 	}
 
 	if (g_Move)

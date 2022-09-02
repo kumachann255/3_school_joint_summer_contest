@@ -37,7 +37,7 @@
 #define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 
-#define	VALUE_MOVE			(10.0f)							// 移動量
+#define	VALUE_MOVE			(15.0f)							// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
@@ -291,13 +291,6 @@ void UpdatePlayer(void)
 
 				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 			
-		}
-
-		if (GetKeyboardTrigger(DIK_L))
-		{
-			SetS_Meteor(g_Player.pos,g_Player.rot.y);
-			SetTimingText(GetNoteTiming());
-
 		}
 
 	}
