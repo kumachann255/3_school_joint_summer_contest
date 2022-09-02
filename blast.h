@@ -57,3 +57,4 @@ BOOL GetCameraSwitch(void);
 void SetCameraSwitch(BOOL data);
 int GetMorphing(void);
 int GetStopTime(void);
+BOOL GetBlastParticleOn(void);
