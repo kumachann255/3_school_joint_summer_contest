@@ -33,6 +33,8 @@ struct CAMERA
 	XMFLOAT3			up;				// カメラの上方向ベクトル
 	XMFLOAT3			rot;			// カメラの回転
 	
+	XMFLOAT3			target;			// 目的地
+
 	float				len;			// カメラの視点と注視点の距離
 
 };

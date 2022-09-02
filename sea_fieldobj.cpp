@@ -12,6 +12,7 @@
 #include "model.h"
 #include "sea_fieldobj.h"
 #include "meshfield.h"
+#include "same.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -20,20 +21,24 @@
 #define	MODEL_KUZIRA		"data/MODEL/kuzira.obj"			// 読み込むモデル名
 #define	MODEL_SHIO			"data/MODEL/kuzira_sio00.obj"	// 読み込むモデル名
 
+#define VALUE_NAMI				(5.0f)						// 波加算量
+#define VALUE_DOWN_POSY			(0.3f)						// 下降加算量
+#define VALUE_FRONT				(1.0f)						// 前後加算量
 #define	VALUE_ROTATE			(0.01f)						// 回転加算量
 #define	VALUE_POSY				(5.0f)						// 上下加算量
 #define	MAX_FRONT_ROT			(0.15f)						// 最大前回転値
 #define	MAX_BACK_ROT			(-0.65f)					// 最大後回転値
 #define	MAX_LOWPOS_Y			(-100.0f)					// 最大下降値
-
+#define MAX_LOW_NAMI			(-25.0f)					// 波の最大下降値
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
+void SetNami(int i, int mode);
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static SEA_FOBJ				g_Nami[MAX_SEA_FOBJ_SIGN];		// 波
+static SEA_FOBJ				g_Nami[MAX_SEA_WAVE];			// 波
 static SEA_FOBJ				g_Kuzira[MAX_SEA_FOBJ_SIGN];	// クジラ
 static SEA_FOBJ				g_Shio[MAX_SEA_FOBJ_SIGN];		// 潮
 
@@ -49,15 +54,15 @@ HRESULT InitSeaFieldObj(void)
 	LoadModel(MODEL_NAMI, &g_Nami[0].model);
 	LoadModel(MODEL_SHIO, &g_Shio[0].model);
 
-	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	for (int i = 0; i < MAX_SEA_WAVE; i++)
 	{
 		LoadModel(MODEL_NAMI, &g_Nami[i].model);
 		g_Nami[i].load = TRUE;
 		g_Nami[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Nami[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Nami[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_Nami[i].scl = XMFLOAT3(1.0f, 3.0f, 3.0f);
 		g_Nami[i].moveFlag = TRUE;
-		g_Nami[i].use = TRUE;			// TRUE:生きてる
+		g_Nami[i].use = FALSE;			// TRUE:生きてる
 		// モデルのディフューズを保存しておく。色変え対応の為。
 		GetModelDiffuse(&g_Nami[i].model, &g_Nami[i].diffuse[0]);
 	}
@@ -99,7 +104,7 @@ void UninitSeaFieldObj(void)
 {
 	if (g_Load == FALSE) return;
 
-	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	for (int i = 0; i < MAX_SEA_WAVE; i++)
 	{
 		if (g_Nami[i].load)
 		{
@@ -134,11 +139,6 @@ void UninitSeaFieldObj(void)
 //=============================================================================
 void UpdateSeaFieldObj(void)
 {
-	// 波の処理
-	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
-	{
-
-	}
 
 	// クジラの処理
 	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
@@ -162,6 +162,56 @@ void UpdateSeaFieldObj(void)
 			break;
 		}
 	}
+
+	// 波の処理
+	for (int i = 0; i < MAX_SEA_WAVE; i++)
+	{
+		SAME *same = GetSame();
+		int dir;
+
+		if (g_Nami[i].use == FALSE)
+		{
+			dir = i % MAX_SEA_WAVE;
+			switch (dir)
+			{
+			case 0:
+				SetNami(dir, same->mode);
+				break;
+
+			case 1:
+				SetNami(dir, same->mode);
+				break;
+			}
+		}
+		else if (g_Nami[i].use == TRUE)
+		{
+			dir = i % MAX_SEA_WAVE;
+			switch (dir)
+			{
+			case 0:
+				g_Nami[i].pos.x += -VALUE_FRONT;
+				g_Nami[i].pos.z -= VALUE_FRONT;
+				g_Nami[i].pos.y += VALUE_DOWN_POSY;
+				if (g_Nami[i].pos.y > MAX_LOW_NAMI)
+				{
+					g_Nami[i].use = FALSE;
+				}
+				break;
+
+			case 1:
+				g_Nami[i].pos.x += VALUE_FRONT;
+				g_Nami[i].pos.z -= VALUE_FRONT;
+				g_Nami[i].pos.y += VALUE_DOWN_POSY;
+				if (g_Nami[i].pos.y > MAX_LOW_NAMI)
+				{
+					g_Nami[i].use = FALSE;
+				}
+				break;
+			}
+
+		}
+	}
+
 	// 潮の処理
 	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
 	{
@@ -205,7 +255,7 @@ void DrawSeaFieldObj(void)
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
 	// 波の描画
-	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	for (int i = 0; i < MAX_SEA_WAVE; i++)
 	{
 		if (g_Nami[i].use == FALSE) continue;
 
@@ -292,5 +342,34 @@ void DrawSeaFieldObj(void)
 		// モデル描画
 		DrawModel(&g_Shio[0].model);
 
+	}
+}
+
+void SetNami(int i, int mode)
+{
+	for (int i = 0; i < MAX_SEA_WAVE; i++)
+	{
+		SAME *same = GetSame();
+
+		if (g_Nami[i].use == FALSE && same->mode == PACKNCYO)
+		{
+			g_Nami[i].use = TRUE;
+
+			if (i == 1)
+			{	// 右に設置
+				g_Nami[i].pos = same->pos;
+				g_Nami[i].pos.x += VALUE_NAMI;
+				g_Nami[i].pos.y -= VALUE_NAMI;
+				g_Nami[i].rot = XMFLOAT3(0.0f, 2.0f, 0.0f);
+			}
+			else
+			{	// 左に設置
+				g_Nami[i].pos = same->pos;
+				g_Nami[i].pos.x += -VALUE_NAMI;
+				g_Nami[i].pos.y -=  VALUE_NAMI;
+				g_Nami[i].rot = XMFLOAT3(0.0f, -2.0f, 0.0f);
+			}
+			return;
+		}
 	}
 }

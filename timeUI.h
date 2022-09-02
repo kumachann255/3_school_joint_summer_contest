@@ -26,5 +26,6 @@ void DrawTime(void);
 
 void AddTime(int add);
 int GetTime(void);
+int GetModeOld(void);
 
 
