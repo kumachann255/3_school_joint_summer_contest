@@ -43,7 +43,7 @@ void DrawCup(void);
 CUP *GetCup(void);
 void SetCup(void);
 
-BOOL GetParticleOn(void);
+BOOL GetCupParticleOn(void);
 
 BOOL GetCameraSwitch(void);
 void SetCameraSwitch(BOOL data);

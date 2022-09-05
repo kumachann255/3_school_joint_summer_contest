@@ -186,7 +186,7 @@ void UpdateCup(void)
 			// カップの移動処理
 			{
 				g_Cup[i].pos.z += g_cupSpeed_Z;
-				g_Cup[i].pos.x += g_cupSpeed_X;
+				//g_Cup[i].pos.x += g_cupSpeed_X;
 				g_Cup[i].rot.y += CUP_ROT_Y;
 
 
@@ -501,7 +501,7 @@ void SetCup(void)
 //=============================================================================
 // 爆発発生フラグを取得
 //=============================================================================
-BOOL GetParticleOn(void)
+BOOL GetCupParticleOn(void)
 {
 	return g_particleOn;
 }
