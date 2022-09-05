@@ -560,102 +560,104 @@ void UpdatePlayer(void)
 void DrawPlayer(void)
 {
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
-
-	if (!GetMovieFlag())
+	
+	if (GetMode() == MODE_GAME_SKY)
 	{
+		if (!GetMovieFlag())
+		{
+			//============================
+			// プレイヤーの描画
+			//============================
+
+			// カリング無効
+			SetCullingMode(CULL_MODE_NONE);
+
+
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
+
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
+
+			XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
+
+			// モデル描画
+			DrawModel(&g_Player.model);
+
+
+
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
+
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
+
+			XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+
+			DrawModel(&g_Rocket.model_tesuri);
+
+		}
+
 		//============================
-		// プレイヤーの描画
+		// ロケットの描画
 		//============================
-
-		// カリング無効
-		SetCullingMode(CULL_MODE_NONE);
-
-
-		// ワールドマトリックスの初期化
-		mtxWorld = XMMatrixIdentity();
-
-		// スケールを反映
-		mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-		// 回転を反映
-		mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-		// 移動を反映
-		mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-		// ワールドマトリックスの設定
-		SetWorldMatrix(&mtxWorld);
-
-		XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
-
-		// モデル描画
-		DrawModel(&g_Player.model);
+		else
+		{
 
 
+			// カリング無効
+			SetCullingMode(CULL_MODE_NONE);
 
-		// ワールドマトリックスの初期化
-		mtxWorld = XMMatrixIdentity();
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
 
-		// スケールを反映
-		mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-		// 回転を反映
-		mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-		// 移動を反映
-		mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		// ワールドマトリックスの設定
-		SetWorldMatrix(&mtxWorld);
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
 
-		XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+			XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
 
-		DrawModel(&g_Rocket.model_tesuri);
+
+			// モデル描画
+			DrawModel(&g_Rocket.model_rocket);
+		}
 
 	}
-
-	//============================
-	// ロケットの描画
-	//============================
-	else
-	{
-
-
-		// カリング無効
-		SetCullingMode(CULL_MODE_NONE);
-
-		// ワールドマトリックスの初期化
-		mtxWorld = XMMatrixIdentity();
-
-		// スケールを反映
-		mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-		// 回転を反映
-		mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-		// 移動を反映
-		mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-		// ワールドマトリックスの設定
-		SetWorldMatrix(&mtxWorld);
-
-		XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
-
-
-		// モデル描画
-		DrawModel(&g_Rocket.model_rocket);
-	}
-
-
 	//// パーツの階層アニメーション
 	//for (int i = 0; i < PLAYER_PARTS_MAX; i++)
 	//{

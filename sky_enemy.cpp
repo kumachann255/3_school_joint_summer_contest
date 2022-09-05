@@ -57,7 +57,7 @@
 #define ENEMY_ANGLE_SHRINK		(1.5f)					// 相手が近づいてくる速度
 #define ENEMY_DISTANCE_CIRCLE	(200.0f)				// 近づいてくる限界
 #define ENEMY_SHINK_SPEED_Y		(0.01f)					// プレイヤーの周りを回転する際の回転速度(Y軸)
-#define ENEMY_SHINK_SPEED_X		(0.05f)					// プレイヤーの周りを回転する際の回転速度(X軸)
+#define ENEMY_SHINK_SPEED_X		(0.01f)					// プレイヤーの周りを回転する際の回転速度(X軸)
 
 #define ENEMY_POP_DEISTANCE			(500)				// エネミーのポップする距離(ベース)
 #define ENEMY_POP_DEISTANCE_RAND	(300)				// エネミーのポップする距離(乱数)
@@ -145,6 +145,7 @@ HRESULT InitSkyEnemy(void)
 		g_SkyEnemy[i].EnemyType = 0;
 		g_SkyEnemy[i].target = FALSE;
 
+		g_SkyEnemy[i].particleOn = FALSE;
 
 		g_Collision[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
 		g_Collision[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -482,7 +483,7 @@ void SetSkyEnemy(void)
 
 			// エネミーが出現する初期位置
 			g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
-								 -150.0f,	// Y
+								 0.0f,	// Y
 								  g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
 
 			g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };
@@ -491,6 +492,9 @@ void SetSkyEnemy(void)
 			// 一定範囲内に入った際の回転速度の初期化
 			g_SkyEnemy[i].circle1_spd = RamdomFloat(5, ENEMY_SHINK_SPEED_Y, -ENEMY_SHINK_SPEED_Y);
 			g_SkyEnemy[i].circle2_spd = RamdomFloat(3, ENEMY_SHINK_SPEED_X, -ENEMY_SHINK_SPEED_X);
+
+			g_SkyEnemy[i].particleOn = FALSE;
+
 
 			return;
 		}
