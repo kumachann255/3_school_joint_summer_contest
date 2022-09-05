@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// ƒ^ƒCƒ€ˆ— [timeUI.cpp]
-// Author : ŒFàV‹`O
+// ã‚¿ã‚¤ãƒ å‡¦ç† [timeUI.cpp]
+// Author : ç†Šæ¾¤ç¾©å¼˜
 //
 //=============================================================================
 #include "main.h"
@@ -13,26 +13,27 @@
 #include "score.h"
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define TEXTURE_WIDTH				(45)	// ŠÔƒTƒCƒY
+#define TEXTURE_WIDTH				(45)	// æ™‚é–“ã‚µã‚¤ã‚º
 #define TEXTURE_HEIGHT				(90)	// 
-#define TEXTURE_MAX					(2)		// ƒeƒNƒXƒ`ƒƒ‚Ì”
+#define TEXTURE_MAX					(2)		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°
 
-#define TIME_MAX					(30)	// ŠÔ§ŒÀ
+#define TIME_MAX					(30)	// æ™‚é–“åˆ¶é™
+
 
 //*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
 void SetEndTime(void);
 void GetStageClear(int score, int mode, int stage);
 
 
 //*****************************************************************************
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;		// ’¸“_î•ñ
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ƒeƒNƒXƒ`ƒƒî•ñ
+static ID3D11Buffer				*g_VertexBuffer = NULL;		// é ‚ç‚¹æƒ…å ±
+static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ãƒ†ã‚¯ã‚¹ãƒãƒ£æƒ…å ±
 
 static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/time0.png",
@@ -40,30 +41,30 @@ static char *g_TexturName[TEXTURE_MAX] = {
 };
 
 
-static BOOL						g_Use;						// TRUE:g‚Á‚Ä‚¢‚é  FALSE:–¢g—p
-static float					g_w, g_h;					// •‚Æ‚‚³
-static XMFLOAT3					g_Pos;						// ƒ|ƒŠƒSƒ“‚ÌÀ•W
-static int						g_TexNo;					// ƒeƒNƒXƒ`ƒƒ”Ô†
+static BOOL						g_Use;						// TRUE:ä½¿ã£ã¦ã„ã‚‹  FALSE:æœªä½¿ç”¨
+static float					g_w, g_h;					// å¹…ã¨é«˜ã•
+static XMFLOAT3					g_Pos;						// ãƒãƒªã‚´ãƒ³ã®åº§æ¨™
+static int						g_TexNo;					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç•ªå·
 
-static int						g_Time;						// c‚èŠÔ
+static int						g_Time;						// æ®‹ã‚Šæ™‚é–“
 
 static BOOL						g_Load = FALSE;
 
-static int						g_stage;					// Œ»İ‚ÌƒXƒe[ƒW”
-static int						g_Mode_old;					// ’¼‘O‚Ìƒ‚[ƒh‚ğ‹L˜^
-static BOOL						g_Fade;						// ƒtƒF[ƒh’†‚©‚Ç‚¤‚©
+static int						g_stage;					// ç¾åœ¨ã®ã‚¹ãƒ†ãƒ¼ã‚¸æ•°
+static int						g_Mode_old;					// ç›´å‰ã®ãƒ¢ãƒ¼ãƒ‰ã‚’è¨˜éŒ²
+static BOOL						g_Fade;						// ãƒ•ã‚§ãƒ¼ãƒ‰ä¸­ã‹ã©ã†ã‹
 
-static time_t naw_time = 0;		// Œ»İ‚ÌŠÔ
-static time_t end_time = 0;		// I—¹ŠÔ
+static time_t naw_time = 0;		// ç¾åœ¨ã®æ™‚é–“
+static time_t end_time = 0;		// çµ‚äº†æ™‚é–“
 
 //=============================================================================
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //=============================================================================
 HRESULT InitTime(void)
 {
 	ID3D11Device *pDevice = GetDevice();
 
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -76,7 +77,7 @@ HRESULT InitTime(void)
 	}
 
 
-	// ’¸“_ƒoƒbƒtƒ@¶¬
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -86,20 +87,20 @@ HRESULT InitTime(void)
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
 
-	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ–
 	g_Use   = TRUE;
 	g_w     = TEXTURE_WIDTH;
 	g_h     = TEXTURE_HEIGHT;
 	g_Pos   = { 500.0f, 60.0f, 0.0f };
 	g_TexNo = 0;
 
-	g_Time = 0;	// ŠÔ‚Ì‰Šú‰»
+	g_Time = 0;	// æ™‚é–“ã®åˆæœŸåŒ–
 
 	g_stage = GetStage();
 	g_Mode_old = GetMode();
 	g_Fade = FALSE;
 
-	// I—¹ŠÔ‚Ìİ’è
+	// çµ‚äº†æ™‚é–“ã®è¨­å®š
 	SetEndTime();
 
 	g_Load = TRUE;
@@ -107,7 +108,7 @@ HRESULT InitTime(void)
 }
 
 //=============================================================================
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //=============================================================================
 void UninitTime(void)
 {
@@ -132,18 +133,18 @@ void UninitTime(void)
 }
 
 //=============================================================================
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 //=============================================================================
 void UpdateTime(void)
 {
-	// I—¹ŠÔ‚©‚çŒ»İ‚ÌŠÔ‚ğˆø‚¢‚Äc‚èŠÔ‚ğZo‚·‚é
+	// çµ‚äº†æ™‚é–“ã‹ã‚‰ç¾åœ¨ã®æ™‚é–“ã‚’å¼•ã„ã¦æ®‹ã‚Šæ™‚é–“ã‚’ç®—å‡ºã™ã‚‹
 	g_Time = (int)(end_time - time(NULL));
 
-	// ŠÔ‚ª0ˆÈ‰º‚É‚È‚ç‚È‚¢‚æ‚¤‚É
+	// æ™‚é–“ãŒ0ä»¥ä¸‹ã«ãªã‚‰ãªã„ã‚ˆã†ã«
 	if (g_Time < 0) g_Time = 0;
 
-	// ƒV[ƒ“‘JˆÚ
-	// ƒXƒe[ƒWƒNƒŠƒA‚µ‚Ä‚¢‚é‚Æ‚«‚Éˆ—
+	// ã‚·ãƒ¼ãƒ³é·ç§»
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¯ãƒªã‚¢ã—ã¦ã„ã‚‹ã¨ãã«å‡¦ç†
 	if ((g_Time == 0) && (!g_Fade))
 	{
 		g_Fade = TRUE;
@@ -161,64 +162,64 @@ void UpdateTime(void)
 }
 
 //=============================================================================
-// •`‰æˆ—
+// æç”»å‡¦ç†
 //=============================================================================
 void DrawTime(void)
 {
-	// ’¸“_ƒoƒbƒtƒ@İ’è
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡è¨­å®š
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// ƒ}ƒgƒŠƒNƒXİ’è
+	// ãƒãƒˆãƒªã‚¯ã‚¹è¨­å®š
 	SetWorldViewProjection2D();
 
-	// ƒvƒŠƒ~ƒeƒBƒuƒgƒ|ƒƒWİ’è
+	// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒˆãƒãƒ­ã‚¸è¨­å®š
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// ƒ}ƒeƒŠƒAƒ‹İ’è
+	// ãƒãƒ†ãƒªã‚¢ãƒ«è¨­å®š
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-	// ƒeƒNƒXƒ`ƒƒİ’è
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-	// Œ…”•ªˆ—‚·‚é
+	// æ¡æ•°åˆ†å‡¦ç†ã™ã‚‹
 	int number = g_Time;
 	for (int i = 0; i < TIME_DIGIT; i++)
 	{
-		// ¡‰ñ•\¦‚·‚éŒ…‚Ì”š
+		// ä»Šå›è¡¨ç¤ºã™ã‚‹æ¡ã®æ•°å­—
 		float x = (float)(number % 10);
 
-		// ƒXƒRƒA‚ÌˆÊ’u‚âƒeƒNƒXƒ`ƒƒ[À•W‚ğ”½‰f
-		float px = g_Pos.x - g_w*i;	// ƒXƒRƒA‚Ì•\¦ˆÊ’uX
-		float py = g_Pos.y;			// ƒXƒRƒA‚Ì•\¦ˆÊ’uY
-		float pw = g_w;				// ƒXƒRƒA‚Ì•\¦•
-		float ph = g_h;				// ƒXƒRƒA‚Ì•\¦‚‚³
+		// ã‚¹ã‚³ã‚¢ã®ä½ç½®ã‚„ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼åº§æ¨™ã‚’åæ˜ 
+		float px = g_Pos.x - g_w*i;	// ã‚¹ã‚³ã‚¢ã®è¡¨ç¤ºä½ç½®X
+		float py = g_Pos.y;			// ã‚¹ã‚³ã‚¢ã®è¡¨ç¤ºä½ç½®Y
+		float pw = g_w;				// ã‚¹ã‚³ã‚¢ã®è¡¨ç¤ºå¹…
+		float ph = g_h;				// ã‚¹ã‚³ã‚¢ã®è¡¨ç¤ºé«˜ã•
 
-		float tw = 1.0f / 10;		// ƒeƒNƒXƒ`ƒƒ‚Ì•
-		float th = 1.0f / 1;		// ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³
-		float tx = x * tw;			// ƒeƒNƒXƒ`ƒƒ‚Ì¶ãXÀ•W
-		float ty = 0.0f;			// ƒeƒNƒXƒ`ƒƒ‚Ì¶ãYÀ•W
+		float tw = 1.0f / 10;		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…
+		float th = 1.0f / 1;		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•
+		float tx = x * tw;			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å·¦ä¸ŠXåº§æ¨™
+		float ty = 0.0f;			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å·¦ä¸ŠYåº§æ¨™
 
-		// ‚P–‡‚Ìƒ|ƒŠƒSƒ“‚Ì’¸“_‚ÆƒeƒNƒXƒ`ƒƒÀ•W‚ğİ’è
+		// ï¼‘æšã®ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ã‚’è¨­å®š
 		SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
 			XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 
-		// ƒ|ƒŠƒSƒ“•`‰æ
+		// ãƒãƒªã‚´ãƒ³æç”»
 		GetDeviceContext()->Draw(4, 0);
 
-		// Ÿ‚ÌŒ…‚Ö
+		// æ¬¡ã®æ¡ã¸
 		number /= 10;
 	}
 }
 
 
 //=============================================================================
-// ƒ^ƒCƒ€‚ğ‰ÁZ‚·‚é
-// ˆø”:add :’Ç‰Á‚·‚é“_”Bƒ}ƒCƒiƒX‚à‰Â”\
+// ã‚¿ã‚¤ãƒ ã‚’åŠ ç®—ã™ã‚‹
+// å¼•æ•°:add :è¿½åŠ ã™ã‚‹ç‚¹æ•°ã€‚ãƒã‚¤ãƒŠã‚¹ã‚‚å¯èƒ½
 //=============================================================================
 void AddTime(int add)
 {
@@ -231,7 +232,7 @@ void AddTime(int add)
 }
 
 //=============================================================================
-// c‚èŠÔ‚ğæ“¾
+// æ®‹ã‚Šæ™‚é–“ã‚’å–å¾—
 //=============================================================================
 int GetTime(void)
 {
@@ -240,7 +241,7 @@ int GetTime(void)
 
 
 //=============================================================================
-// I—¹ŠÔ‚ğƒZƒbƒg‚·‚éŠÖ”
+// çµ‚äº†æ™‚é–“ã‚’ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
 //=============================================================================
 void SetEndTime(void)
 {
@@ -249,7 +250,7 @@ void SetEndTime(void)
 
 
 //=============================================================================
-// ƒQ[ƒ€ƒNƒŠƒA‚µ‚Ä‚¢‚é‚©‚ğ”»’f‚ÆƒV[ƒ“‘JˆÚ
+// ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢ã—ã¦ã„ã‚‹ã‹ã‚’åˆ¤æ–­ã¨ã‚·ãƒ¼ãƒ³é·ç§»
 //=============================================================================
 void GetStageClear(int score, int mode, int stage)
 {
@@ -257,7 +258,7 @@ void GetStageClear(int score, int mode, int stage)
 	{
 	case MODE_GAME_CITY:
 
-		// ƒXƒe[ƒW‚²‚Æ‚É”»’è
+		// ã‚¹ãƒ†ãƒ¼ã‚¸ã”ã¨ã«åˆ¤å®š
 		switch (stage)
 		{
 		case stage0:
@@ -284,7 +285,7 @@ void GetStageClear(int score, int mode, int stage)
 
 	case MODE_GAME_SEA:
 
-		// ƒXƒe[ƒW‚²‚Æ‚É”»’è
+		// ã‚¹ãƒ†ãƒ¼ã‚¸ã”ã¨ã«åˆ¤å®š
 		switch (stage)
 		{
 		case stage0:
@@ -312,7 +313,7 @@ void GetStageClear(int score, int mode, int stage)
 
 	case MODE_GAME_SKY:
 
-		// ƒXƒe[ƒW‚²‚Æ‚É”»’è
+		// ã‚¹ãƒ†ãƒ¼ã‚¸ã”ã¨ã«åˆ¤å®š
 		switch (stage)
 		{
 		case stage0:
@@ -336,7 +337,7 @@ void GetStageClear(int score, int mode, int stage)
 }
 
 
-// ’¼‘O‚ÌƒQ[ƒ€ƒ‚[ƒh‚ğ•Ô‚·
+// ç›´å‰ã®ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰ã‚’è¿”ã™
 int GetModeOld(void)
 {
 	return g_Mode_old;

@@ -49,6 +49,8 @@
 #define ENEMY_GOAL_Z		(70.0f)						// エネミーのゴール基準位置(z座標)
 #define ENEMY_GOAL_Z_OFFSET	(60)						// エネミーのゴール位置の乱数
 
+#define STAGE_TUTORIAL_MAX_POP	(1)						// 最大、場に何体エネミーを出すか
+
 #define STAGE0_POP_COUNT	(100)						// エネミーのポップ間隔
 #define STAGE0_MAX_POP		(20)						// 最大、場に何体エネミーを出すか
 
@@ -216,7 +218,6 @@ void UpdateEnemy(void)
 			// 時間経過とエネミーの出現数次第でポップするか判断
 			if ((count % STAGE0_POP_COUNT == 0) && (useCount < STAGE0_MAX_POP))
 			{
-
 				SetEnemy();
 			}
 
@@ -232,13 +233,12 @@ void UpdateEnemy(void)
 			// 時間経過とエネミーの出現数次第でポップするか判断
 			if ((count % STAGE1_POP_COUNT == 0) && (useCount < STAGE1_MAX_POP))
 			{
-
 				SetEnemy();
 			}
 
 			break;
 
-		case stage2:
+		case tutorial:
 			// 今何体出現しているかを確認
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
@@ -246,30 +246,12 @@ void UpdateEnemy(void)
 			}
 
 			// 時間経過とエネミーの出現数次第でポップするか判断
-			if ((count % STAGE2_POP_COUNT == 0) && (useCount < STAGE2_MAX_POP))
+			if ((count % STAGE2_POP_COUNT == 0) && (useCount < STAGE_TUTORIAL_MAX_POP))
 			{
-
 				SetEnemy();
 			}
 
 			break;
-
-		case stage3:
-			// 今何体出現しているかを確認
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (g_Enemy[i].use == TRUE) useCount++;
-			}
-
-			// 時間経過とエネミーの出現数次第でポップするか判断
-			if ((count % STAGE3_POP_COUNT == 0) && (useCount < STAGE3_MAX_POP))
-			{
-
-				SetEnemy();
-			}
-
-			break;
-
 		}
 	}
 
@@ -334,7 +316,6 @@ void UpdateEnemy(void)
 						// リムライトオフ
 						g_Enemy[i].fuchi = FALSE;
 					}
-
 				}
 			}
 
@@ -372,8 +353,6 @@ void UpdateEnemy(void)
 
 			// 当たり判定ようのボックスと位置を共有する
 			g_Collision[i].pos = g_Enemy[i].pos;
-
-
 
 			//=======================================================================
 			// ↓今回は当たった後のエネミーの挙動は攻撃オブジェクト側で行いましょう！
@@ -439,8 +418,6 @@ void UpdateEnemy(void)
 				{
 					g_Enemy[i].use = FALSE;
 					g_Collision[i].use = FALSE;
-
-					SetTutorialEnemy(TRUE);
 				}
 			}
 

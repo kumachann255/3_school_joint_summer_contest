@@ -63,6 +63,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="particleSky.cpp" />
+    <ClCompile Include="sea_particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attackRange.h" />
@@ -128,5 +129,6 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="particleSky.h" />
+    <ClInclude Include="sea_particle.h" />
   </ItemGroup>
 </Project>

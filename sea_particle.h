@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// パーティクル処理 [particle.h]
-// Author : 熊澤義弘
+// 海パーティクル処理 [sea_particle.h]
+// Author : 熊澤義弘 + 大塚勝亮
 //
 //=============================================================================
 #pragma once
@@ -13,14 +13,13 @@
 // パーティクルの種類
 enum
 {
-	PARTICLE_TYPE_CUP,			// カップ用
-	PARTICLE_TYPE_CUP_NOTE,		// カップ音符用
-	PARTICLE_TYPE_BLAST,		// ネバネバ用
+	PARTICLE_TYPE_TAKO,			// タコ用
+	PARTICLE_TYPE_SAME,			// サメ用
 	PARTICLE_TYPE_MAX,
 };
 
 
-struct PARTICLE
+struct SEA_PARTICLE
 {
 	XMFLOAT3		pos;			// 位置
 	XMFLOAT3		rot;			// 回転
@@ -28,28 +27,23 @@ struct PARTICLE
 	XMFLOAT3		move;			// 移動量
 	
 	MATERIAL		material;		// マテリアル
-
-	int				nIdxShadow;		// 影ID
 	
-	int				texNo;			// テクスチャ番号
 	int				type;			// タイプ
 	int				life;			// 寿命
-	
-	float			pop;			// 表示タイミング
+	int				pop;			// 表示タイミング
 	
 	BOOL			use;			// 使用しているかどうか
 
-	float			radian;			// カップ用ラジアン
 };
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitParticle(void);
-void UninitParticle(void);
-void UpdateParticle(void);
-void DrawParticle(void);
+HRESULT InitSeaParticle(void);
+void UninitSeaParticle(void);
+void UpdateSeaParticle(void);
+void DrawSeaParticle(void);
 
-int SetParticle(int adr, int type, int texNo, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life);
-void SetColorParticle(int nIdxParticle, XMFLOAT4 col);
+//int SetSeaParticleSetSeaParticle(int type, XMFLOAT3 pos, int life);
+//void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col);
 
