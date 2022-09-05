@@ -39,6 +39,7 @@
 #include "rockOn.h"
 #include "fieldobj.h"
 #include "particleMeteor.h"
+#include "particleSky.h"
 
 
 //*****************************************************************************
@@ -60,6 +61,7 @@ void CheckHitSky(void);
 static int	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 static BOOL	g_bPause = TRUE;	// ポーズON/OFF
+static BOOL g_DeathParticl;
 
 static int					g_Stage;
 
@@ -176,6 +178,8 @@ HRESULT InitGameSky(void)
 	// メテオのパーティクルの初期化
 	InitParticleMeteor();
 
+	// 空ステージのエネミーを倒したときのパーティクルの初期化
+	InitParticleSky();
 
 	g_Stage = GetStage();
 
@@ -199,6 +203,7 @@ HRESULT InitGameSky(void)
 		break;
 	}
 
+	g_DeathParticl = FALSE;
 
 	return S_OK;
 }
@@ -208,6 +213,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// 空ステージのエネミーを倒したときのパーティクルの終了処理
+	UninitParticleSky();
+
 	// メテオのパーティクルの終了処理
 	UninitParticleMeteor();
 
@@ -364,6 +372,10 @@ void UpdateGameSky(void)
 
 	// メテオのパーティクルの更新処理
 	UpdateParticleMeteor();
+
+	// 空ステージのエネミーを倒したときのパーティクルの更新処理
+	UpdateParticleSky();
+
 }
 
 //=============================================================================
@@ -407,6 +419,10 @@ void DrawGameSky0(void)
 
 	// メテオのパーティクルの描画処理
 	DrawParticleMeteor();
+
+	// 空ステージのエネミーを倒したときのパーティクルの描画処理
+	DrawParticleSky();
+
 
 
 	// 2Dの物を描画する処理
@@ -543,6 +559,9 @@ void CheckHitSky(void)
 			if (CollisionBC(s_meteor[i].pos,sky_enemy[j].pos,s_meteor[i].size,sky_enemy[j].size))
 			{
 				sky_enemy[j].use = FALSE;
+				sky_enemy[j].particleOn = TRUE;
+
+				g_DeathParticl = TRUE;
 			}
 		}
 	}
@@ -557,3 +576,7 @@ void CheckHitSky(void)
 }
 
 
+BOOL GetDeathPartical(void)
+{
+	return g_DeathParticl;
+}

@@ -13,6 +13,7 @@
 #include "shadow.h"
 #include "bom.h"
 #include "player.h"
+#include "combo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -105,7 +106,8 @@ void UpdateAttackR(void)
 	{
 		g_AttackR.use = FALSE;
 	}
-
+	
+	
 	{
 
 		// 移動させちゃう
@@ -136,6 +138,8 @@ void DrawAttackR(void)
 {
 	// 攻撃方法がロックオンの場合はスキップ
 	if (GetPlayer()->rockOn) return;
+	// 攻撃方法がカップの場合はスキップ
+	if (GetCombo() >= COMBO_CHANGE_ACTION && GetMode() == MODE_GAME_CITY) return;
 
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 

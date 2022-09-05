@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// 軌道処理 [orbit.cpp]
+// メテオのパーティクル処理 [particleMeteor.cpp]
 // Author : 熊澤義弘
 //
 //=============================================================================
@@ -10,47 +10,40 @@
 #include "camera.h"
 #include "model.h"
 #include "shadow.h"
-#include "orbit.h"
-#include "player.h"
-#include "attackRange.h"
-#include "bom.h"
-#include "combo.h"
+#include "particle.h"
+#include "particleSky.h"
+#include "sky_enemy.h"
+
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_MAX			(1)			// テクスチャの数
 
-#define	ORBIT_SIZE_X		(2.0f)		// 頂点サイズ
-#define	ORBIT_SIZE_Y		(2.0f)		// 頂点サイズ
+#define	PARTICLE_SIZE_X		(15.0f)		// 頂点サイズ・パーティクルサイズ
+#define	PARTICLE_SIZE_Y		(15.0f)		// 頂点サイズ・パーティクルサイズ
 
-#define	MAX_ORBIT			(32)		// パーティクル最大数
+#define	MAX_PARTICLE		(1024)		// パーティクル最大数
 
-#define	DISP_SHADOW						// 影の表示
-//#undef DISP_SHADOW
+#define SKY_ENEMY_POP_RAND		(10.0f)		// 発生位置の乱数
 
-//*****************************************************************************
-// 構造体定義
-//*****************************************************************************
-typedef struct
-{
-	XMFLOAT3		pos;			// 位置
-	XMFLOAT3		rot;			// 回転
-	XMFLOAT3		scale;			// スケール
-	XMFLOAT3		move;			// 移動量
-	MATERIAL		material;		// マテリアル
-	float			fSizeX;			// 幅
-	float			fSizeY;			// 高さ
-	int				nIdxShadow;		// 影ID
-	int				nLife;			// 寿命
-	BOOL			bUse;			// 使用しているかどうか
+#define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
+#define METEOR_MOVE_XY		(5.0f)		// xy軸の移動量の乱数
 
-} ORBIT;
+#define MAX_SKY_ENEMY_COLOR	(0.5f)		// カラーの乱数
+#define MIN_SKY_ENEMY_COLOR	(0.2f)		// カラーの乱数
+
+#define MAX_SKY_ENEMY_LIFE		(50)		// カラーの乱数
+#define MIN_SKY_ENEMY_LIFE		(50)		// カラーの乱数
+
+#define SKY_ENEMY_LIFE_ALFA	(20)		// カラーの乱数
+
+#define SKY_ENEMY_FLAM_NUM		(10)			// 1フレームに何個出すか
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT MakeVertexOrbit(void);
+HRESULT MakeVertexParticleSky(void);
 
 //*****************************************************************************
 // グローバル変数
@@ -60,16 +53,11 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;					// テクスチャ番号
 
-static ORBIT					g_Orbit[MAX_ORBIT];		// パーティクルワーク
-static XMFLOAT3					g_posBase;						// ビルボード発生位置
-static float					g_fWidthBase = 5.0f;			// 基準の幅
-static float					g_fHeightBase = 10.0f;			// 基準の高さ
-static float					g_roty = 0.0f;					// 移動方向
-static float					g_spd = 0.0f;					// 移動スピード
+static PARTICLE						g_ParticleSky[MAX_PARTICLE];		// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/effect000.jpg",
+	"data/TEXTURE/onpu01.jpg",
 };
 
 static BOOL						g_Load = FALSE;
@@ -77,10 +65,10 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitOrbit(void)
+HRESULT InitParticleSky(void)
 {
 	// 頂点情報の作成
-	MakeVertexOrbit();
+	MakeVertexParticleSky();
 
 	// テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -97,26 +85,22 @@ HRESULT InitOrbit(void)
 	g_TexNo = 0;
 
 	// パーティクルワークの初期化
-	for(int nCntParticle = 0; nCntParticle < MAX_ORBIT; nCntParticle++)
+	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		g_Orbit[nCntParticle].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Orbit[nCntParticle].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Orbit[nCntParticle].scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		g_Orbit[nCntParticle].move = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_ParticleSky[i].type = 0;
+		g_ParticleSky[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleSky[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleSky[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_ParticleSky[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		ZeroMemory(&g_Orbit[nCntParticle].material, sizeof(g_Orbit[nCntParticle].material));
-		g_Orbit[nCntParticle].material.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		ZeroMemory(&g_ParticleSky[i].material, sizeof(g_ParticleSky[i].material));
+		g_ParticleSky[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		g_Orbit[nCntParticle].fSizeX = ORBIT_SIZE_X;
-		g_Orbit[nCntParticle].fSizeY = ORBIT_SIZE_Y;
-		g_Orbit[nCntParticle].nIdxShadow = -1;
-		g_Orbit[nCntParticle].nLife = 0;
-		g_Orbit[nCntParticle].bUse = TRUE;
+		g_ParticleSky[i].life = 0;
+		g_ParticleSky[i].pop = 0.0f;
+		g_ParticleSky[i].use = FALSE;
 	}
 
-	g_posBase = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_roty = 0.0f;
-	g_spd = 0.0f;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -125,7 +109,7 @@ HRESULT InitOrbit(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitOrbit(void)
+void UninitParticleSky(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -152,65 +136,75 @@ void UninitOrbit(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateOrbit(void)
+void UpdateParticleSky(void)
 {
-	// 攻撃方法がロックオンの場合はスキップ
-	if (GetPlayer()->rockOn) return;
+	SKY_ENEMY *sky_enemy = GetSkyEnemy();
 
-	PLAYER *pPlayer = GetPlayer();
-	ATTACKRANGE *AttackR = GetAttackR();
-
-	XMFLOAT3 control;	// 制御点
-	float hight = 0.0f;	// 高さ調節
-
-	// 制御点の算出
-	control.x = (AttackR->pos.x - pPlayer->pos.x) / 2.0f + pPlayer->pos.x;
-	control.z = (AttackR->pos.z - pPlayer->pos.z) / 2.0f + pPlayer->pos.z;
-	control.y = (AttackR->pos.y - pPlayer->pos.y) / 2.0f + pPlayer->pos.y;
-
-	hight = BOM_H;
-
-	control.y += hight;
-
-	float time = 1.0f;
-
+	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		for(int nCntParticle = 0; nCntParticle < MAX_ORBIT; nCntParticle++)
+		// パーティクルワーク処理
+		if(g_ParticleSky[i].use)		// 使用中
 		{
-			if(g_Orbit[nCntParticle].bUse)
-			{// 使用中
-
-				// 時間の初期化
-				time = 1.0f;
-				time /= MAX_ORBIT;
-				time *= nCntParticle;
-
-				// スケールの初期化
-				g_Orbit[nCntParticle].scale.x = 1.0f;
-				g_Orbit[nCntParticle].scale.y = 1.0f;
-				g_Orbit[nCntParticle].scale.z = 1.0f;
-
-				// ベジェ曲線算出
-				g_Orbit[nCntParticle].pos.x =	((1.0f - time) * (1.0f - time) * pPlayer->pos.x) + 
-												(2 * time * (1.0f - time) * control.x) + 
-												(time * time * AttackR->pos.x);
-
-				g_Orbit[nCntParticle].pos.z = ((1.0f - time) * (1.0f - time) * pPlayer->pos.z) +
-					(2 * time * (1.0f - time) * control.z) +
-					(time * time * AttackR->pos.z);
-
-				g_Orbit[nCntParticle].pos.y = ((1.0f - time) * (1.0f - time) * pPlayer->pos.y) +
-					(2 * time * (1.0f - time) * control.y) +
-					(time * time * AttackR->pos.y);
-
-				// カップの場合は直線にする
-				if (GetCombo() >= COMBO_CHANGE_ACTION && GetMode() == MODE_GAME_CITY)
+			g_ParticleSky[i].life--;
+			
+			if (g_ParticleSky[i].life <= SKY_ENEMY_LIFE_ALFA)
+			{	// 寿命が１０フレーム切ったら段々透明になっていく
+				g_ParticleSky[i].material.Diffuse.w -= 1.0f / SKY_ENEMY_LIFE_ALFA;
+				if (g_ParticleSky[i].material.Diffuse.w < 0.0f)
 				{
-					g_Orbit[nCntParticle].pos.y = 1.0f;
-					
-					g_Orbit[nCntParticle].scale.x = 3.0f;
-					g_Orbit[nCntParticle].scale.y = 3.0f;
-					g_Orbit[nCntParticle].scale.z = 3.0f;
+					g_ParticleSky[i].material.Diffuse.w = 0.0f;
+				}
+			}
+
+			if (g_ParticleSky[i].life <= 0)
+			{
+				g_ParticleSky[i].use = FALSE;
+			}
+
+			// 移動処理
+			g_ParticleSky[i].pos.x += g_ParticleSky[i].move.x;
+			g_ParticleSky[i].pos.y += g_ParticleSky[i].move.y;
+			g_ParticleSky[i].pos.z += g_ParticleSky[i].move.z;
+		}
+	}
+
+
+	//エフェクトの発生処理
+	{
+		for (int i = 0; i < MAX_SKY_ENEMY; i++)
+		{
+			if (sky_enemy[i].particleOn)
+			{
+				sky_enemy[i].particleOn = FALSE;
+
+				for (int p = 0; p < SKY_ENEMY_FLAM_NUM; p++)
+				{
+					XMFLOAT3 pos, move, scl;
+					XMFLOAT4 col;
+					int life;
+
+					// 発生位置を設定
+					pos.x = sky_enemy[i].pos.x + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					pos.y = sky_enemy[i].pos.y + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					pos.z = sky_enemy[i].pos.z + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+
+					// 移動量を設定
+					move.x = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+					move.z = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+					move.y = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+
+					// カラー設定
+					col.x = 0.8f;
+					col.y = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					col.z = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					col.w = 1.0f;
+
+					// 寿命の設定
+					life = (rand() % MAX_SKY_ENEMY_LIFE) + MIN_SKY_ENEMY_LIFE;
+
+					scl = { 1.0f,1.0f,1.0f };
+
+					SetParticleSky(pos, scl, move, col, life);
 				}
 			}
 		}
@@ -220,11 +214,8 @@ void UpdateOrbit(void)
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawOrbit(void)
+void DrawParticleSky(void)
 {
-	// 攻撃方法がロックオンの場合はスキップ
-	if (GetPlayer()->rockOn) return;
-
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
 
@@ -251,15 +242,20 @@ void DrawOrbit(void)
 	// テクスチャ設定
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-	for(int nCntParticle = 0; nCntParticle < MAX_ORBIT; nCntParticle++)
+	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(g_Orbit[nCntParticle].bUse)
+		if(g_ParticleSky[i].use)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
 
 			// ビューマトリックスを取得
 			mtxView = XMLoadFloat4x4(&cam->mtxView);
+
+			//mtxWorld = XMMatrixInverse(nullptr, mtxView);
+			//mtxWorld.r[3].m128_f32[0] = 0.0f;
+			//mtxWorld.r[3].m128_f32[1] = 0.0f;
+			//mtxWorld.r[3].m128_f32[2] = 0.0f;
 
 			// 処理が速いしお勧め
 			mtxWorld.r[0].m128_f32[0] = mtxView.r[0].m128_f32[0];
@@ -275,18 +271,18 @@ void DrawOrbit(void)
 			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
 
 			// スケールを反映
-			mtxScl = XMMatrixScaling(g_Orbit[nCntParticle].scale.x, g_Orbit[nCntParticle].scale.y, g_Orbit[nCntParticle].scale.z);
+			mtxScl = XMMatrixScaling(g_ParticleSky[i].scl.x, g_ParticleSky[i].scl.y, g_ParticleSky[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_Orbit[nCntParticle].pos.x, g_Orbit[nCntParticle].pos.y, g_Orbit[nCntParticle].pos.z);
+			mtxTranslate = XMMatrixTranslation(g_ParticleSky[i].pos.x, g_ParticleSky[i].pos.y, g_ParticleSky[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 			// ワールドマトリックスの設定
 			SetWorldMatrix(&mtxWorld);
 
 			// マテリアル設定
-			SetMaterial(g_Orbit[nCntParticle].material);
+			SetMaterial(g_ParticleSky[i].material);
 
 			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
@@ -310,7 +306,7 @@ void DrawOrbit(void)
 //=============================================================================
 // 頂点情報の作成
 //=============================================================================
-HRESULT MakeVertexOrbit(void)
+HRESULT MakeVertexParticleSky(void)
 {
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -329,10 +325,10 @@ HRESULT MakeVertexOrbit(void)
 		VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
 
 		// 頂点座標の設定
-		vertex[0].Position = XMFLOAT3(-ORBIT_SIZE_X / 2,  ORBIT_SIZE_Y / 2, 0.0f);
-		vertex[1].Position = XMFLOAT3( ORBIT_SIZE_X / 2,  ORBIT_SIZE_Y / 2, 0.0f);
-		vertex[2].Position = XMFLOAT3(-ORBIT_SIZE_X / 2, -ORBIT_SIZE_Y / 2, 0.0f);
-		vertex[3].Position = XMFLOAT3( ORBIT_SIZE_X / 2, -ORBIT_SIZE_Y / 2, 0.0f);
+		vertex[0].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[1].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[2].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[3].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
 
 		// 法線の設定
 		vertex[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
@@ -361,42 +357,32 @@ HRESULT MakeVertexOrbit(void)
 //=============================================================================
 // マテリアルカラーの設定
 //=============================================================================
-void SetColorOrbit(int nIdxParticle, XMFLOAT4 col)
+void SetColorParticleSky(int nIdxParticle, XMFLOAT4 col)
 {
-	g_Orbit[nIdxParticle].material.Diffuse = col;
+	g_ParticleSky[nIdxParticle].material.Diffuse = col;
 }
 
 //=============================================================================
 // パーティクルの発生処理
 //=============================================================================
-int SetOrbit(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT4 col, float fSizeX, float fSizeY, int nLife)
+int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
 {
 	int nIdxParticle = -1;
 
-	for(int nCntParticle = 0; nCntParticle < MAX_ORBIT; nCntParticle++)
+	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(!g_Orbit[nCntParticle].bUse)
+		if(!g_ParticleSky[i].use)
 		{
-			g_Orbit[nCntParticle].pos = pos;
-			g_Orbit[nCntParticle].rot   = { 0.0f, 0.0f, 0.0f };
-			g_Orbit[nCntParticle].scale = { 1.0f, 1.0f, 1.0f };
-			g_Orbit[nCntParticle].move = move;
-			g_Orbit[nCntParticle].material.Diffuse = col;
-			g_Orbit[nCntParticle].fSizeX = fSizeX;
-			g_Orbit[nCntParticle].fSizeY = fSizeY;
-			g_Orbit[nCntParticle].nLife = nLife;
-			g_Orbit[nCntParticle].bUse = TRUE;
+			g_ParticleSky[i].pos  = pos;
+			g_ParticleSky[i].rot  = { 0.0f, 0.0f, 0.0f };
+			g_ParticleSky[i].scl  = { 1.0f, 1.0f, 1.0f };
+			g_ParticleSky[i].move = move;
+			g_ParticleSky[i].material.Diffuse = col;
+			g_ParticleSky[i].life = life;
+			g_ParticleSky[i].use  = TRUE;
+			
 
-			nIdxParticle = nCntParticle;
-
-#ifdef DISP_SHADOW
-			// 影の設定
-			g_Orbit[nCntParticle].nIdxShadow = CreateShadow(XMFLOAT3(pos.x, 0.1f, pos.z), 0.8f, 0.8f);		// 影の設定
-			if(g_Orbit[nCntParticle].nIdxShadow != -1)
-			{
-				SetColorShadow(g_Orbit[nCntParticle].nIdxShadow, XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-			}
-#endif
+			nIdxParticle = i;
 
 			break;
 		}
