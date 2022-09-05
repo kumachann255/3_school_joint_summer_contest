@@ -58,7 +58,7 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;				// 頂点バッファ
 
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
-static PARTICLE						g_Particle[MAX_PARTICLE];			// パーティクルワーク
+static PARTICLE						g_Particle[MAX_PARTICLE];	// パーティクルワーク
 
 static int							g_CupNotePop;						// カップ音符の数を制限用
 
@@ -192,28 +192,8 @@ void UpdateParticle(void)
 			if (g_Particle[i].life <= 0)
 			{
 				g_Particle[i].use = FALSE;
-				ReleaseShadow(g_Particle[i].nIdxShadow);
-				g_Particle[i].nIdxShadow = -1;
 			}
-			//else
-			//{
-			//	if(g_Particle[i].life <= 80)
-			//	{
-			//		g_Particle[i].material.Diffuse.x = 0.8f - (float)(80 - g_Particle[i].life) / 80 * 0.8f;
-			//		g_Particle[i].material.Diffuse.y = 0.7f - (float)(80 - g_Particle[i].life) / 80 * 0.7f;
-			//		g_Particle[i].material.Diffuse.z = 0.2f - (float)(80 - g_Particle[i].life) / 80 * 0.2f;
-			//	}
 
-			//	if(g_Particle[i].life <= 20)
-			//	{
-			//		// α値設定
-			//		g_Particle[i].material.Diffuse.w -= 0.05f;
-			//		if(g_Particle[i].material.Diffuse.w < 0.0f)
-			//		{
-			//			g_Particle[i].material.Diffuse.w = 0.0f;
-			//		}
-			//	}
-			//}
 
 			// 移動処理
 			g_Particle[i].pos.x += g_Particle[i].move.x;
@@ -364,8 +344,6 @@ void UpdateParticle(void)
 			}
 		}
 	}
-
-
 }
 
 //=============================================================================
@@ -544,15 +522,6 @@ int SetParticle(int adr, int type, int texNo,XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT
 			g_Particle[adr + i].use  = TRUE;
 
 			nIdxParticle = i;
-
-#ifdef DISP_SHADOW
-			// 影の設定
-			g_Particle[i].nIdxShadow = CreateShadow(XMFLOAT3(pos.x, 0.1f, pos.z), 0.8f, 0.8f);		// 影の設定
-			if(g_Particle[i].nIdxShadow != -1)
-			{
-				SetColorShadow(g_Particle[i].nIdxShadow, XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-			}
-#endif
 
 			break;
 		}

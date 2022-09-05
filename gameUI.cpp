@@ -151,29 +151,62 @@ HRESULT InitGameUI(void)
 	g_Stage = GetStage();
 
 	// 目標スコアの初期化
-	switch (g_Stage)
+	switch (GetMode())
 	{
-	case stage0:
-	case tutorial:
-		g_BorderScore = SCORE_STAGE0_BORDER;
+	case MODE_GAME_CITY:
+	case MODE_TUTORIAL:
+
+		switch (g_Stage)
+		{
+		case stage0:
+		case tutorial:
+			g_BorderScore = CITY_STAGE0_BORDER;
+
+			break;
+
+		case stage1:
+			g_BorderScore = CITY_STAGE1_BORDER;
+
+			break;
+		}
 
 		break;
 
-	case stage1:
-		g_BorderScore = SCORE_STAGE1_BORDER;
+	case MODE_GAME_SEA:
+
+		switch (g_Stage)
+		{
+		case stage0:
+		case tutorial:
+			g_BorderScore = SEA_STAGE0_BORDER;
+
+			break;
+
+		case stage1:
+			g_BorderScore = SEA_STAGE1_BORDER;
+
+			break;
+		}
 
 		break;
 
-	case stage2:
-		g_BorderScore = SCORE_STAGE2_BORDER;
+	case MODE_GAME_SKY:
+
+		switch (g_Stage)
+		{
+		case stage0:
+		case tutorial:
+			g_BorderScore = SKY_STAGE0_BORDER;
+
+			break;
+
+		case stage1:
+			g_BorderScore = SKY_STAGE1_BORDER;
+
+			break;
+		}
 
 		break;
-
-	case stage3:
-		g_BorderScore = SCORE_STAGE3_BORDER;
-
-		break;
-
 	}
 
 
