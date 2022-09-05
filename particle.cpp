@@ -191,28 +191,8 @@ void UpdateParticle(void)
 			if (g_Particle[i].life <= 0)
 			{
 				g_Particle[i].use = FALSE;
-				ReleaseShadow(g_Particle[i].nIdxShadow);
-				g_Particle[i].nIdxShadow = -1;
 			}
-			//else
-			//{
-			//	if(g_Particle[i].life <= 80)
-			//	{
-			//		g_Particle[i].material.Diffuse.x = 0.8f - (float)(80 - g_Particle[i].life) / 80 * 0.8f;
-			//		g_Particle[i].material.Diffuse.y = 0.7f - (float)(80 - g_Particle[i].life) / 80 * 0.7f;
-			//		g_Particle[i].material.Diffuse.z = 0.2f - (float)(80 - g_Particle[i].life) / 80 * 0.2f;
-			//	}
 
-			//	if(g_Particle[i].life <= 20)
-			//	{
-			//		// α値設定
-			//		g_Particle[i].material.Diffuse.w -= 0.05f;
-			//		if(g_Particle[i].material.Diffuse.w < 0.0f)
-			//		{
-			//			g_Particle[i].material.Diffuse.w = 0.0f;
-			//		}
-			//	}
-			//}
 
 			// 移動処理
 			g_Particle[i].pos.x += g_Particle[i].move.x;
@@ -355,33 +335,6 @@ void UpdateParticle(void)
 			}
 		}
 	}
-
-
-	//// パーティクル発生
-	//{
-	//	XMFLOAT3 pos;
-	//	XMFLOAT3 move;
-	//	float fAngle, fLength;
-	//	int nLife;
-	//	float fSize;
-
-	//	pos = g_posBase;
-
-	//	fAngle = (float)(rand() % 628 - 314) / 100.0f;
-	//	fLength = rand() % (int)(g_fWidthBase * 200 ) / 100.0f - g_fWidthBase;
-	//	move.x = sinf(fAngle) * fLength;
-	//	move.y = rand() % 300 / 100.0f + g_fHeightBase;
-	//	move.z = cosf(fAngle) * fLength;
-
-	//	nLife = rand() % 100 + 150;  
-
-	//	fSize = (float)(rand() % 30 + 20);
-
-	//	pos.y = fSize / 2;
-
-	//	// ビルボードの設定
-	//	SetParticle(pos, move, XMFLOAT4(0.8f, 0.7f, 0.2f, 0.85f), fSize, fSize, nLife);
-	//}
 }
 
 //=============================================================================
@@ -558,15 +511,6 @@ int SetParticle(int type, int texNo,XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, X
 			g_Particle[i].use  = TRUE;
 
 			nIdxParticle = i;
-
-#ifdef DISP_SHADOW
-			// 影の設定
-			g_Particle[i].nIdxShadow = CreateShadow(XMFLOAT3(pos.x, 0.1f, pos.z), 0.8f, 0.8f);		// 影の設定
-			if(g_Particle[i].nIdxShadow != -1)
-			{
-				SetColorShadow(g_Particle[i].nIdxShadow, XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-			}
-#endif
 
 			break;
 		}

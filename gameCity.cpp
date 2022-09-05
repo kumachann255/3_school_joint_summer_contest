@@ -623,6 +623,8 @@ void CheckHitCity(void)
 				// コンボを足す
 				AddCombo(1);
 				ResetComboTime();
+
+				if(GetStage() == tutorial) SetTutorialEnemy(TRUE);
 			}
 		}
 	}

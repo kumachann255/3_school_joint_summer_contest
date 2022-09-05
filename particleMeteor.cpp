@@ -167,7 +167,6 @@ void UpdateParticleMeteor(void)
 		}
 	}
 
-
 	//エフェクトの発生処理
 	{
 		for (int i = 0; i < MAX_S_METEOR; i++)
@@ -207,6 +206,7 @@ void UpdateParticleMeteor(void)
 		}
 	}
 }
+
 
 //=============================================================================
 // 描画処理
