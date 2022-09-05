@@ -379,7 +379,7 @@ void SetComboSpeech(void)
 void SetDamageSpeech(void)
 {
 	// SEの挿入（破壊されている段階でブーイングを入れる処理）
-	PlaySound(SOUND_LABEL_SE_booingSound01);
+	//PlaySound(SOUND_LABEL_SE_booingSound01);
 
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{

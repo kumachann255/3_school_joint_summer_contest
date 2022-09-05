@@ -44,7 +44,8 @@
 
 #define CAMERA_MOVE_SPEED		(0.02f)		// カメラが動くスピード
 #define CAMERA_DISTANCE			(50.0f)		// 注視点からカメラまでの距離
-//#define CAMERA_
+#define CAMERA_SPEED			(0.005f)	// ムービー中のカメラのスピード
+#define CAMERA_MOVE_DISTANCE	(300.0f)	// ムービー開始時のz座標
 
 //*****************************************************************************
 // グローバル変数
@@ -60,6 +61,8 @@ static XMFLOAT3			g_ShakePos;		// どのくらい揺らすかの距離を保存
 static BOOL				g_Move;			// 
 static float			g_Rot;			// カメラの回転角度
 
+static BOOL				g_MoveSky;		// 空ステージがムービー中かどうか
+
 static XMFLOAT3			g_pos = {0.0f , 15.0f , 25.0f};
 
 
@@ -72,7 +75,9 @@ void InitCamera(void)
 	g_Camera.at  = { 0.0f, 0.0f, 20.0f };
 	g_Camera.up  = { 0.0f, 1.0f, 0.0f };
 	g_Camera.rot = { 0.0f, 0.0f, 0.0f };
+	g_Camera.target = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
 
+	g_MoveSky = FALSE;
 
 	// 視点と注視点の距離を計算
 	float vx, vz;
@@ -80,6 +85,15 @@ void InitCamera(void)
 	vz = g_Camera.pos.z - g_Camera.at.z;
 	g_Camera.len = sqrtf(vx * vx + vz * vz);
 	
+	if (GetMode() == MODE_GAME_SKY)
+	{
+		g_MoveSky = TRUE;
+		//g_Camera.target.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+		//g_Camera.target.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
+
+		g_Camera.pos = { POS_X_CAM_DEFO, 0.0f, CAMERA_MOVE_DISTANCE };
+	}
+
 	// ビューポートタイプの初期化
 	g_ViewPortType = TYPE_FULL_SCREEN;
 }
@@ -128,16 +142,33 @@ void UpdateCamera(void)
 			g_Shake = FALSE;
 		}
 	}
-	else
+	else if(!g_MoveSky)
 	{
 		//SetCameraAT(pPlayer->pos);
-		g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
+		//g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
 
-		if (GetMode() == MODE_GAME_SKY)
+		//if (GetMode() == MODE_GAME_SKY)
+		//{
+		//	g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
+		//}
+	}
+
+	// ムービー中の処理
+	if (g_MoveSky)
+	{
+		g_Camera.target.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+		g_Camera.target.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
+
+		g_Camera.pos.x += (g_Camera.target.x - g_Camera.pos.x) * CAMERA_SPEED;
+		g_Camera.pos.y += (g_Camera.target.y - g_Camera.pos.y) * CAMERA_SPEED;
+		g_Camera.pos.z += (g_Camera.target.z - g_Camera.pos.z) * CAMERA_SPEED;
+
+		if (g_Camera.pos.z - 1.0f < g_Camera.target.z)
 		{
-			g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
+			g_MoveSky = FALSE;
 		}
 	}
+
 
 	if (g_Move)
 	{
@@ -415,10 +446,13 @@ void SetCameraAT(XMFLOAT3 pos)
 		// カメラの注視点をプレイヤーの座標にしてみる
 		g_Camera.at = pos;
 		//g_Camera.at.y += CAMERA_OFFSET_Y;
-		
-		// カメラの視点をカメラのY軸回転に対応させている
-		g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
-		g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
+
+		if (!g_MoveSky)
+		{
+			// カメラの視点をカメラのY軸回転に対応させている
+			g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+			g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
+		}
 	}
 }
 
