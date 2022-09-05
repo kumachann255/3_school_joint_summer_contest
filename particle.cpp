@@ -17,23 +17,32 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_MAX				(22)		// テクスチャの数
+#define TEXTURE_MAX				(22)				// テクスチャの数
 
-#define	PARTICLE_SIZE_X			(30.0f)		// 頂点サイズ・パーティクルサイズ
-#define	PARTICLE_SIZE_Y			(30.0f)		// 頂点サイズ・パーティクルサイズ
+#define	PARTICLE_SIZE_X			(30.0f)				// 頂点サイズ・パーティクルサイズ
+#define	PARTICLE_SIZE_Y			(30.0f)				// 頂点サイズ・パーティクルサイズ
 
-#define	MAX_PARTICLE			(1000)		// パーティクル最大数
+#define	MAX_PARTICLE			(512)				// パーティクル最大数
 
-#define	MAX_PARTICLE_CUP_NOTE	(1)			// パーティクル最大数(カップ音符)
+#define	MAX_PARTICLE_DEVIDE		(100)				// パーティクル最大数
 
-#define	MAX_PARTICLE_CUP		(10)		// パーティクル最大数(カップ)
 
-#define	MAX_PARTICLE_BLAST		(30)		// パーティクル最大数(ネバネバ音符)
+#define	ADRESS_BLAST			(0)					// 使える分の先頭アドレス(ネバネバ)
+#define	MAX_PARTICLE_BLAST		(5)					// パーティクルワーク(ネバネバ)
 
-#define	CUP_NOTE_TIME			(30)		// カップ音符移動回数
-#define	CUP_NOTE_MOVE			(2.0f)		// カップ音符移動量
 
-#define	DISP_SHADOW							// 影の表示
+#define	ADRESS_CUP				(100)				// 使える分の先頭アドレス(カップ爆発)
+#define	MAX_PARTICLE_CUP		(5)					// パーティクルワーク(カップ爆発)
+
+
+#define	ADRESS_CUP_NOTE			(200)				// 使える分の先頭アドレス(カップ音符)
+#define	MAX_PARTICLE_CUP_NOTE	(1)					// パーティクルワーク(カップ音符)
+
+#define	CUP_NOTE_RADIAN			(XM_2PI * 0.02f)	// カップ音符のラジアン
+#define	CUP_NOTE_RADIUS			(2.0f)				// カップ音符移動量
+#define	CUP_NOTE_POP			(2)				// カップ音符の数
+
+#define	DISP_SHADOW									// 影の表示
 #undef DISP_SHADOW
 
 
@@ -45,14 +54,13 @@ HRESULT MakeVertexParticle(void);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
+static ID3D11Buffer					*g_VertexBuffer = NULL;				// 頂点バッファ
 
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static PARTICLE						g_Particle[MAX_PARTICLE];	// パーティクルワーク
 
-static int							g_CupNoteTime;				// カップ音符の移動回数
-static float						g_CupNoteMove;				// カップ音符の移動量
+static int							g_CupNotePop;						// カップ音符の数を制限用
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
@@ -121,10 +129,10 @@ HRESULT InitParticle(void)
 		g_Particle[i].life = 0;
 		g_Particle[i].pop = 0.0f;
 		g_Particle[i].use = FALSE;
+		g_Particle[i].radian = 0.0f;
 	}
 
-	g_CupNoteTime = 0;
-	g_CupNoteMove = CUP_NOTE_MOVE;
+	g_CupNotePop = CUP_NOTE_POP;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -164,13 +172,6 @@ void UpdateParticle(void)
 {
 	//PLAYER *pPlayer = GetPlayer();
 	//g_posBase = pPlayer->pos;
-	g_CupNoteTime++;
-	
-	if (g_CupNoteTime >= CUP_NOTE_TIME)
-	{
-		g_CupNoteTime = 0;
-		g_CupNoteMove *= (-1);
-	}
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
@@ -205,6 +206,7 @@ void UpdateParticle(void)
 				g_Particle[i].pop--;
 			}
 
+
 			// カップ爆発の更新処理
 			if (g_Particle[i].type == PARTICLE_TYPE_CUP)
 			{
@@ -213,24 +215,29 @@ void UpdateParticle(void)
 				g_Particle[i].scl.y += RamdomFloat(2, 0.2f, 0.1f);
 			}
 
+
 			// カップ音符の更新処理
 			if (g_Particle[i].type == PARTICLE_TYPE_CUP_NOTE)
 			{
-				// 移動させる
-				g_Particle[i].pos.x += g_CupNoteMove;
-			}
+				float radius = CUP_NOTE_RADIUS;
 
-			// ネバネバ音符の更新処理
-			//if (g_Particle[i].type == PARTICLE_TYPE_BLAST)
-			//{
-			//	// 移動させる
-			//	g_Particle[i].pos.x += RamdomFloat(2, 10.0f, -10.0f);
-			//	g_Particle[i].pos.y += RamdomFloat(2, 10.0f, -10.0f);
-			//	g_Particle[i].pos.z += RamdomFloat(2, 10.0f, -10.0f);
-			//}
+				g_Particle[i].move.x = sinf(g_Particle[i].radian) * radius;
+				g_Particle[i].radian += CUP_NOTE_RADIAN;
+				
+				//if (g_Particle[i].radian >= XM_2PI)
+				//{
+				//	g_Particle[i].radian = 0.0f;
+				//}
+			}
 		}
 	}
 
+	// カップ音符用POPをリセット
+	g_CupNotePop--;
+	if (g_CupNotePop < 0)
+	{
+		g_CupNotePop = CUP_NOTE_POP;
+	}
 
 	//エフェクトの発生処理（カップ爆発）
 	{
@@ -260,11 +267,11 @@ void UpdateParticle(void)
 
 				// カラー設定
 				col.x = 1.0f;
-				col.y = RamdomFloat(2, 0.8f, 0.6f);
-				col.z = RamdomFloat(2, 0.7f, 0.3f);
-				col.w = RamdomFloat(2, 1.0f, 0.8f);
+				col.y = RamdomFloat(2, 1.0f, 0.5f);
+				col.z = RamdomFloat(2, 1.0f, 0.5f);
+				col.w = RamdomFloat(2, 1.0f, 0.5f);
 
-				SetParticle(PARTICLE_TYPE_CUP, 0 ,pos, scl, move, col, 5.0f,50);
+				SetParticle(ADRESS_CUP, PARTICLE_TYPE_CUP, 0, pos, scl, move, col, 5.0f, 60);
 			}
 		}
 	}
@@ -273,7 +280,7 @@ void UpdateParticle(void)
 	{
 		CUP *cup = GetCup();
 
-		if (cup[0].use == TRUE)
+		if (cup[0].use == TRUE && g_CupNotePop == 0)
 		{
 			for (int j = 0; j < MAX_PARTICLE_CUP_NOTE; j++)
 			{
@@ -291,13 +298,15 @@ void UpdateParticle(void)
 				pos.y = cup[0].pos.y + RamdomFloat(2, 30.0f, 20.0f);
 				pos.z = cup[0].pos.z + RamdomFloat(2, 10.0f, -10.0f);
 
+
 				// 移動量設定
 				move.x = 0.0f;
 				move.y = 1.3f;
 				move.z = 0.0f;
 
-				SetParticle(PARTICLE_TYPE_CUP_NOTE, texNo, pos, scl, move, col, 0.0f, 50);
-				g_CupNoteTime = 0;
+				g_Particle[j].radian = 0.0f;
+
+				SetParticle(ADRESS_CUP_NOTE, PARTICLE_TYPE_CUP_NOTE, texNo, pos, scl, move, col, 0.0f, 80);
 			}
 		}
 	}
@@ -331,7 +340,7 @@ void UpdateParticle(void)
 				move.y = RamdomFloat(2, 0.7f, -0.7f);
 				move.z = RamdomFloat(2, 0.7f, -0.7f);
 
-				SetParticle(PARTICLE_TYPE_BLAST, texNo, pos, scl, move, col, 1.0f, rand()%21 + 50);
+				SetParticle(ADRESS_BLAST, PARTICLE_TYPE_BLAST, texNo, pos, scl, move, col, 1.0f, rand()%21 + 60);
 			}
 		}
 	}
@@ -489,26 +498,28 @@ void SetColorParticle(int nIdxParticle, XMFLOAT4 col)
 }
 
 //=============================================================================
-// パーティクルの発生処理
+// パーティクルの発生処理(int 先頭アドレス, int 種類, int テクスチャ番号,
+//						  XMFLOAT3 座標, XMFLOAT3 サイズ, XMFLOAT3 移動量
+//						  XMFLOAT4 色, float pop, int life)
 //=============================================================================
-int SetParticle(int type, int texNo,XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life)
+int SetParticle(int adr, int type, int texNo,XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life)
 {
 	int nIdxParticle = -1;
 
-	for(int i = 0; i < MAX_PARTICLE; i++)
+	for(int i = 0; i < MAX_PARTICLE_DEVIDE; i++)
 	{
-		if(!g_Particle[i].use)
+		if(!g_Particle[adr + i].use)
 		{
-			g_Particle[i].texNo = texNo;
-			g_Particle[i].type = type;
-			g_Particle[i].pos  = pos;
-			g_Particle[i].rot  = { 0.0f, 0.0f, 0.0f };
-			g_Particle[i].scl  = scl;
-			g_Particle[i].move = move;
-			g_Particle[i].material.Diffuse = col;
-			g_Particle[i].life = life;
-			g_Particle[i].pop = pop * i;
-			g_Particle[i].use  = TRUE;
+			g_Particle[adr + i].texNo = texNo;
+			g_Particle[adr + i].type = type;
+			g_Particle[adr + i].pos  = pos;
+			g_Particle[adr + i].rot  = { 0.0f, 0.0f, 0.0f };
+			g_Particle[adr + i].scl  = scl;
+			g_Particle[adr + i].move = move;
+			g_Particle[adr + i].material.Diffuse = col;
+			g_Particle[adr + i].life = life;
+			g_Particle[adr + i].pop = pop * i;
+			g_Particle[adr + i].use  = TRUE;
 
 			nIdxParticle = i;
 
