@@ -231,7 +231,7 @@ void UpdateCountDown(void)
 			if(GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_CITY);
 			else
 			{
-				SetStage(stage0);
+				SetStage(tutorial);
 				SetFade(FADE_OUT, MODE_GAME_SEA);
 			}
 			break;
@@ -251,6 +251,7 @@ void UpdateCountDown(void)
 		}
 	}
 
+	int unko = 3;
 
 	// お祝いテクスチャ
 	switch (g_Stage)

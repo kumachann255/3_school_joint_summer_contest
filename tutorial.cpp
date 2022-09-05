@@ -18,10 +18,12 @@
 #define TEXTURE_WIDTH				(500.0f)	// キャラサイズ
 #define TEXTURE_HEIGHT				(300.0f)	// 
 
-#define TEXTURE_MAX					(11)			// テクスチャの数
+#define TEXTURE_MAX					(tutorialMax)		// テクスチャの数
 
 #define TEXTURE_OFFSET_Y			(60.0f)		// 表示位置調整
 #define TEXTURE_OFFSET_X			(180.0f)	// 表示位置調整
+
+#define TUTORIAL_MAX				(2)			// チュートリアル
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -40,37 +42,23 @@ static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/tutorial00.png",
 	"data/TEXTURE/tutorial01.png",
 	"data/TEXTURE/tutorial02.png",
+	"data/TEXTURE/howTo0.png",
 	"data/TEXTURE/tutorial03.png",
 	"data/TEXTURE/tutorial04.png",
 	"data/TEXTURE/tutorial05.png",
-	"data/TEXTURE/tutorial06.png",
-	"data/TEXTURE/tutorial07.png",
-	"data/TEXTURE/tutorial08.png",
-	"data/TEXTURE/tutorial09.png",
+	"data/TEXTURE/tutorial00_sea.png",
+	"data/TEXTURE/tutorial01_sea.png",
+	"data/TEXTURE/howTo1.png",
+	"data/TEXTURE/tutorial02_sea.png",
 };
 
-enum {
-	tutorial00 = 1,
-	tutorial01,
-	tutorial02,
-	tutorial03,
-	tutorial04,
-	tutorial05,
-	tutorial06,
-	tutorial07,
-	tutorial08,
-	tutorial09,
-};
 
-static TUTORIAL					g_Tutorial[2];	// 0：少しくらい背景　1：テキスト
-
+static TUTORIAL					g_Tutorial[TUTORIAL_MAX];	// 0：少しくらい背景　1：テキスト
 static float					g_time;
-
 static BOOL						g_EnemyDead;
-
 static int						g_Stage;
-
 static BOOL						g_Load = FALSE;
+static int						g_TextureMax;
 
 
 //=============================================================================
@@ -105,7 +93,7 @@ HRESULT InitTutorial(void)
 	g_Stage = GetStage();
 
 	// 初期化
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < TUTORIAL_MAX; i++)
 	{
 		g_Tutorial[i].use = FALSE;
 		g_Tutorial[i].pos = { SCREEN_WIDTH / 2 ,SCREEN_HEIGHT / 2 , 0.0f };
@@ -120,22 +108,31 @@ HRESULT InitTutorial(void)
 		{	// テキスト
 			g_Tutorial[i].w = TEXTURE_WIDTH;
 			g_Tutorial[i].h = TEXTURE_HEIGHT;
-
-			g_Tutorial[i].pos.y -= TEXTURE_OFFSET_Y;
-			g_Tutorial[i].pos.x -= TEXTURE_OFFSET_X;
-
 		}
 	}
 
 	// チュートリアル以外は使わない
 	if (g_Stage == tutorial)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < TUTORIAL_MAX; i++)
 		{
 			g_Tutorial[i].use = TRUE;
 		}
 	}
 
+	switch (GetMode())
+	{
+	case MODE_GAME_CITY:
+		g_TextureMax = howto0;
+		break;
+
+	case MODE_GAME_SEA:
+		g_TextureMax = howto1;
+		break;
+	}
+
+
+	if (GetMode() == MODE_GAME_SEA) g_Tutorial[1].texNo = tutorial00sea;
 
 	g_time = 0.0f;
 	g_EnemyDead = FALSE;
@@ -174,45 +171,36 @@ void UninitTutorial(void)
 void UpdateTutorial(void)
 {
 	// チュートリアル以外は使わない
-	if (g_Stage != tutorial) return;
+	if ((g_Stage != tutorial) || (!g_Tutorial[0].use)) return;
 
+	if ((GetKeyboardTrigger(DIK_RETURN)) || (GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
 	{
-		if ((GetKeyboardTrigger(DIK_RETURN)) || (GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
+		// チュートリアルテキストが最後まで言っていたらチュートリアル終了
+		if ((g_Tutorial[1].texNo == tutorial05) || (g_Tutorial[1].texNo == tutorial02sea))
 		{
-			// チュートリアルテキストが最後まで言っていたらチュートリアル終了
-			if (g_Tutorial[1].texNo == tutorial09)
-			{
-				SetStage(stage0);
-				SetFade(FADE_OUT, MODE_GAME_CITY);
-			}
-
+			SetStage(stage0);
+			SetFade(FADE_OUT, MODE_GAME_CITY);
+		}
+		else
+		{
 			// 敵を倒す前までのチュートリアル
 			if (!g_EnemyDead)
 			{
-				if (g_Tutorial[1].texNo < tutorial06) g_Tutorial[1].texNo++;
-				else if (g_Tutorial[1].texNo == tutorial06)
+				if (g_Tutorial[1].texNo < g_TextureMax) g_Tutorial[1].texNo++;
+				else
 				{	// 敵を倒すフェーズに行ったらチュートリアルを消す
-					for (int i = 0; i < 2; i++)
+					for (int i = 0; i < TUTORIAL_MAX; i++)
 					{
 						g_Tutorial[i].use = FALSE;
 					}
+					g_Tutorial[1].texNo++;
 				}
 			}
 			else
 			{	// 敵を倒した後のチュートリアル
-				if (g_Tutorial[1].texNo < tutorial09) g_Tutorial[1].texNo++;
+				if (g_Tutorial[1].texNo < tutorialMax - 1) g_Tutorial[1].texNo++;
 			}
 		}
-
-		// 敵が倒されていたら再度チュートリアルを表示
-		if (g_EnemyDead)
-		{
-			for (int i = 0; i < 2; i++)
-			{
-				g_Tutorial[i].use = TRUE;
-			}
-		}
-
 	}
 }
 
@@ -221,6 +209,9 @@ void UpdateTutorial(void)
 //=============================================================================
 void DrawTutorial(void)
 {
+	// チュートリアル以外は使わない
+	if (g_Stage != tutorial) return;
+
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
@@ -240,7 +231,7 @@ void DrawTutorial(void)
 
 	XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < TUTORIAL_MAX; i++)
 	{
 		if (!g_Tutorial[i].use) continue;
 
@@ -271,7 +262,16 @@ void DrawTutorial(void)
 void SetTutorialEnemy(BOOL data)
 {
 	g_EnemyDead = data;
-	if (g_Tutorial[1].texNo < tutorial07) g_Tutorial[1].texNo++;
+
+	// 敵が倒されていたら再度チュートリアルを表示
+	if (g_EnemyDead)
+	{
+		for (int i = 0; i < TUTORIAL_MAX; i++)
+		{
+			g_Tutorial[i].use = TRUE;
+		}
+	}
+
 }
 
 
