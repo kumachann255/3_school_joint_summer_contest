@@ -366,7 +366,7 @@ void UpdateGameSea(void)
 	// 壁処理の更新
 	UpdateMeshWall();
 
-	// 木の更新処理
+	// 海オブジェクトの更新処理
 	UpdateSeaFieldObj();
 
 	// スカイドームの更新処理
