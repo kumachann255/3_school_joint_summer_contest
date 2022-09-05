@@ -23,6 +23,8 @@
 #define TEXTURE_OFFSET_Y			(60.0f)		// 表示位置調整
 #define TEXTURE_OFFSET_X			(180.0f)	// 表示位置調整
 
+#define TUTORIAL_MAX				(2)			// チュートリアル
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -60,9 +62,10 @@ enum {
 	tutorial07,
 	tutorial08,
 	tutorial09,
+	tutorialMax,
 };
 
-static TUTORIAL					g_Tutorial[2];	// 0：少しくらい背景　1：テキスト
+static TUTORIAL					g_Tutorial[TUTORIAL_MAX];	// 0：少しくらい背景　1：テキスト
 
 static float					g_time;
 
@@ -105,7 +108,7 @@ HRESULT InitTutorial(void)
 	g_Stage = GetStage();
 
 	// 初期化
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < TUTORIAL_MAX; i++)
 	{
 		g_Tutorial[i].use = FALSE;
 		g_Tutorial[i].pos = { SCREEN_WIDTH / 2 ,SCREEN_HEIGHT / 2 , 0.0f };
@@ -130,7 +133,7 @@ HRESULT InitTutorial(void)
 	// チュートリアル以外は使わない
 	if (g_Stage == tutorial)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < TUTORIAL_MAX; i++)
 		{
 			g_Tutorial[i].use = TRUE;
 		}
@@ -180,7 +183,7 @@ void UpdateTutorial(void)
 		if ((GetKeyboardTrigger(DIK_RETURN)) || (GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
 		{
 			// チュートリアルテキストが最後まで言っていたらチュートリアル終了
-			if (g_Tutorial[1].texNo == tutorial09)
+			if (g_Tutorial[1].texNo == tutorialMax - 1)
 			{
 				SetStage(stage0);
 				SetFade(FADE_OUT, MODE_GAME_CITY);
@@ -192,7 +195,7 @@ void UpdateTutorial(void)
 				if (g_Tutorial[1].texNo < tutorial06) g_Tutorial[1].texNo++;
 				else if (g_Tutorial[1].texNo == tutorial06)
 				{	// 敵を倒すフェーズに行ったらチュートリアルを消す
-					for (int i = 0; i < 2; i++)
+					for (int i = 0; i < TUTORIAL_MAX; i++)
 					{
 						g_Tutorial[i].use = FALSE;
 					}
@@ -207,7 +210,7 @@ void UpdateTutorial(void)
 		// 敵が倒されていたら再度チュートリアルを表示
 		if (g_EnemyDead)
 		{
-			for (int i = 0; i < 2; i++)
+			for (int i = 0; i < TUTORIAL_MAX; i++)
 			{
 				g_Tutorial[i].use = TRUE;
 			}
@@ -240,7 +243,7 @@ void DrawTutorial(void)
 
 	XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < TUTORIAL_MAX; i++)
 	{
 		if (!g_Tutorial[i].use) continue;
 

@@ -253,23 +253,6 @@ void UpdateEnemy(void)
 			}
 
 			break;
-
-		case stage3:
-			// 今何体出現しているかを確認
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (g_Enemy[i].use == TRUE) useCount++;
-			}
-
-			// 時間経過とエネミーの出現数次第でポップするか判断
-			if ((count % STAGE3_POP_COUNT == 0) && (useCount < STAGE3_MAX_POP))
-			{
-
-				SetEnemy();
-			}
-
-			break;
-
 		}
 	}
 
@@ -372,8 +355,6 @@ void UpdateEnemy(void)
 
 			// 当たり判定ようのボックスと位置を共有する
 			g_Collision[i].pos = g_Enemy[i].pos;
-
-
 
 			//=======================================================================
 			// ↓今回は当たった後のエネミーの挙動は攻撃オブジェクト側で行いましょう！
