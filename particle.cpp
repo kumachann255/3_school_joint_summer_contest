@@ -49,7 +49,7 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
-static PARTICLE					g_Particle[MAX_PARTICLE];		// パーティクルワーク
+static PARTICLE						g_Particle[MAX_PARTICLE];	// パーティクルワーク
 
 static int							g_CupNoteTime;				// カップ音符の移動回数
 static float						g_CupNoteMove;				// カップ音符の移動量

@@ -27,7 +27,7 @@ struct SEA_FOBJ
 	BOOL				load;
 	DX11_MODEL			model;				// ƒ‚ƒfƒ‹î•ñ
 	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// ƒ‚ƒfƒ‹‚ÌF
-	BOOL				moveFlag;
+	int					moveFlag;
 };
 
 //*****************************************************************************
