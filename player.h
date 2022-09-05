@@ -67,7 +67,9 @@ struct ROCKET
 	XMFLOAT4X4			mtxWorld;	// ワールドマトリックス
 
 	BOOL				load;
-	DX11_MODEL			model;		// モデル情報
+	DX11_MODEL			model_rocket;		// モデル情報
+	DX11_MODEL			model_tesuri;		// モデル情報
+
 
 	BOOL				use;
 

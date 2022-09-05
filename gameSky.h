@@ -15,3 +15,5 @@ void UninitGameSky(void);
 void UpdateGameSky(void);
 void DrawGameSky(void);
 
+BOOL GetParticalSwicth(void);
+
