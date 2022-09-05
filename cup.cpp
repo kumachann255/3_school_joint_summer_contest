@@ -186,7 +186,7 @@ void UpdateCup(void)
 			// ƒJƒbƒv‚ÌˆÚ“®ˆ—
 			{
 				g_Cup[i].pos.z += g_cupSpeed_Z;
-				//g_Cup[i].pos.x += g_cupSpeed_X;
+				g_Cup[i].pos.x += g_cupSpeed_X;
 				g_Cup[i].rot.y += CUP_ROT_Y;
 
 
