@@ -60,7 +60,7 @@ void CheckHitSky(void);
 static int	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 static BOOL	g_bPause = TRUE;	// ポーズON/OFF
-static BOOL g_ParticlSwicth;
+static BOOL g_DeathParticl;
 
 static int					g_Stage;
 
@@ -200,7 +200,7 @@ HRESULT InitGameSky(void)
 		break;
 	}
 
-	g_ParticlSwicth = FALSE;
+	g_DeathParticl = FALSE;
 
 	return S_OK;
 }
@@ -546,7 +546,7 @@ void CheckHitSky(void)
 			{
 				sky_enemy[j].use = FALSE;
 
-				g_ParticlSwicth = TRUE;
+				g_DeathParticl = TRUE;
 			}
 		}
 	}
@@ -561,7 +561,7 @@ void CheckHitSky(void)
 }
 
 
-BOOL GetParticalSwicth(void)
+BOOL GetDeathPartical(void)
 {
-	return g_ParticlSwicth;
+	return g_DeathParticl;
 }

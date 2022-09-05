@@ -35,9 +35,9 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MODEL_ROCKET		"data/MODEL/tesuri.obj"
+#define MODEL_ROCKET		"data/MODEL/rocket.obj"
 #define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
-#define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
+#define	MODEL_TESURI		"data/MODEL/tesuri.obj"			// 読み込むモデル名
 
 #define	VALUE_MOVE			(15.0f)							// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
@@ -102,7 +102,9 @@ static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
 HRESULT InitPlayer(void)
 {
 	LoadModel(MODEL_PLAYER, &g_Player.model);
-	LoadModel(MODEL_ROCKET, &g_Rocket.model);
+	LoadModel(MODEL_ROCKET, &g_Rocket.model_rocket);
+
+	LoadModel(MODEL_TESURI, &g_Rocket.model_tesuri);
 
 
 	g_Player.load = TRUE;
@@ -139,43 +141,43 @@ HRESULT InitPlayer(void)
 	// 階層アニメーション用の初期化処理
 	g_Player.parent = NULL;			// 本体（親）なのでNULLを入れる
 
-	// パーツの初期化
-	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
-	{
-		g_Parts[i].use = FALSE;
+	//// パーツの初期化
+	//for (int i = 0; i < PLAYER_PARTS_MAX; i++)
+	//{
+	//	g_Parts[i].use = FALSE;
 
-		// 位置・回転・スケールの初期設定
-		g_Parts[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Parts[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Parts[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	//	// 位置・回転・スケールの初期設定
+	//	g_Parts[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//	g_Parts[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//	g_Parts[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-		// 親子関係
-		g_Parts[i].parent = &g_Player;		// ← ここに親のアドレスを入れる
-	//	g_Parts[腕].parent= &g_Player;		// 腕だったら親は本体（プレイヤー）
-	//	g_Parts[手].parent= &g_Paerts[腕];	// 指が腕の子供だった場合の例
+	//	// 親子関係
+	//	g_Parts[i].parent = &g_Player;		// ← ここに親のアドレスを入れる
+	////	g_Parts[腕].parent= &g_Player;		// 腕だったら親は本体（プレイヤー）
+	////	g_Parts[手].parent= &g_Paerts[腕];	// 指が腕の子供だった場合の例
 
-		// 階層アニメーション用のメンバー変数の初期化
-		g_Parts[i].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
-		g_Parts[i].move_time = 0.0f;	// 実行時間をクリア
-		g_Parts[i].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
+	//	// 階層アニメーション用のメンバー変数の初期化
+	//	g_Parts[i].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
+	//	g_Parts[i].move_time = 0.0f;	// 実行時間をクリア
+	//	g_Parts[i].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
 
-		// パーツの読み込みはまだしていない
-		g_Parts[i].load = 0;
-	}
+	//	// パーツの読み込みはまだしていない
+	//	g_Parts[i].load = 0;
+	//}
 
-	g_Parts[0].use = TRUE;
-	g_Parts[0].parent = &g_Player;		// 親をセット
-	g_Parts[0].tbl_adr = move_tbl_right;	// 再生するアニメデータの先頭アドレスをセット
-	g_Parts[0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
-	g_Parts[0].load = 1;
-	LoadModel(MODEL_PLAYER_PARTS, &g_Parts[0].model);
+	//g_Parts[0].use = TRUE;
+	//g_Parts[0].parent = &g_Player;		// 親をセット
+	//g_Parts[0].tbl_adr = move_tbl_right;	// 再生するアニメデータの先頭アドレスをセット
+	//g_Parts[0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
+	//g_Parts[0].load = 1;
+	//LoadModel(MODEL_PLAYER_PARTS, &g_Parts[0].model);
 
-	g_Parts[1].use = TRUE;
-	g_Parts[1].parent = &g_Player;		// 親をセット
-	g_Parts[1].tbl_adr = move_tbl_left;	// 再生するアニメデータの先頭アドレスをセット
-	g_Parts[1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
-	g_Parts[1].load = 1;
-	LoadModel(MODEL_PLAYER_PARTS, &g_Parts[1].model);
+	//g_Parts[1].use = TRUE;
+	//g_Parts[1].parent = &g_Player;		// 親をセット
+	//g_Parts[1].tbl_adr = move_tbl_left;	// 再生するアニメデータの先頭アドレスをセット
+	//g_Parts[1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
+	//g_Parts[1].load = 1;
+	//LoadModel(MODEL_PLAYER_PARTS, &g_Parts[1].model);
 
 	g_Load = TRUE;
 	return S_OK;
@@ -198,7 +200,9 @@ void UninitPlayer(void)
 	// モデルの解放処理
 	if (g_Rocket.load)
 	{
-		UnloadModel(&g_Rocket.model);
+		UnloadModel(&g_Rocket.model_rocket);
+		UnloadModel(&g_Rocket.model_tesuri);
+
 		g_Rocket.load = FALSE;
 	}
 
@@ -555,115 +559,142 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
-	//============================
-	// プレイヤーの描画
-	//============================
-
-	// カリング無効
-	SetCullingMode(CULL_MODE_NONE);
-
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-	// ワールドマトリックスの初期化
-	mtxWorld = XMMatrixIdentity();
-
-	// スケールを反映
-	mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-	// クォータニオンを反映
-	XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Player.quaternion));
-	mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
-	
-	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-	// ワールドマトリックスの設定
-	SetWorldMatrix(&mtxWorld);
-
-	XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
-
-
-	// モデル描画
-	DrawModel(&g_Player.model);
-
-
-	//============================
-	// ロケットの描画
-	//============================
-	// カリング無効
-	SetCullingMode(CULL_MODE_NONE);
-
-	// ワールドマトリックスの初期化
-	mtxWorld = XMMatrixIdentity();
-
-	// スケールを反映
-	mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-	// ワールドマトリックスの設定
-	SetWorldMatrix(&mtxWorld);
-
-	XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
-
-
-	// モデル描画
-	DrawModel(&g_Rocket.model);
-
-
-
-	// パーツの階層アニメーション
-	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
+	if (!GetMovieFlag())
 	{
-		//if (i != 2) return;
+		//============================
+		// プレイヤーの描画
+		//============================
+
+		// カリング無効
+		SetCullingMode(CULL_MODE_NONE);
+
+
 		// ワールドマトリックスの初期化
 		mtxWorld = XMMatrixIdentity();
 
 		// スケールを反映
-		mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
+		mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 		// 回転を反映
-		mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 		// 移動を反映
-		mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
+		mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-		if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
-		{
-			mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
-			// ↑
-			// g_Player.mtxWorldを指している
-		}
-
-		XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
-
-		// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
-		if (g_Parts[i].use == FALSE) continue;
 
 		// ワールドマトリックスの設定
 		SetWorldMatrix(&mtxWorld);
 
+		XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
 
 		// モデル描画
-		DrawModel(&g_Parts[i].model);
+		DrawModel(&g_Player.model);
+
+
+
+		// ワールドマトリックスの初期化
+		mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		// 回転を反映
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// 移動を反映
+		mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		// ワールドマトリックスの設定
+		SetWorldMatrix(&mtxWorld);
+
+		XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+
+		DrawModel(&g_Rocket.model_tesuri);
 
 	}
+
+	//============================
+	// ロケットの描画
+	//============================
+	else
+	{
+
+
+		// カリング無効
+		SetCullingMode(CULL_MODE_NONE);
+
+		// ワールドマトリックスの初期化
+		mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		// 回転を反映
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// 移動を反映
+		mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		// ワールドマトリックスの設定
+		SetWorldMatrix(&mtxWorld);
+
+		XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+
+
+		// モデル描画
+		DrawModel(&g_Rocket.model_rocket);
+	}
+
+
+	//// パーツの階層アニメーション
+	//for (int i = 0; i < PLAYER_PARTS_MAX; i++)
+	//{
+	//	//if (i != 2) return;
+	//	// ワールドマトリックスの初期化
+	//	mtxWorld = XMMatrixIdentity();
+
+	//	// スケールを反映
+	//	mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
+	//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+	//	// 回転を反映
+	//	mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
+	//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+	//	// 移動を反映
+	//	mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
+	//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+	//	if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
+	//	{
+	//		mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
+	//		// ↑
+	//		// g_Player.mtxWorldを指している
+	//	}
+
+	//	XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
+
+	//	// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
+	//	if (g_Parts[i].use == FALSE) continue;
+
+	//	// ワールドマトリックスの設定
+	//	SetWorldMatrix(&mtxWorld);
+
+
+	//	// モデル描画
+	//	DrawModel(&g_Parts[i].model);
+
+	//}
 
 
 
