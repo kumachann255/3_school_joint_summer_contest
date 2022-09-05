@@ -533,6 +533,8 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
+	return;
+
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);
 
