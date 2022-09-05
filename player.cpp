@@ -266,6 +266,8 @@ void UpdatePlayer(void)
 		g_Player.pos.x -= sinf(g_Player.rot.y) * g_Player.spd;
 		g_Player.pos.z -= cosf(g_Player.rot.y) * g_Player.spd;
 	}
+
+
 	//================================
 	// 空ステージのプレイヤーの挙動
 	//================================
@@ -338,12 +340,30 @@ void UpdatePlayer(void)
 	if (g_Stage == tutorial)
 	{
 		if (((GetKeyboardTrigger(DIK_SPACE)) || (IsButtonTriggered(0, BUTTON_B)))
-				&& (!GetTutorialUse()))
+			&& (!GetTutorialUse()))
 		{
-			g_Player.action = TRUE;
-			SetTimingText(GetNoteTiming());
 
-			SetBom();
+			g_Player.action = TRUE;
+			SetTimingText(GetNoteTiming());	// ノーツ判定
+
+			switch (GetMode())
+			{
+			case MODE_GAME_CITY:
+				SetBom();
+				break;
+
+			case MODE_GAME_SEA:
+				// タコ一本釣り
+				SetTako();
+				g_Player.cooltime = COOLTIME_OCTOPUS;
+
+				// エネミーのターゲットフラグのリセット
+				ResetEnemyTarget();
+
+				// ロックオンターゲットのリセット
+				ResetRockOn();
+				break;
+			}
 		}
 	}
 	else
