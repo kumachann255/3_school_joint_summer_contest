@@ -30,6 +30,7 @@
 #include "bullet.h"
 #include "score.h"
 #include "particle.h"
+#include "sea_particle.h"
 #include "orbit.h"
 #include "collision.h"
 #include "debugproc.h"
@@ -158,6 +159,9 @@ HRESULT InitGameSea(void)
 	// パーティクルの初期化
 	InitParticle();
 
+	// 海パーティクルの初期化
+	InitSeaParticle();
+
 	// 軌跡の初期化
 	InitOrbit();
 
@@ -248,6 +252,9 @@ void UninitGameSea(void)
 
 	// 軌跡の終了処理
 	UninitOrbit();
+
+	// 海パーティクルの終了処理
+	UninitSeaParticle();
 
 	// パーティクルの終了処理
 	UninitParticle();
@@ -378,6 +385,9 @@ void UpdateGameSea(void)
 	// パーティクルの更新処理
 	UpdateParticle();
 
+	// 海パーティクルの更新処理
+	UpdateSeaParticle();
+
 	// 軌跡の更新処理
 	UpdateOrbit();
 
@@ -481,6 +491,9 @@ void DrawGameSea0(void)
 
 	// パーティクルの描画処理
 	DrawParticle();
+
+	// 海パーティクルの描画処理
+	DrawSeaParticle();
 
 	// 軌跡の描画処理
 	DrawOrbit();

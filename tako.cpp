@@ -20,6 +20,7 @@
 #include "collision.h"
 #include "score.h"
 #include "combo.h"
+#include "sea_particle.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -37,9 +38,12 @@
 #define TAKO_SCL_INIT		(0.1f)							// タコの大きさの初期値設定
 #define TAKO_POS_Y			(50.0f)							// タコの高さ初期値設定
 #define TAKO_POS_CATCH		(70.0f)							// タコのキャッチアクション発生時の高さ
-#define TAKO_POS_ADDITION	(0.5f)							// タコのポジション加算用
+#define TAKO_POS_ADDITION	(2.5f)							// タコのポジション加算用
 #define VALUE_HOMING		(0.1f)							// タコ引き寄せ値
 #define FRONT_COLLISION		(20.0f)							// 手前で消す位置の当たり判定値
+#define TAKO_PARTICLE_POP	(5)								// タコパーティクルポップ間隔
+#define POP_TIME			(20)							// タコパーティクルポップ時間
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -48,10 +52,11 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-TAKO				g_Tako[MAX_TAKO];							// プレイヤー
-TAKO				g_Tako_middle[MAX_TAKO];					// プレイヤー
-TAKO				g_Tako_last[MAX_TAKO];					// プレイヤー
+TAKO				g_Tako[MAX_TAKO];							// タコ
+TAKO				g_Tako_middle[MAX_TAKO];					// タコ
+TAKO				g_Tako_last[MAX_TAKO];						// タコ
 
+static int pSetCount = 0;										// パーティクルセット用カウント
 
 //=============================================================================
 // 初期化処理
@@ -171,6 +176,7 @@ void UpdateTako(void)
 				break;
 
 			case CATCH:
+				// エネミーの頭上から落ちていく
 				g_Tako[i].pos.x = rockOn[g_Tako[i].rockOnNum].pos.x;
 				g_Tako[i].pos.y -= TAKO_POS_ADDITION;
 				g_Tako[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
@@ -184,14 +190,32 @@ void UpdateTako(void)
 
 				if (g_Tako[i].pos.y < 0.0f)
 				{
+					pSetCount = 0;
 					g_Tako_middle[i].use = FALSE;
 					g_Tako_last[i].use = TRUE;
-					g_Tako[i].mode = RELEASE;
+					g_Tako[i].mode = WAIT;
 				}
 				break;
 
-			case RELEASE:
+			case WAIT:
+				// パーティクル発生用待機時間
+				pSetCount++;
+				if (pSetCount % TAKO_PARTICLE_POP == 0)
+				{
+					SetSeaParticleTako();
+				}
 
+				g_Tako[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+				g_Tako_last[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+
+				if (pSetCount == POP_TIME)
+				{
+					pSetCount = 0;
+					g_Tako[i].mode = RELEASE;
+				}
+
+
+			case RELEASE:
 				XMVECTOR pos1 = XMLoadFloat3(&cam->pos);
 				XMVECTOR pos2 = XMLoadFloat3(&g_Tako[i].pos);
 				pos2 += (pos1 - pos2) * VALUE_HOMING;
