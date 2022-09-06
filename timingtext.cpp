@@ -128,7 +128,7 @@ void UninitTimingText(void)
 //=============================================================================
 void UpdateTimingText(void)
 {
-	for (int i = 0; i < NOTE_MAX; i++)
+	for (int i = 0; i < TTEXT_MAX; i++)
 	{
 		if (g_Text[i].use)
 		{
