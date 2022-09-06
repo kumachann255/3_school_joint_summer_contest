@@ -28,7 +28,7 @@
 #define SKY_ENEMY_POP_RAND		(10.0f)		// 発生位置の乱数
 
 #define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
-#define METEOR_MOVE_XY		(5.0f)		// xy軸の移動量の乱数
+#define SKY_MOVE_XY			(3.0f)		// xy軸の移動量の乱数
 
 #define MAX_SKY_ENEMY_COLOR	(0.5f)		// カラーの乱数
 #define MIN_SKY_ENEMY_COLOR	(0.2f)		// カラーの乱数
@@ -57,7 +57,7 @@ static PARTICLE						g_ParticleSky[MAX_PARTICLE];		// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/onpu01.jpg",
+	"data/TEXTURE/onpu01.png",
 };
 
 static BOOL						g_Load = FALSE;
@@ -189,9 +189,9 @@ void UpdateParticleSky(void)
 					pos.z = sky_enemy[i].pos.z + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
 
 					// 移動量を設定
-					move.x = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.z = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.y = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
+					move.x = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
+					move.z = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
+					move.y = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
 
 					// カラー設定
 					col.x = 0.8f;
@@ -204,7 +204,7 @@ void UpdateParticleSky(void)
 
 					scl = { 1.0f,1.0f,1.0f };
 
-					SetParticleSky(pos, scl, move, col, life);
+					SetParticleSky(pos, move, scl, col, life);
 				}
 			}
 		}

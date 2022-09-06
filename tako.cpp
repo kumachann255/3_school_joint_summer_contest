@@ -20,6 +20,7 @@
 #include "collision.h"
 #include "score.h"
 #include "combo.h"
+#include "tutorial.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -238,6 +239,9 @@ void UpdateTako(void)
 							if (enemy[j].isHit == TRUE) break;
 							// 敵キャラクターは倒される
 							enemy[j].use = FALSE;
+
+							if (GetStage() == tutorial) SetTutorialEnemy(TRUE);
+
 						}
 					}
 				}

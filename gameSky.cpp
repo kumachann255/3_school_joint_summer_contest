@@ -196,8 +196,6 @@ HRESULT InitGameSky(void)
 
 	case stage0:
 	case stage1:
-	case stage2:
-	case stage3:
 		// BGM再生
 		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
@@ -562,6 +560,13 @@ void CheckHitSky(void)
 				sky_enemy[j].particleOn = TRUE;
 
 				g_DeathParticl = TRUE;
+
+				// スコアを足す
+				AddScore(100);
+
+				// コンボを足す
+				AddCombo(1);
+				ResetComboTime();
 			}
 		}
 	}

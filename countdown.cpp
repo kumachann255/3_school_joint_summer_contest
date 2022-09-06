@@ -152,11 +152,6 @@ HRESULT InitCountDown(void)
 
 	switch (g_Stage)
 	{
-	case stage2:
-		// SEçƒê∂
-		PlaySound(SOUND_LABEL_SE_cheers03);
-		break;
-
 	case stage1:
 		// SEçƒê∂
 		PlaySound(SOUND_LABEL_SE_cheers02);

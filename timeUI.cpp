@@ -19,7 +19,7 @@
 #define TEXTURE_HEIGHT				(90)	// 
 #define TEXTURE_MAX					(2)		// テクスチャの数
 
-#define TIME_MAX					(30)	// 時間制限
+#define TIME_MAX					(50)	// 時間制限
 
 
 //*****************************************************************************
@@ -273,7 +273,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage1:
 			if (CITY_STAGE1_BORDER < score)
 			{
-				SetStage(stage2);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);
@@ -301,7 +300,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage1:
 			if (SEA_STAGE1_BORDER < score)
 			{
-				SetStage(stage2);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);

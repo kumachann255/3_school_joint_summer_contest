@@ -179,7 +179,8 @@ void UpdateTutorial(void)
 		if ((g_Tutorial[1].texNo == tutorial05) || (g_Tutorial[1].texNo == tutorial02sea))
 		{
 			SetStage(stage0);
-			SetFade(FADE_OUT, MODE_GAME_CITY);
+			if(GetMode() == MODE_GAME_CITY) SetFade(FADE_OUT, MODE_GAME_CITY);
+			else SetFade(FADE_OUT, MODE_GAME_SEA);
 		}
 		else
 		{
