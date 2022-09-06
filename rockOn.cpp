@@ -31,7 +31,7 @@ static struct ROCKON	g_RockOn[MAX_ROCKON];
 static float			g_rot_y;
 
 static BOOL				g_Load = FALSE;
-
+static int				g_max;
 
 //=============================================================================
 // 初期化処理
@@ -65,6 +65,9 @@ HRESULT InitRockOn(void)
 		GetModelDiffuse(&g_RockOn[i].model, &g_RockOn[i].diffuse[0]);
 
 	}
+	
+	g_max = MAX_ROCKON;
+	if (GetMode() == MODE_GAME_SEA) g_max = MAX_ROCKON_SEA;
 
 	g_Load = TRUE;
 	return S_OK;
@@ -100,7 +103,7 @@ void UpdateRockOn(void)
 	{
 		ENEMY *enemy = GetEnemy();
 
-		for (int i = 0; i < MAX_ROCKON; i++)
+		for (int i = 0; i < g_max; i++)
 		{
 			if (g_RockOn[i].use)
 			{
@@ -117,7 +120,7 @@ void UpdateRockOn(void)
 	{
 		SKY_ENEMY *enemy = GetSkyEnemy();
 
-		for (int i = 0; i < MAX_ROCKON; i++)
+		for (int i = 0; i < g_max; i++)
 		{
 			if (g_RockOn[i].use)
 			{
@@ -139,7 +142,7 @@ void DrawRockOn(void)
 {
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-	for (int i = 0; i < MAX_ROCKON; i++)
+	for (int i = 0; i < g_max; i++)
 	{
 		if (g_RockOn[i].use == FALSE) return;
 
@@ -180,7 +183,7 @@ ROCKON *GetRockOn()
 
 void SetRockOn(void)
 {
-	for (int i = 0; i < MAX_ROCKON; i++)
+	for (int i = 0; i < g_max; i++)
 	{
 		if (!g_RockOn[i].use)
 		{
@@ -195,7 +198,7 @@ void SetRockOn(void)
 // ロックオンターゲットの一括削除
 void ResetRockOn(void)
 {
-	for (int i = 0; i < MAX_ROCKON; i++)
+	for (int i = 0; i < g_max; i++)
 	{
 		g_RockOn[i].use = FALSE;
 	}

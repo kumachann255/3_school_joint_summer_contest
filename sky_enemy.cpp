@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // モデル処理 [player.cpp]
 // Author : 
@@ -425,6 +425,8 @@ void DrawSkyEnemy(void)
 			DrawModel(&g_SkyEnemy[g_SkyEnemy[i].EnemyType].model);
       
 
+#ifdef _DEBUG	// デバッグ時のみ表示
+
 			// コリジョン用のボックスの描画
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -447,6 +449,7 @@ void DrawSkyEnemy(void)
 
 			// モデル描画
 			DrawModel(&g_Collision[0].model);
+#endif
 		}
 	}
 

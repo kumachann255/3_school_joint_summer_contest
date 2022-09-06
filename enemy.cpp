@@ -527,6 +527,7 @@ void DrawEnemy(void)
 			break;
 		}
 
+#ifdef _DEBUG	// デバッグ時のみ表示
 
 		// コリジョン用のボックスの描画
 		// ワールドマトリックスの初期化
@@ -558,6 +559,8 @@ void DrawEnemy(void)
 
 		// リムライトの設定
 		SetFuchi(FALSE);
+#endif
+
 	}
 
 	// カリング設定を戻す
