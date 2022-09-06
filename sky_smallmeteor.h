@@ -34,6 +34,8 @@ struct S_METEOR
 	float				time;				// ŽžŠÔ
 	float				size;
 	XMFLOAT3			randMove;
+
+	int					ModelPattern;
 };
 
 //*****************************************************************************

@@ -29,14 +29,17 @@
 #include "rockon.h"
 #include "enemy.h"
 #include "sky_enemy.h"
+#include "targetObj.h"
+
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_PLAYER		"data/MODEL/cone.obj"			// 読み込むモデル名
+#define MODEL_ROCKET		"data/MODEL/rocket.obj"
+#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 
-#define	VALUE_MOVE			(2.0f)							// 移動量
+#define	VALUE_MOVE			(10.0f)							// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
@@ -50,6 +53,8 @@
 #define COOLTIME_SHARK		(180)		// サメのクールタイム
 #define COOLTIME_METEOR		(180)		// メテオのクールタイム
 
+#define PLAYER_MOVE_ROT		(0.01f)		// プレイヤーの左右の移動速度
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -60,6 +65,8 @@
 // グローバル変数
 //*****************************************************************************
 static PLAYER		g_Player;						// プレイヤー
+
+static ROCKET		g_Rocket;
 
 static PLAYER		g_Parts[PLAYER_PARTS_MAX];		// プレイヤーのパーツ用
 static int			g_Stage;
@@ -94,7 +101,11 @@ static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
 HRESULT InitPlayer(void)
 {
 	LoadModel(MODEL_PLAYER, &g_Player.model);
+	LoadModel(MODEL_ROCKET, &g_Rocket.model);
+
+
 	g_Player.load = TRUE;
+	g_Rocket.load = TRUE;
 
 	g_Player.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
 	g_Player.rot = { 0.0f, 0.0f, 0.0f };
@@ -110,6 +121,11 @@ HRESULT InitPlayer(void)
 	g_Player.cooltime = 0;
 	
 	g_Stage = GetStage();
+
+	g_Rocket.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
+	g_Rocket.rot = { 0.0f, 0.0f, 0.0f };
+	g_Rocket.scl = { 3.0f, 3.0f, 3.0f };
+
 
 
 	// ここでプレイヤー用の影を作成している
@@ -177,6 +193,14 @@ void UninitPlayer(void)
 		UnloadModel(&g_Player.model);
 		g_Player.load = FALSE;
 	}
+
+	// モデルの解放処理
+	if (g_Rocket.load)
+	{
+		UnloadModel(&g_Rocket.model);
+		g_Rocket.load = FALSE;
+	}
+
 
 	g_Load = FALSE;
 }
@@ -247,29 +271,30 @@ void UpdatePlayer(void)
 	//================================
 	if (GetMode() == MODE_GAME_SKY)
 	{
-
 		if (GetKeyboardPress(DIK_RIGHT))
 		{
 			g_Player.spd = VALUE_MOVE;
 
-				g_Player.angle += 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
+			g_Player.angle += PLAYER_MOVE_ROT;
+			g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+			g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
-				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
-			
+			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+
+			GetTargetObj()->rot.y += PLAYER_MOVE_ROT;
 		}
 
 		if (GetKeyboardPress(DIK_LEFT))
 		{
 			g_Player.spd = VALUE_MOVE;
 
-				g_Player.angle -= 0.01f;
-				g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
-				g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
+			g_Player.angle -= PLAYER_MOVE_ROT;
+			g_Player.pos.x = sinf(g_Player.angle) * 25.0f;
+			g_Player.pos.z = cosf(g_Player.angle) * 25.0f;
 
-				g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
-			
+			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
+
+			GetTargetObj()->rot.y -= PLAYER_MOVE_ROT;
 		}
 
 		if (GetKeyboardTrigger(DIK_L))
@@ -278,7 +303,6 @@ void UpdatePlayer(void)
 			SetTimingText(GetNoteTiming());
 
 		}
-
 	}
 
 
@@ -289,7 +313,6 @@ void UpdatePlayer(void)
 	bool ans = RayHitSeaField(g_Player.pos, &hitPosition, &normal);
 	g_Player.pos.y = hitPosition.y + PLAYER_OFFSET_Y;
 	//g_Player.pos.y = PLAYER_OFFSET_Y;
-
 
 	// 影もプレイヤーの位置に合わせる
 	XMFLOAT3 pos = g_Player.pos;
@@ -386,8 +409,6 @@ void UpdatePlayer(void)
 				ResetRockOn();
 
 				break;
-
-
 			}
 		}
 	}
@@ -533,7 +554,9 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
-	return;
+	//============================
+	// プレイヤーの描画
+	//============================
 
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);
@@ -548,7 +571,7 @@ void DrawPlayer(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y + XM_PI, g_Player.rot.z);
+	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 	// クォータニオンを反映
@@ -567,6 +590,37 @@ void DrawPlayer(void)
 
 	// モデル描画
 	DrawModel(&g_Player.model);
+
+
+	//============================
+	// ロケットの描画
+	//============================
+	// カリング無効
+	SetCullingMode(CULL_MODE_NONE);
+
+	// ワールドマトリックスの初期化
+	mtxWorld = XMMatrixIdentity();
+
+	// スケールを反映
+	mtxScl = XMMatrixScaling(g_Rocket.scl.x, g_Rocket.scl.y, g_Rocket.scl.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+	// 回転を反映
+	mtxRot = XMMatrixRotationRollPitchYaw(g_Rocket.rot.x, g_Rocket.rot.y, g_Rocket.rot.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+	// 移動を反映
+	mtxTranslate = XMMatrixTranslation(g_Rocket.pos.x, g_Rocket.pos.y, g_Rocket.pos.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+	// ワールドマトリックスの設定
+	SetWorldMatrix(&mtxWorld);
+
+	XMStoreFloat4x4(&g_Rocket.mtxWorld, mtxWorld);
+
+
+	// モデル描画
+	DrawModel(&g_Rocket.model);
 
 
 

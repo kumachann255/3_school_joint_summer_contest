@@ -15,7 +15,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_DOME_CITY			"data/MODEL/dome_city.obj"				// 読み込むモデル名
+#define	MODEL_DOME_CITY			"data/MODEL/wakusei.obj"				// 読み込むモデル名
 #define	MODEL_DOME_UNIVERSE		"data/MODEL/dome_universe.obj"			// 読み込むモデル名
 #define	SKY_OFFSET_Y			(XM_PI/15000)							// 回転速度
 
@@ -50,7 +50,7 @@ HRESULT InitDome(void)
 
 		g_Dome[i].use = TRUE;
 
-		g_Dome[i].pos = XMFLOAT3(0.0f, -2300.0f, 0.0f);
+		g_Dome[i].pos = XMFLOAT3(0.0f, -800.0f, 0.0f);
 		g_Dome[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Dome[i].scl = XMFLOAT3(80.0f, 80.0f, 80.0f);
 

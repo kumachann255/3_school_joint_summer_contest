@@ -14,6 +14,8 @@
 enum
 {
 	PARTICLE_TYPE_CUP,			// カップ用
+	PARTICLE_TYPE_CUP_NOTE,		// カップ音符用
+	PARTICLE_TYPE_BLAST,		// ネバネバ用
 	PARTICLE_TYPE_MAX,
 };
 
@@ -29,6 +31,7 @@ struct PARTICLE
 
 	int				nIdxShadow;		// 影ID
 	
+	int				texNo;			// テクスチャ番号
 	int				type;			// タイプ
 	int				life;			// 寿命
 	
@@ -46,6 +49,6 @@ void UninitParticle(void);
 void UpdateParticle(void);
 void DrawParticle(void);
 
-int SetParticle(int type, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT4 col, float pop, int life);
+int SetParticle(int type, int texNo, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life);
 void SetColorParticle(int nIdxParticle, XMFLOAT4 col);
 
