@@ -150,7 +150,10 @@ HRESULT InitResult(void)
 
 	for (int i = 0; i < stage_max; i++)
 	{
-		g_totale += GetMainScore(i);
+		for (int p = 0; p < modeMax; p++)
+		{
+		g_totale += GetMainScore(p, i);
+		}
 	}
 
 	// 最大を超えていた場合99999で固定
@@ -455,43 +458,43 @@ void DrawResult(void)
 		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[11]);
 
-		for (int m = 0; m < stage_max; m++)
+		for (int p = 0; p < modeMax; p++)
 		{
-
-			// 桁数分処理する
-			int number = GetMainScore(m);
-			for (int i = 0; i < SCORE_DIGIT; i++)
+			for (int m = 0; m < stage_max; m++)
 			{
-				// 今回表示する桁の数字
-				float x = (float)(number % 10);
-
-				// スコアの位置やテクスチャー座標を反映
-				float pw = 22;			// スコアの表示幅
-				float ph = 40;			// スコアの表示高さ
-				float px = 450.0f - i * pw;	// スコアの表示位置X
-				float py = 130.0f + (m * 55.0f);			// スコアの表示位置Y
-
-				float tw = 1.0f / 10;		// テクスチャの幅
-				float th = 1.0f / 1;		// テクスチャの高さ
-				float tx = x * tw;			// テクスチャの左上X座標
-				float ty = 0.0f;			// テクスチャの左上Y座標
-
-				if (g_Use[m] == TRUE)
+				// 桁数分処理する
+				int number = GetMainScore(p, m);
+				for (int i = 0; i < SCORE_DIGIT; i++)
 				{
-					// １枚のポリゴンの頂点とテクスチャ座標を設定
-					SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
-						XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+					// 今回表示する桁の数字
+					float x = (float)(number % 10);
 
-					// ポリゴン描画
-					GetDeviceContext()->Draw(4, 0);
+					// スコアの位置やテクスチャー座標を反映
+					float pw = 22;				// スコアの表示幅
+					float ph = 40;				// スコアの表示高さ
+					float px = 450.0f - i * pw;					// スコアの表示位置X
+					float py = 130.0f + (p * m * 55.0f);		// スコアの表示位置Y
 
+					float tw = 1.0f / 10;		// テクスチャの幅
+					float th = 1.0f / 1;		// テクスチャの高さ
+					float tx = x * tw;			// テクスチャの左上X座標
+					float ty = 0.0f;			// テクスチャの左上Y座標
+
+					if (g_Use[m] == TRUE)
+					{
+						// １枚のポリゴンの頂点とテクスチャ座標を設定
+						SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
+							XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+
+						// ポリゴン描画
+						GetDeviceContext()->Draw(4, 0);
+					}
+
+					// 次の桁へ
+					number /= 10;
 				}
-
-				// 次の桁へ
-				number /= 10;
 			}
 		}
-
 	}
 
 

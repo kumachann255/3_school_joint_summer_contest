@@ -191,8 +191,6 @@ HRESULT InitGameCity(void)
 
 	case stage0:
 	case stage1:
-	case stage2:
-	case stage3:
 		// BGM再生
 		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;

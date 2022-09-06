@@ -87,12 +87,16 @@ enum
 enum {
 	stage0,
 	stage1,
-	stage2,
-	stage3,
 	stage_max,
 	tutorial,
 };
 
+enum {
+	city,
+	sea,
+	sky,
+	modeMax,
+};
 
 
 //*****************************************************************************
@@ -109,7 +113,7 @@ float RamdomFloat(int digits, float max, float min);
 int GetStage(void);
 void SetStage(int stage);
 void SetMainScore(int score);
-int GetMainScore(int stage);
+int GetMainScore(int mode, int stage);
 void ResetMainScore(void);
 void SetComboMax(int combo);
 int GetComboMax(void);

@@ -225,7 +225,6 @@ void UpdateTImingBar(void)
 					SetNoteTiming(g_Timing_old);
 				}
 			}
-
 		}
 	}
 
@@ -381,6 +380,7 @@ int GetNoteTiming(void)
 	if (ans >= good)
 	{
 		SetTimingHas(TRUE);
+		AddScore(1);		// コンボを加算
 		ResetComboTime();	// コンボ継続時間もリセット
 	}
 	else SetTimingHas(FALSE);
@@ -408,7 +408,12 @@ void SetNoteTiming(int timing)
 	}
 
 	// GOOD以上の場合は小気味よい音を鳴らす
-	if (timing >= good) PlaySound(SOUND_LABEL_SE_timing_good);
+	if (timing >= good) 
+	{ 
+		PlaySound(SOUND_LABEL_SE_timing_good); 
+		AddScore(1);		// コンボを加算
+		ResetComboTime();	// コンボ継続時間もリセット
+	}
 	else PlaySound(SOUND_LABEL_SE_timing_miss);
 
 	// エフェクトを発生(エフェクトの種類はランダム)
