@@ -460,7 +460,7 @@ void DrawGameSea0(void)
 	DrawEnemy();
 
 	// プレイヤーの描画処理
-	DrawPlayer();
+	//DrawPlayer();
 
 	// ダイナマイトの描画処理
 	DrawBom();

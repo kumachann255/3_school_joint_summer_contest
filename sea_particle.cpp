@@ -30,12 +30,16 @@
 #define	MAX_LIFE			(75)		// パーティクルの寿命
 #define PARTICLE_SPEED		(0.01f)		// パーティクルの動く速さ
 
+#define BEZIER_F_X			(0.0f)		// ベジェ曲線始点X
+#define BEZIER_F_Y			(75.0f)		// ベジェ曲線始点Y
+#define BEZIER_F_Z			(75.0f)		// ベジェ曲線始点Z
+
 #define BEZIER_P_X			(50.0f)		// ベジェ曲線アンカーX
 #define BEZIER_P_Y			(75.0f)		// ベジェ曲線アンカーY
 #define BEZIER_P_Z			(50.0f)		// ベジェ曲線アンカーZ
 
 #define BEZIER_L_X			(100.0f)	// ベジェ曲線終点X
-#define BEZIER_L_Y			(0.0f)		// ベジェ曲線終点Y
+#define BEZIER_L_Y			(20.0f)		// ベジェ曲線終点Y
 #define BEZIER_L_Z			(100.0f)	// ベジェ曲線終点Z
 
 #define BEZIER_RANDOM		(20)		// ベジェ曲線用乱数
@@ -370,52 +374,10 @@ void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col)
 }
 
 //=============================================================================
-// パーティクルの発生処理
+// タコ用パーティクルの発生処理
 //=============================================================================
-//void SetSeaParticle(int mode)
 void SetSeaParticleTako(void)
 {
-	//for(int i = 0; i < MAX_SEA_PARTICLE; i++)
-	//{
-	//	TAKO *tako = GetTako();
-
-	//	for (int j = 0; j < MAX_TAKO; j++)
-	//	{
-	//		if (g_SeaParticle[i].use == FALSE && tako[j].mode == CATCH)
-	//		{
-	//			g_SeaParticle[i].use = TRUE;
-	//			g_SeaParticle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	//			g_SeaParticle[i].life = MAX_LIFE;
-	//			g_SeaParticle[i].pos = tako[j].pos;
-	//			g_SeaParticle[i].pos.y += 10.0f;
-	//			g_SeaParticle[i].tex_No = rand() % TEXTURE_MAX;
-	//		}
-	//	}
-	//}
-
-	//return;
-	//TAKO *tako = GetTako();
-
-	//for (int i = 0; i < MAX_TAKO; i++)
-	//{
-	//	if (tako[i].mode == WAIT)
-	//	{
-	//		for (int j = 0; j < MAX_SEA_PARTICLE; j++)
-	//		{
-	//			if (g_SeaParticle[j].use == FALSE)
-	//			{
-	//				g_SeaParticle[j].use = TRUE;
-	//				g_SeaParticle[j].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	//				g_SeaParticle[j].life = MAX_LIFE;
-	//				g_SeaParticle[j].pos = tako[i].pos;
-	//				g_SeaParticle[j].pos.y += 10.0f;
-	//				g_SeaParticle[j].tex_No = rand() % TEXTURE_MAX;
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
-
 	TAKO *tako = GetTako();
 
 	for (int i = 0; i < MAX_TAKO; i++)
@@ -431,7 +393,7 @@ void SetSeaParticleTako(void)
 					g_SeaParticle[j].life = MAX_LIFE;
 					g_SeaParticle[j].pos = tako[i].pos;
 
-					// 噴水みたいにパーティクルを発生させる処理
+					// 噴水みたいにパーティクルを発生させる処理(タコは三軸に放射)
 					// 右の放物線
 					if (j % 2 == 0)
 					{
@@ -468,6 +430,74 @@ void SetSeaParticleTako(void)
 					g_SeaParticle[j].tex_No = rand() % TEXTURE_MAX;
 					break;
 				}
+			}
+		}
+	}
+
+}
+
+//=============================================================================
+// サメ用パーティクルの発生処理
+//=============================================================================
+void SetSeaParticleSame(void)
+{
+	SAME *same = GetSame();
+
+	if (same->mode == DOWN_LAST)
+	{
+		for (int i = 0; i < MAX_SEA_PARTICLE; i++)
+		{
+			if (g_SeaParticle[i].use == FALSE)
+			{
+				g_SeaParticle[i].use = TRUE;
+				g_SeaParticle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+				g_SeaParticle[i].life = MAX_LIFE;
+				g_SeaParticle[i].pos.x = same->pos.x;
+				g_SeaParticle[i].pos.y = same->pos.y + BEZIER_F_Y;
+				g_SeaParticle[i].pos.z = same->pos.z - BEZIER_F_Y;
+
+
+				// 噴水みたいにパーティクルを発生させる処理（サメはZ軸は固定）
+				// 右の放物線
+				if (i % 2 == 0)
+				{
+					// ベジェ開始位置
+					control0[i].x = same->pos.x;
+					control0[i].y = same->pos.y + BEZIER_F_Y;
+					control0[i].z = same->pos.z - BEZIER_F_Y;
+
+
+					// ポイント
+					control1[i].x = same->pos.x + BEZIER_P_X;
+					control1[i].y = (same->pos.y + BEZIER_F_Y) + (BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM));
+					control1[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ベジェゴール位置
+					control2[i].x = same->pos.x + BEZIER_L_X + (float)(rand() % BEZIER_RANDOM);
+					control2[i].y = same->pos.y - BEZIER_L_Y;
+					control2[i].z = same->pos.z - BEZIER_F_Y;
+				}
+				// 左の放物線
+				else if (i % 2 == 1)
+				{
+					// ベジェ開始位置
+					control0[i].x = same->pos.x;
+					control0[i].y = same->pos.y + BEZIER_F_Y;
+					control0[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ポイント
+					control1[i].x = same->pos.x - BEZIER_P_X;
+					control1[i].y = (same->pos.y + BEZIER_F_Y) + (BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM));
+					control1[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ベジェゴール位置
+					control2[i].x = same->pos.x - BEZIER_L_X - (float)(rand() % BEZIER_RANDOM);
+					control2[i].y = same->pos.y - BEZIER_L_Y;
+					control2[i].z = same->pos.z - BEZIER_F_Y;
+				}
+				//g_SeaParticle[i].pos.y += 10.0f;
+				g_SeaParticle[i].tex_No = rand() % TEXTURE_MAX;
+				break;
 			}
 		}
 	}

@@ -43,6 +43,7 @@ void UpdateSeaParticle(void);
 void DrawSeaParticle(void);
 
 void SetSeaParticleTako();
+void SetSeaParticleSame();
 
 void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col);
 
