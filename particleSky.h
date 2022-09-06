@@ -19,6 +19,6 @@ void UninitParticleSky(void);
 void UpdateParticleSky(void);
 void DrawParticleSky(void);
 
-int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life);
+int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life, int texNo);
 void SetColorParticleSky(int nIdxParticle, XMFLOAT4 col);
 

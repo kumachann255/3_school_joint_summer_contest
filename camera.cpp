@@ -44,7 +44,7 @@
 
 #define CAMERA_MOVE_SPEED		(0.02f)		// カメラが動くスピード
 #define CAMERA_DISTANCE			(50.0f)		// 注視点からカメラまでの距離
-#define CAMERA_SPEED			(0.005f)	// ムービー中のカメラのスピード
+#define CAMERA_SPEED			(0.01f)	// ムービー中のカメラのスピード
 #define CAMERA_MOVE_DISTANCE	(300.0f)	// ムービー開始時のz座標
 
 #define MOVIE_CUTPOINT			(90.0f)		// ムービーが終わる地点を設定

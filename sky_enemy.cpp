@@ -22,16 +22,15 @@
 #include "target.h"
 #include "targetObj.h"
 #include "rockOn.h"
+#include "sound.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_SKY_ENEMY_W	"data/MODEL/enemy04.obj"			// 読み込むモデル名
-#define	MODEL_SKY_ENEMY_B	"data/MODEL/enemy05.obj"			// 読み込むモデル名
-#define MODEL_SKY_ENEMY_D	"data/MODEL/enemy09.obj"
+#define	MODEL_SKY_ENEMY_W	"data/MODEL/enemy04.obj"			// エネミー白
+#define	MODEL_SKY_ENEMY_B	"data/MODEL/enemy05.obj"			// エネミー黒
+#define MODEL_SKY_ENEMY_D	"data/MODEL/enemy09.obj"			// なんかちょっと怖いやつ 
 
-#define	MODEL_SKY_ENEMY		"data/MODEL/m.obj"			// 読み込むモデル名
-#define	MODEL_SKY_ENEMY_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 #define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 #define	VALUE_MOVE				(2.0f)							// 移動量
@@ -42,7 +41,7 @@
 
 #define SKY_ENEMY_PARTS_MAX		(2)								// エネミーのパーツの数
 
-#define STAGE0_POP_COUNT	(300)						// エネミーのポップ間隔
+#define STAGE0_POP_COUNT	(80)						// エネミーのポップ間隔
 #define STAGE0_MAX_POP		(40)						// 最大、場に何体エネミーを出すか
 
 #define ENEMY_HIT_MOVE		(5.0f)						// 当たり判定後アニメーション用移動量
@@ -55,13 +54,16 @@
 #define ENEMY_BLINKING1		(14)						// 点滅の間隔
 
 #define ENEMY_ANGLE_SHRINK		(1.5f)					// 相手が近づいてくる速度
-#define ENEMY_DISTANCE_CIRCLE	(200.0f)				// 近づいてくる限界
+#define ENEMY_DISTANCE_CIRCLE	(400.0f)				// 近づいてくる限界
 #define ENEMY_SHINK_SPEED_Y		(0.01f)					// プレイヤーの周りを回転する際の回転速度(Y軸)
 #define ENEMY_SHINK_SPEED_X		(0.01f)					// プレイヤーの周りを回転する際の回転速度(X軸)
 
-#define ENEMY_POP_DEISTANCE			(500)				// エネミーのポップする距離(ベース)
+#define ENEMY_POP_DEISTANCE			(1000)				// エネミーのポップする距離(ベース)
 #define ENEMY_POP_DEISTANCE_RAND	(300)				// エネミーのポップする距離(乱数)
 
+#define CIRCLE_INSIDE_MIN				(200.0f)	// エネミーがサークル１の内側入ってプレイヤーに近づく限界値
+
+#define ENEMY_POP_Y_RAND			(100.0f)			// エネミーがポップする位置の乱数
 
 
 
@@ -86,6 +88,7 @@ static BOOL		g_Load = FALSE;
 static int g_count;
 
 static int g_Stage;
+
 
 
 // プレイヤーの階層アニメーションデータ
@@ -146,6 +149,7 @@ HRESULT InitSkyEnemy(void)
 		g_SkyEnemy[i].target = FALSE;
 
 		g_SkyEnemy[i].particleOn = FALSE;
+		g_SkyEnemy[i].enemyPop = FALSE;
 
 		g_Collision[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
 		g_Collision[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -166,6 +170,8 @@ HRESULT InitSkyEnemy(void)
 	LoadObj(MODEL_ENEMY_COLLISION, &g_Collision_Vertex);
 
 	g_Vertex = new VERTEX_3D[g_Collision_Vertex.VertexNum];
+
+	
 
 	// 初期化
 	for (int i = 0; i < g_Collision_Vertex.VertexNum; i++)
@@ -217,6 +223,7 @@ void UpdateSkyEnemy(void)
 	for (int i = 0; i < MAX_SKY_ENEMY; i++)
 	{
 		if (g_SkyEnemy[i].use == TRUE) useCount++;
+
 	}
 
 	// 時間経過とエネミーの出現数次第でポップするか判断
@@ -232,7 +239,7 @@ void UpdateSkyEnemy(void)
 		g_SkyEnemy[i].move_count++;
 
 
-		// 1つ目のサークル
+		// 1つ目のサークルの円運動
 		XMFLOAT3 first_circle;
 
 		first_circle.x = sinf(g_SkyEnemy[i].angle1) * g_SkyEnemy[i].radius2;		// 1つ目の円に2つ目の円を合成　円運動をする基点（中心点）＊2つ目の円運動の半径
@@ -240,7 +247,7 @@ void UpdateSkyEnemy(void)
 
 
 
-		// 2つ目のサークル
+		// 2つ目のサークルの円運動
 		XMFLOAT3 second_circle;
 		g_SkyEnemy[i].radius2 = g_SkyEnemy[i].radius1 + cosf(g_SkyEnemy[i].angle2) * 50;		// 現在の位置からのサークル２の半径を求める
 
@@ -248,21 +255,24 @@ void UpdateSkyEnemy(void)
 
 
 		// サークル1の範囲外にいる場合
-		if (g_SkyEnemy[i].radius1 >= ENEMY_DISTANCE_CIRCLE)					
+		if (g_SkyEnemy[i].radius1 >= ENEMY_DISTANCE_CIRCLE)					// エネミーがサークル１の外周よりも遠くにいたとき
 		{
 			g_SkyEnemy[i].radius1 -= ENEMY_ANGLE_SHRINK;					// サークル1に向かって一直線に来る　エネミーのポップする位置はワールド座標の原点を中心として三角関数で管理しているので、半径を縮めていけばサークル１に向かってくる
 		}
-		else if (g_SkyEnemy[i].radius1 > 0.0f)				// サークル1の内側（半径が０～１５０）の場合
+		else if (g_SkyEnemy[i].radius1 > CIRCLE_INSIDE_MIN)				// エネミーがサークル1の内側（ここから（CIRCLE_INSIDE_MIN）～ここまで（ENEMY_DISTANCE_CIRCLE））に入ってきた場合
 		{
-			g_SkyEnemy[i].angle1 += g_SkyEnemy[i].circle1_spd;	// 回転割合
+			g_SkyEnemy[i].angle1 += g_SkyEnemy[i].circle1_spd*0.1f;	// 回転割合
 
 			g_SkyEnemy[i].angle2 += g_SkyEnemy[i].circle2_spd;	// 回転割合
 			g_SkyEnemy[i].pos.y = second_circle.y;
+
+			g_SkyEnemy[i].radius1 += 0.0f;				
+
 		}
-		else											// 半径が０以下になった場合
-		{
-			g_SkyEnemy[i].radius1 = 0.0f;					// 0より小さくなってしまうと止まってうので半径を0にしている
-		}
+		//else											// 半径が０以下になった場合
+		//{
+		//	g_SkyEnemy[i].radius1 = 0.0f;					// 0より小さくなってしまうと止まってうので半径を0にしている
+		//}
 
 		if (g_SkyEnemy[i].move_count <= 60)
 		{
@@ -377,7 +387,7 @@ void UpdateSkyEnemy(void)
 		}
 
 #ifdef _DEBUG	// デバッグ情報を表示する
-		PrintDebugProc("g_SkyEnemy[%d]:X:%f Y:%f Z:%f\n", i, g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
+		//PrintDebugProc("g_SkyEnemy[%d]:X:%f Y:%f Z:%f\n", i, g_SkyEnemy[i].pos.x, g_SkyEnemy[i].pos.y, g_SkyEnemy[i].pos.z);
 #endif
 		}
 }
@@ -425,28 +435,28 @@ void DrawSkyEnemy(void)
 			DrawModel(&g_SkyEnemy[g_SkyEnemy[i].EnemyType].model);
       
 
-			// コリジョン用のボックスの描画
-			// ワールドマトリックスの初期化
-			mtxWorld = XMMatrixIdentity();
+			//// コリジョン用のボックスの描画
+			//// ワールドマトリックスの初期化
+			//mtxWorld = XMMatrixIdentity();
 
-			// スケールを反映
-			mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+			//// スケールを反映
+			//mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
+			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// 回転を反映
-			mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+			//// 回転を反映
+			//mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
+			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+			//// 移動を反映
+			//mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
+			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ワールドマトリックスの設定
-			SetWorldMatrix(&mtxWorld);
-			XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
+			//// ワールドマトリックスの設定
+			//SetWorldMatrix(&mtxWorld);
+			//XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
 
-			// モデル描画
-			DrawModel(&g_Collision[0].model);
+			//// モデル描画
+			//DrawModel(&g_Collision[0].model);
 		}
 	}
 
@@ -474,7 +484,10 @@ void SetSkyEnemy(void)
 		if (!g_SkyEnemy[i].use)
 		{
 			g_SkyEnemy[i].use = TRUE;
-			g_SkyEnemy[i].EnemyType = rand() % 2;
+			PlaySound(SOUND_LABEL_SE_enemy_pop);
+
+			g_SkyEnemy[i].enemyPop = TRUE;
+			g_SkyEnemy[i].EnemyType = rand() % 3;
 			g_SkyEnemy[i].radius1 = (float)(ENEMY_POP_DEISTANCE + rand() % ENEMY_POP_DEISTANCE_RAND);				// サークル１の半径	rand関数はint型なのでfloat型にキャストしている
 			g_SkyEnemy[i].target = FALSE;
 
@@ -483,7 +496,7 @@ void SetSkyEnemy(void)
 
 			// エネミーが出現する初期位置
 			g_SkyEnemy[i].pos = { g_SkyEnemy[i].radius1 * cosf(g_SkyEnemy[i].angle1),	// X
-								 0.0f,	// Y
+								  RamdomFloat(2, ENEMY_POP_Y_RAND, -ENEMY_POP_Y_RAND),	// Y
 								  g_SkyEnemy[i].radius1 * sinf(g_SkyEnemy[i].angle1) };	// Z
 
 			g_SkyEnemy[i].rot = { 0.0f, 0.0f, 0.0f };

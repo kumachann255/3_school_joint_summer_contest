@@ -36,11 +36,16 @@ DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 // 各音素材のパラメータ
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
-	// BGM
+	//// BGM
 	{ (char*)"data/BGM/bgm_title.wav", -1 },	// タイトルBGM
 	{ (char*)"data/BGM/bgm_stage001.wav", -1 },	// ステージBGM1
 	{ (char*)"data/BGM/bgm_stage002.wav", -1 },	// ステージBGM2
 	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
+	// 空ステージ
+	{ (char*)"data/BGM/bgm_sky_stage_1.wav", -1 },	// 空ステージBGMサンプル１
+	{ (char*)"data/BGM/bgm_sky_stage_2.wav", -1 },	// 空ステージBGMサンプル２
+	{ (char*)"data/BGM/bgm_sky_stage_3.wav", -1 },	// 空ステージBGMサンプル３
+
 
 	//// SE
 	{ (char*)"data/SE/booingSound01.wav", 0 },		// ブーイング音
@@ -74,6 +79,13 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/rhythm.wav", 0 },				// リズムの音
 	{ (char*)"data/SE/timing_miss.wav", 0 },		// ミスの音
 	{ (char*)"data/SE/timing_good.wav", 0 },		// GOODの音
+	// 空ステージ
+	{ (char*)"data/SE/enemy_pop.wav", 0 },			// エネミーポップ音
+	{ (char*)"data/SE/meteor_shot.wav", 0 },		// メテオ発射音
+	{ (char*)"data/SE/meteor_hit.wav", 0 },			// メテオヒット音
+	{ (char*)"data/SE/skyEnemy_death_0.wav", 0 },		// エネミー死亡音
+	{ (char*)"data/SE/skyEnemy_death_1.wav", 0 },		// エネミー死亡音
+	{ (char*)"data/SE/skyEnemy_death_2.wav", 0 },		// エネミー死亡音
 
 
 };
@@ -233,6 +245,19 @@ BOOL InitSound(HWND hWnd)
 	SetSourceVolume(SOUND_LABEL_SE_siren01, 0.5f);
 	SetSourceVolume(SOUND_LABEL_SE_stickingSound01, 1.5f);
 	SetSourceVolume(SOUND_LABEL_SE_titleClick04, 0.25f);
+
+
+	// 空ステージのBGMとSEの音量調整
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_1, 1.0f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_2, 1.0f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_3, 1.0f);
+
+	SetSourceVolume(SOUND_LABEL_SE_enemy_pop,		 1.0f);
+	SetSourceVolume(SOUND_LABEL_SE_meteor_shot,		 1.0f);
+	SetSourceVolume(SOUND_LABEL_SE_meteor_hit,		 1.0f);
+	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_0, 1.0f);
+	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_1, 1.0f);
+	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_2, 1.0f);
 
 	return TRUE;
 }
