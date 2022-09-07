@@ -11,7 +11,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_TARGETOBJ	(1)						// 数
-#define TARGET_MOVE_VALUE_Y			(10.0f)		// ターゲットが縦に動く速度
+#define TARGET_MOVE_VALUE_Y			(20.0f)		// ターゲットが縦に動く速度
 #define TARGET_MOVE_VALUE_X			(0.03f)		// ターゲットが横に動く速度
 
 enum {
