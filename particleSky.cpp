@@ -18,7 +18,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_MAX			(1)			// テクスチャの数
+#define TEXTURE_MAX			(23)			// テクスチャの数
 
 #define	PARTICLE_SIZE_X		(15.0f)		// 頂点サイズ・パーティクルサイズ
 #define	PARTICLE_SIZE_Y		(15.0f)		// 頂点サイズ・パーティクルサイズ
@@ -27,8 +27,8 @@
 
 #define SKY_ENEMY_POP_RAND		(10.0f)		// 発生位置の乱数
 
-#define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
-#define SKY_MOVE_XY			(3.0f)		// xy軸の移動量の乱数
+#define SKY_ENEMY_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
+#define SKY_ENEMY_MOVE_XY		(2.0f)		// xy軸の移動量の乱数
 
 #define MAX_SKY_ENEMY_COLOR	(0.5f)		// カラーの乱数
 #define MIN_SKY_ENEMY_COLOR	(0.2f)		// カラーの乱数
@@ -38,7 +38,13 @@
 
 #define SKY_ENEMY_LIFE_ALFA	(20)		// カラーの乱数
 
-#define SKY_ENEMY_FLAM_NUM		(10)			// 1フレームに何個出すか
+#define SKY_ENEMY_FLAM_NUM		(25)			// 1フレームに何個出すか
+#define SKY_ENEMY_POP_FLAM_NUM		(15)			// 1フレームに何個出すか
+
+#define SKY_ENEMY_SCL		(6.0f)	// スケールの乱数
+
+#define POP_SKY_ENEMY_MOVE		(0.8f)	//エネミーがポップした際の移動量の乱数
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -57,7 +63,30 @@ static PARTICLE						g_ParticleSky[MAX_PARTICLE];		// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/onpu01.png",
+	"data/TEXTURE/enemyPop.png",
+	"data/TEXTURE/onpu01_01.png",
+	"data/TEXTURE/onpu01_02.png",
+	"data/TEXTURE/onpu01_03.png",
+	"data/TEXTURE/onpu02_01.png",
+	"data/TEXTURE/onpu02_02.png",
+	"data/TEXTURE/onpu02_03.png",
+	"data/TEXTURE/onpu03_01.png",
+	"data/TEXTURE/onpu03_02.png",
+	"data/TEXTURE/onpu03_03.png",
+	"data/TEXTURE/onpu04_01.png",
+	"data/TEXTURE/onpu04_02.png",
+	"data/TEXTURE/onpu04_03.png",
+	"data/TEXTURE/onpu05_01.png",
+	"data/TEXTURE/onpu05_02.png",
+	"data/TEXTURE/onpu05_03.png",
+	"data/TEXTURE/onpu06_01.png",
+	"data/TEXTURE/onpu06_02.png",
+	"data/TEXTURE/onpu06_03.png",
+	"data/TEXTURE/onpu07_01.png",
+	"data/TEXTURE/onpu07_02.png",
+	"data/TEXTURE/onpu07_03.png",
+
+
 };
 
 static BOOL						g_Load = FALSE;
@@ -173,40 +202,92 @@ void UpdateParticleSky(void)
 	{
 		for (int i = 0; i < MAX_SKY_ENEMY; i++)
 		{
-			if (sky_enemy[i].particleOn)
+			// エネミーが死んだとき　
+			if (sky_enemy[i].particleOn )
 			{
-				sky_enemy[i].particleOn = FALSE;
-
 				for (int p = 0; p < SKY_ENEMY_FLAM_NUM; p++)
 				{
 					XMFLOAT3 pos, move, scl;
 					XMFLOAT4 col;
 					int life;
-
+					
 					// 発生位置を設定
 					pos.x = sky_enemy[i].pos.x + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
 					pos.y = sky_enemy[i].pos.y + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
 					pos.z = sky_enemy[i].pos.z + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
 
 					// 移動量を設定
-					move.x = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
-					move.z = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
-					move.y = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
+					move.x = RamdomFloat(2, SKY_ENEMY_MOVE_XY, -SKY_ENEMY_MOVE_XY);
+					move.z = RamdomFloat(2, SKY_ENEMY_MOVE_XY, -SKY_ENEMY_MOVE_XY);
+					move.y = RamdomFloat(2, SKY_ENEMY_MOVE_XY, -SKY_ENEMY_MOVE_XY);
 
-					// カラー設定
-					col.x = 0.8f;
-					col.y = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
-					col.z = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
-					col.w = 1.0f;
+					//// カラー設定
+					//col.x = 0.8f;
+					//col.y = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					//col.z = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					//col.w = 1.0f;
+
+					col = { 1.0f,1.0f, 1.0f, 1.0f };
 
 					// 寿命の設定
 					life = (rand() % MAX_SKY_ENEMY_LIFE) + MIN_SKY_ENEMY_LIFE;
 
-					scl = { 1.0f,1.0f,1.0f };
+					// スケール設定
+					scl = { RamdomFloat(2,SKY_ENEMY_SCL,-SKY_ENEMY_SCL),
+							RamdomFloat(2,SKY_ENEMY_SCL,-SKY_ENEMY_SCL),
+							RamdomFloat(2,SKY_ENEMY_SCL,-SKY_ENEMY_SCL)};
 
-					SetParticleSky(pos, move, scl, col, life);
+					int textNo = (rand() % 21) + 1;
+
+					SetParticleSky(pos, move, scl, col, life, textNo);
 				}
+
+				sky_enemy[i].particleOn = FALSE;
 			}
+
+
+			if ( sky_enemy[i].enemyPop)
+			{
+				for (int p = 0; p < SKY_ENEMY_POP_FLAM_NUM; p++)
+				{
+					XMFLOAT3 pos, move, scl;
+					XMFLOAT4 col;
+					int life;
+
+					// 発生位置を設定
+					//pos.y = sky_enemy[i].pos.y + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					//pos.z = sky_enemy[i].pos.z + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					//pos.x = sky_enemy[i].pos.x + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+
+					pos = sky_enemy[i].pos;
+
+					// 移動量を設定
+					move.x = RamdomFloat(2, POP_SKY_ENEMY_MOVE, -POP_SKY_ENEMY_MOVE);
+					move.z = RamdomFloat(2, POP_SKY_ENEMY_MOVE, -POP_SKY_ENEMY_MOVE);
+					move.y = RamdomFloat(2, POP_SKY_ENEMY_MOVE, -POP_SKY_ENEMY_MOVE);
+
+					//// カラー設定
+					//col.x = 0.8f;
+					//col.y = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					//col.z = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					//col.w = 1.0f;
+
+					col = { 1.0f,1.0f, 1.0f, 1.0f };
+
+					// 寿命の設定
+					life = (rand() % MAX_SKY_ENEMY_LIFE) + MIN_SKY_ENEMY_LIFE;
+
+					// スケール設定
+					scl = { 1.0f,1.0f, 1.0f };
+
+					int textNo = g_TexNo;
+
+					SetParticleSky(pos, move, scl, col, life, textNo);
+				}
+
+				sky_enemy[i].enemyPop = FALSE;
+			}
+
 		}
 	}
 }
@@ -218,12 +299,10 @@ void DrawParticleSky(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
+	SKY_ENEMY *sky_enemy = GetSkyEnemy();
 
 	// ライティングを無効に
 	SetLightEnable(FALSE);
-
-	// 加算合成に設定
-	SetBlendState(BLEND_MODE_ADD);
 
 	// Z比較無し
 	SetDepthEnable(FALSE);
@@ -239,8 +318,8 @@ void DrawParticleSky(void)
 	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// テクスチャ設定
-	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
+
+	
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
@@ -284,6 +363,10 @@ void DrawParticleSky(void)
 			// マテリアル設定
 			SetMaterial(g_ParticleSky[i].material);
 
+			// テクスチャ設定
+			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_ParticleSky[i].texNo]);
+
+
 			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
 		}
@@ -292,8 +375,6 @@ void DrawParticleSky(void)
 	// ライティングを有効に
 	SetLightEnable(TRUE);
 
-	// 通常ブレンドに戻す
-	SetBlendState(BLEND_MODE_ALPHABLEND);
 
 	// Z比較有効
 	SetDepthEnable(TRUE);
@@ -365,7 +446,7 @@ void SetColorParticleSky(int nIdxParticle, XMFLOAT4 col)
 //=============================================================================
 // パーティクルの発生処理
 //=============================================================================
-int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
+int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life, int texNo)
 {
 	int nIdxParticle = -1;
 
@@ -375,12 +456,12 @@ int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int 
 		{
 			g_ParticleSky[i].pos  = pos;
 			g_ParticleSky[i].rot  = { 0.0f, 0.0f, 0.0f };
-			g_ParticleSky[i].scl  = { 1.0f, 1.0f, 1.0f };
+			g_ParticleSky[i].scl  = scl;
 			g_ParticleSky[i].move = move;
 			g_ParticleSky[i].material.Diffuse = col;
 			g_ParticleSky[i].life = life;
 			g_ParticleSky[i].use  = TRUE;
-			
+			g_ParticleSky[i].texNo = texNo;
 
 			nIdxParticle = i;
 

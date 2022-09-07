@@ -24,7 +24,6 @@
 #include "debugproc.h"
 #include "timeUI.h"
 #include "damageEF.h"
-//#include "enemyHeli.h"
 #include "combo.h"
 #include "playerHP.h"
 #include "gameUI.h"
@@ -191,13 +190,13 @@ HRESULT InitGameSky(void)
 	{
 	case tutorial:
 		// BGM再生
-		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
 		break;
 
 	case stage0:
 	case stage1:
 		// BGM再生
-		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
 		break;
 	}
 
@@ -556,7 +555,26 @@ void CheckHitSky(void)
 
 			if (CollisionBC(s_meteor[i].pos,sky_enemy[j].pos,s_meteor[i].size,sky_enemy[j].size))
 			{
+				PlaySound(SOUND_LABEL_SE_meteor_hit);
+
 				sky_enemy[j].use = FALSE;
+				switch (sky_enemy[i].EnemyType)
+				{
+				case 0:
+					PlaySound(SOUND_LABEL_SE_skyEnemy_death_1);
+					break;
+
+				case 1:
+					PlaySound(SOUND_LABEL_SE_skyEnemy_death_2);
+					break;
+
+				case 2:
+					PlaySound(SOUND_LABEL_SE_skyEnemy_death_0);
+					break;
+
+				default:
+					break;
+				}
 				sky_enemy[j].particleOn = TRUE;
 
 				g_DeathParticl = TRUE;

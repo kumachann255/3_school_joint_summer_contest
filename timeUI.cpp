@@ -1,7 +1,7 @@
 ﻿//=============================================================================
 //
-// タイム処理 [timeUI.cpp]
-// Author : 熊澤義弘
+// タイム処琁E[timeUI.cpp]
+// Author : 熊澤義弁E
 //
 //=============================================================================
 #include "main.h"
@@ -17,10 +17,9 @@
 //*****************************************************************************
 #define TEXTURE_WIDTH				(45)	// 時間サイズ
 #define TEXTURE_HEIGHT				(90)	// 
-#define TEXTURE_MAX					(2)		// テクスチャの数
+#define TEXTURE_MAX					(2)		// チE��スチャの数
 
 #define TIME_MAX					(5)	// 時間制限
-
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -32,8 +31,8 @@ void GetStageClear(int score, int mode, int stage);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点惁E��
+static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// チE��スチャ惁E��
 
 static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/time0.png",
@@ -41,30 +40,30 @@ static char *g_TexturName[TEXTURE_MAX] = {
 };
 
 
-static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
-static float					g_w, g_h;					// 幅と高さ
-static XMFLOAT3					g_Pos;						// ポリゴンの座標
-static int						g_TexNo;					// テクスチャ番号
+static BOOL						g_Use;						// TRUE:使ってぁE��  FALSE:未使用
+static float					g_w, g_h;					// 幁E��高さ
+static XMFLOAT3					g_Pos;						// ポリゴンの座樁E
+static int						g_TexNo;					// チE��スチャ番号
 
 static int						g_Time;						// 残り時間
 
 static BOOL						g_Load = FALSE;
 
-static int						g_stage;					// 現在のステージ数
-static int						g_Mode_old;					// 直前のモードを記録
-static BOOL						g_Fade;						// フェード中かどうか
+static int						g_stage;					// 現在のスチE�Eジ数
+static int						g_Mode_old;					// 直前�Eモードを記録
+static BOOL						g_Fade;						// フェード中かどぁE��
 
 static time_t naw_time = 0;		// 現在の時間
-static time_t end_time = 0;		// 終了時間
+static time_t end_time = 0;		// 終亁E��閁E
 
 //=============================================================================
-// 初期化処理
+// 初期化�E琁E
 //=============================================================================
 HRESULT InitTime(void)
 {
 	ID3D11Device *pDevice = GetDevice();
 
-	//テクスチャ生成
+	//チE��スチャ生�E
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -77,7 +76,7 @@ HRESULT InitTime(void)
 	}
 
 
-	// 頂点バッファ生成
+	// 頂点バッファ生�E
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -87,20 +86,20 @@ HRESULT InitTime(void)
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
 
-	// プレイヤーの初期化
+	// プレイヤーの初期匁E
 	g_Use   = TRUE;
 	g_w     = TEXTURE_WIDTH;
 	g_h     = TEXTURE_HEIGHT;
 	g_Pos   = { 500.0f, 60.0f, 0.0f };
 	g_TexNo = 0;
 
-	g_Time = 0;	// 時間の初期化
+	g_Time = 0;	// 時間の初期匁E
 
 	g_stage = GetStage();
 	g_Mode_old = GetMode();
 	g_Fade = FALSE;
 
-	// 終了時間の設定
+	// 終亁E��間�E設宁E
 	SetEndTime();
 
 	g_Load = TRUE;
@@ -108,7 +107,7 @@ HRESULT InitTime(void)
 }
 
 //=============================================================================
-// 終了処理
+// 終亁E�E琁E
 //=============================================================================
 void UninitTime(void)
 {
@@ -133,11 +132,11 @@ void UninitTime(void)
 }
 
 //=============================================================================
-// 更新処理
+// 更新処琁E
 //=============================================================================
 void UpdateTime(void)
 {
-	// 終了時間から現在の時間を引いて残り時間を算出する
+	// 終亁E��間から現在の時間を引いて残り時間を算�Eする
 	g_Time = (int)(end_time - time(NULL));
 
 	if (GetStage() == tutorial)
@@ -148,7 +147,7 @@ void UpdateTime(void)
 	if (g_Time < 0) g_Time = 0;
 
 	// シーン遷移
-	// ステージクリアしているときに処理
+	// スチE�EジクリアしてぁE��ときに処琁E
 	if ((g_Time == 0) && (!g_Fade))
 	{
 		g_Fade = TRUE;
@@ -166,49 +165,49 @@ void UpdateTime(void)
 }
 
 //=============================================================================
-// 描画処理
+// 描画処琁E
 //=============================================================================
 void DrawTime(void)
 {
-	// 頂点バッファ設定
+	// 頂点バッファ設宁E
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// マトリクス設定
+	// マトリクス設宁E
 	SetWorldViewProjection2D();
 
-	// プリミティブトポロジ設定
+	// プリミティブトポロジ設宁E
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// マテリアル設定
+	// マテリアル設宁E
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-	// テクスチャ設定
+	// チE��スチャ設宁E
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-	// 桁数分処理する
+	// 桁数刁E�E琁E��めE
 	int number = g_Time;
 	for (int i = 0; i < TIME_DIGIT; i++)
 	{
-		// 今回表示する桁の数字
+		// 今回表示する桁�E数孁E
 		float x = (float)(number % 10);
 
-		// スコアの位置やテクスチャー座標を反映
+		// スコアの位置めE��クスチャー座標を反映
 		float px = g_Pos.x - g_w*i;	// スコアの表示位置X
 		float py = g_Pos.y;			// スコアの表示位置Y
-		float pw = g_w;				// スコアの表示幅
+		float pw = g_w;				// スコアの表示幁E
 		float ph = g_h;				// スコアの表示高さ
 
-		float tw = 1.0f / 10;		// テクスチャの幅
-		float th = 1.0f / 1;		// テクスチャの高さ
-		float tx = x * tw;			// テクスチャの左上X座標
-		float ty = 0.0f;			// テクスチャの左上Y座標
+		float tw = 1.0f / 10;		// チE��スチャの幁E
+		float th = 1.0f / 1;		// チE��スチャの高さ
+		float tx = x * tw;			// チE��スチャの左上X座樁E
+		float ty = 0.0f;			// チE��スチャの左上Y座樁E
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
+		// �E�枚のポリゴンの頂点とチE��スチャ座標を設宁E
 		SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
 			XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 
@@ -222,8 +221,8 @@ void DrawTime(void)
 
 
 //=============================================================================
-// タイムを加算する
-// 引数:add :追加する点数。マイナスも可能
+// タイムを加算すめE
+// 引数:add :追加する点数。�Eイナスも可能
 //=============================================================================
 void AddTime(int add)
 {
@@ -236,7 +235,7 @@ void AddTime(int add)
 }
 
 //=============================================================================
-// 残り時間を取得
+// 残り時間を取征E
 //=============================================================================
 int GetTime(void)
 {
@@ -245,7 +244,7 @@ int GetTime(void)
 
 
 //=============================================================================
-// 終了時間をセットする関数
+// 終亁E��間をセチE��する関数
 //=============================================================================
 void SetEndTime(void)
 {
@@ -254,7 +253,7 @@ void SetEndTime(void)
 
 
 //=============================================================================
-// ゲームクリアしているかを判断とシーン遷移
+// ゲームクリアしてぁE��かを判断とシーン遷移
 //=============================================================================
 void GetStageClear(int score, int mode, int stage)
 {
@@ -262,7 +261,7 @@ void GetStageClear(int score, int mode, int stage)
 	{
 	case MODE_GAME_CITY:
 
-		// ステージごとに判定
+		// スチE�Eジごとに判宁E
 		switch (stage)
 		{
 		case stage0:
@@ -287,7 +286,7 @@ void GetStageClear(int score, int mode, int stage)
 
 	case MODE_GAME_SEA:
 
-		// ステージごとに判定
+		// スチE�Eジごとに判宁E
 		switch (stage)
 		{
 		case stage0:
@@ -313,7 +312,7 @@ void GetStageClear(int score, int mode, int stage)
 
 	case MODE_GAME_SKY:
 
-		// ステージごとに判定
+		// スチE�Eジごとに判宁E
 		switch (stage)
 		{
 		case stage0:
@@ -336,7 +335,7 @@ void GetStageClear(int score, int mode, int stage)
 }
 
 
-// 直前のゲームモードを返す
+// 直前�Eゲームモードを返す
 int GetModeOld(void)
 {
 	return g_Mode_old;

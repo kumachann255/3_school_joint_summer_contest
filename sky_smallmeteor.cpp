@@ -38,6 +38,9 @@
 
 #define S_METEOR_SPEED_MAX		(40.0f)			// 何フレームでメテオがエネミーにぶつかるか
 #define S_METEOR_SPEED_MIN		(30.0f)				// 何フレームでメテオがエネミーにぶつかるか
+#define S_METEOR_POP_DISTANCE	(100.0f)
+#define	S_METEOR_POP_RAND		(50.0f)
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -75,7 +78,7 @@ HRESULT InitS_Meteor(void)
 
 		g_sMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_sMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_sMeteor[i].scl = XMFLOAT3(3.0f, 3.0f, 3.0f);
+		g_sMeteor[i].scl = XMFLOAT3(4.0f, 4.0f, 4.0f);
 
 		g_sMeteor[i].speed = S_METEOR_SPEED;			// 移動スピードクリア
 		g_sMeteor[i].time = 0.0f;
@@ -222,11 +225,13 @@ void SetS_Meteor(XMFLOAT3 pos, float rot)
 		{
 			g_sMeteor[i].use = TRUE;
 
+			PlaySound(SOUND_LABEL_SE_meteor_shot);
+
 			g_sMeteor[i].ModelPattern = rand() % 2;
 
 			// 発生位置を規定位置から少しランダム要素を加える
-			g_sMeteor[i].pos.x = (pos.x - sinf(rot) * 100.0f) + RamdomFloat(2, 50.0f, -50.0f);
-			g_sMeteor[i].pos.z = (pos.z + cosf(rot) * 100.0f) + RamdomFloat(2, 50.0f, -50.0f);
+			g_sMeteor[i].pos.x = (pos.x - sinf(rot) * S_METEOR_POP_DISTANCE) + RamdomFloat(2, S_METEOR_POP_RAND, -S_METEOR_POP_RAND);
+			g_sMeteor[i].pos.z = (pos.z + cosf(rot) * S_METEOR_POP_DISTANCE) + RamdomFloat(2, S_METEOR_POP_RAND, -S_METEOR_POP_RAND);
 			g_sMeteor[i].pos.y = 300.0f;
 
 			//g_sMeteor[i].randMove.x = RamdomFloat(2, 2.0f, -2.0f);
