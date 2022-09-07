@@ -188,15 +188,15 @@ HRESULT InitGameSky(void)
 
 	switch (g_Stage)
 	{
-	case tutorial:
-		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
-		break;
+	//case tutorial:
+	//	// BGM再生
+	//	PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
+	//	break;
 
 	case stage0:
 	case stage1:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
+		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_3);
 		break;
 	}
 
