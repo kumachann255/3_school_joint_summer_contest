@@ -47,6 +47,8 @@
 #define CAMERA_SPEED			(0.005f)	// ムービー中のカメラのスピード
 #define CAMERA_MOVE_DISTANCE	(300.0f)	// ムービー開始時のz座標
 
+#define MOVIE_CUTPOINT			(90.0f)		// ムービーが終わる地点を設定
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -64,6 +66,8 @@ static float			g_Rot;			// カメラの回転角度
 static BOOL				g_MoveSky;		// 空ステージがムービー中かどうか
 
 static XMFLOAT3			g_pos = {0.0f , 15.0f , 25.0f};
+
+static BOOL				g_ModelType;
 
 
 //=============================================================================
@@ -144,7 +148,7 @@ void UpdateCamera(void)
 	}
 	else if(!g_MoveSky)
 	{
-		//SetCameraAT(pPlayer->pos);
+		////SetCameraAT(pPlayer->pos);
 		//g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
 
 		//if (GetMode() == MODE_GAME_SKY)
@@ -163,13 +167,15 @@ void UpdateCamera(void)
 		g_Camera.pos.y += (g_Camera.target.y - g_Camera.pos.y) * CAMERA_SPEED;
 		g_Camera.pos.z += (g_Camera.target.z - g_Camera.pos.z) * CAMERA_SPEED;
 
-		if (g_Camera.pos.z - 1.0f < g_Camera.target.z)
+		if (g_Camera.pos.z < g_Camera.target.z + MOVIE_CUTPOINT)
 		{
 			g_MoveSky = FALSE;
+
+			g_Camera.pos = g_Camera.target;
 		}
 	}
 
-
+	
 	if (g_Move)
 	{
 		g_Camera.pos.x = g_pos.x - sinf(g_Rot) * CAMERA_DISTANCE;
@@ -480,4 +486,7 @@ void SetCameraShake(int time)
 	g_ShakePos = { 0.0f, 0.0f ,0.0f };
 }
 
-
+BOOL GetMovieFlag(void)
+{
+	return g_MoveSky;
+}

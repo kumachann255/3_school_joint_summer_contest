@@ -75,7 +75,7 @@ HRESULT InitS_Meteor(void)
 
 		g_sMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_sMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_sMeteor[i].scl = XMFLOAT3(1.5f, 1.5f, 1.5f);
+		g_sMeteor[i].scl = XMFLOAT3(3.0f, 3.0f, 3.0f);
 
 		g_sMeteor[i].speed = S_METEOR_SPEED;			// 移動スピードクリア
 		g_sMeteor[i].time = 0.0f;

@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // タイム処理 [timeUI.cpp]
 // Author : 熊澤義弘
@@ -19,7 +19,7 @@
 #define TEXTURE_HEIGHT				(90)	// 
 #define TEXTURE_MAX					(2)		// テクスチャの数
 
-#define TIME_MAX					(30)	// 時間制限
+#define TIME_MAX					(5)	// 時間制限
 
 
 //*****************************************************************************
@@ -140,6 +140,10 @@ void UpdateTime(void)
 	// 終了時間から現在の時間を引いて残り時間を算出する
 	g_Time = (int)(end_time - time(NULL));
 
+	if (GetStage() == tutorial)
+	{
+		end_time = time(NULL) + 99;
+	}
 	// 時間が0以下にならないように
 	if (g_Time < 0) g_Time = 0;
 
@@ -264,7 +268,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage0:
 			if (CITY_STAGE0_BORDER < score)
 			{
-				SetStage(stage1);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);
@@ -273,7 +276,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage1:
 			if (CITY_STAGE1_BORDER < score)
 			{
-				SetStage(stage2);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);
@@ -291,7 +293,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage0:
 			if (SEA_STAGE0_BORDER < score)
 			{
-				SetStage(stage1);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);
@@ -301,7 +302,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage1:
 			if (SEA_STAGE1_BORDER < score)
 			{
-				SetStage(stage2);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);
@@ -319,7 +319,6 @@ void GetStageClear(int score, int mode, int stage)
 		case stage0:
 			if (SKY_STAGE0_BORDER < score)
 			{
-				SetStage(stage1);
 				SetFade(FADE_OUT, MODE_GAME_COUNT);
 			}
 			else SetFade(FADE_OUT, MODE_RESULT);

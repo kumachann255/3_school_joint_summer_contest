@@ -22,17 +22,17 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_CUP			"data/MODEL/newneba00.obj"		// 読み込むモデル名
-#define	MODEL_CUP_1			"data/MODEL/newneba01.obj"		// 読み込むモデル名
-#define	MODEL_CUP_2			"data/MODEL/newneba02.obj"		// 読み込むモデル名
-#define	MODEL_CUP_3			"data/MODEL/newneba03.obj"		// 読み込むモデル名
-#define	MODEL_CUP_4			"data/MODEL/newneba04.obj"		// 読み込むモデル名
+#define	MODEL_CUP			"data/MODEL/coffeecup01.obj"		// 読み込むモデル名
+#define	MODEL_CUP_1			"data/MODEL/coffeecup01.obj"		// 読み込むモデル名
+#define	MODEL_CUP_2			"data/MODEL/coffeecup02.obj"		// 読み込むモデル名
+#define	MODEL_CUP_3			"data/MODEL/coffeecup03.obj"		// 読み込むモデル名
+#define	MODEL_CUP_4			"data/MODEL/coffeecup03.obj"		// 読み込むモデル名
 
 
 #define	VALUE_MOVE			(5.0f)						// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)				// 回転量
 
-#define CUP_OFFSET_Y		(12.0f)						// オブジェクトの足元をあわせる
+#define CUP_OFFSET_Y		(23.0f)						// オブジェクトの足元をあわせる
 
 #define CUP_LIFE			(150)						// 爆破オブジェクトの表示時間
 #define CUP_MOVE_TIME_0	(3)								// ねばねばが広がる時間
@@ -59,7 +59,7 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static CUP			g_Cup[MAX_CUP];				// 爆破オブジェクト
+static CUP				g_Cup[MAX_CUP];				// 爆破オブジェクト
 
 static BOOL				g_Load = FALSE;
 
@@ -95,7 +95,7 @@ HRESULT InitCup(void)
 
 		g_Cup[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Cup[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Cup[i].scl = XMFLOAT3(1.3f, 1.3f, 1.3f);
+		g_Cup[i].scl = XMFLOAT3(6.3f, 6.3f, 6.3f);
 		g_Cup[i].size = CUP_SIZE;
 		g_Cup[i].life = 0;
 
@@ -186,7 +186,7 @@ void UpdateCup(void)
 			// カップの移動処理
 			{
 				g_Cup[i].pos.z += g_cupSpeed_Z;
-				//g_Cup[i].pos.x += g_cupSpeed_X;
+				g_Cup[i].pos.x += g_cupSpeed_X;
 				g_Cup[i].rot.y += CUP_ROT_Y;
 
 
@@ -424,7 +424,6 @@ void DrawCup(void)
 
 			XMStoreFloat4x4(&g_Cup[i].mtxWorld, mtxWorld);
 
-
 			// モデル描画
 			DrawModel(&g_Cup[i].model);
 		}
@@ -461,6 +460,23 @@ void SetCup(void)
 		{
 			// SEのセット
 			PlaySound(SOUND_LABEL_SE_stickingSound01);
+			
+			// ランダムでモデルを出す
+			int model = rand() % 3;
+			switch (model)
+			{
+			case 0:
+				LoadModel(MODEL_CUP_1, &g_Cup[i].model);
+				break;
+
+			case 1:
+				LoadModel(MODEL_CUP_2, &g_Cup[i].model);
+				break;
+
+			case 2:
+				LoadModel(MODEL_CUP_3, &g_Cup[i].model);
+				break;
+			}
 
 			g_Cup[i].use = TRUE;
 			//g_Cup[i].move = FALSE;

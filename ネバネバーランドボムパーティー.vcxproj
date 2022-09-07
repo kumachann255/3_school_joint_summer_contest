@@ -48,7 +48,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -169,6 +169,7 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="particleBase.cpp" />
     <ClCompile Include="particleMeteor.cpp" />
+    <ClCompile Include="particleSky.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="playerHP.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="particleBase.h" />
     <ClInclude Include="particleMeteor.h" />
+    <ClInclude Include="particleSky.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="playerHP.h" />
     <ClInclude Include="renderer.h" />

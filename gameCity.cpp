@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // ゲーム画面処理 [gameCity.cpp]
 // Author : 熊澤義弘
@@ -191,8 +191,6 @@ HRESULT InitGameCity(void)
 
 	case stage0:
 	case stage1:
-	case stage2:
-	case stage3:
 		// BGM再生
 		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
@@ -623,6 +621,8 @@ void CheckHitCity(void)
 				// コンボを足す
 				AddCombo(1);
 				ResetComboTime();
+
+				if(GetStage() == tutorial) SetTutorialEnemy(TRUE);
 			}
 		}
 	}

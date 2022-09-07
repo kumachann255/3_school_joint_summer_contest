@@ -50,6 +50,10 @@ enum {
 
 };
 
+enum {
+	GAME_MOVIE_SKY,
+};
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -67,3 +71,5 @@ int GetViewPortType(void);
 void SetCameraAT(XMFLOAT3 pos);
 
 void SetCameraShake(int time);
+
+BOOL GetMovieFlag(void);

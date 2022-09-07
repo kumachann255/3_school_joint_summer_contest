@@ -1,26 +1,24 @@
 //=============================================================================
 //
-// タイトル画面処理 [title.h]
-// Author : エナ
+// メテオのパーティクル処理 [particleMeteor.h]
+// Author : 熊澤義弘
 //
 //=============================================================================
 #pragma once
 
-
 //*****************************************************************************
-// マクロ定義
+// 構造体定義
 //*****************************************************************************
-
-
 
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitTitle(void);
-void UninitTitle(void);
-void UpdateTitle(void);
-void DrawTitle(void);
+HRESULT InitParticleSky(void);
+void UninitParticleSky(void);
+void UpdateParticleSky(void);
+void DrawParticleSky(void);
 
-void SetGameClear(BOOL data);
+int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life);
+void SetColorParticleSky(int nIdxParticle, XMFLOAT4 col);
 
