@@ -12,18 +12,38 @@
 #include "shadow.h"
 #include "sea_particle.h"
 #include "cup.h"
+#include "tako.h"
+#include "same.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_MAX			(21)			// テクスチャの数
+#define TEXTURE_MAX			(21)		// テクスチャの数
 
 #define	SEA_PARTICLE_SIZE_X	(30.0f)		// 頂点サイズ・パーティクルサイズ
 #define	SEA_PARTICLE_SIZE_Y	(30.0f)		// 頂点サイズ・パーティクルサイズ
 
-#define	MAX_PARTICLE		(512)		// パーティクル最大数
+#define	VALUE_SUB			(0.1f)		// パーティクルの減算値
+#define	VALUE_START_SUB		(10)		// パーティクルの減算開始値
 
-#define	MAX_SEA_PARTICLE	(10)		// パーティクル最大数
+#define	MAX_SEA_PARTICLE	(512)		// 海パーティクル最大数
+#define	MAX_LIFE			(75)		// パーティクルの寿命
+#define PARTICLE_SPEED		(0.01f)		// パーティクルの動く速さ
+
+#define BEZIER_F_X			(0.0f)		// ベジェ曲線始点X
+#define BEZIER_F_Y			(75.0f)		// ベジェ曲線始点Y
+#define BEZIER_F_Z			(75.0f)		// ベジェ曲線始点Z
+
+#define BEZIER_P_X			(50.0f)		// ベジェ曲線アンカーX
+#define BEZIER_P_Y			(75.0f)		// ベジェ曲線アンカーY
+#define BEZIER_P_Z			(50.0f)		// ベジェ曲線アンカーZ
+
+#define BEZIER_L_X			(100.0f)	// ベジェ曲線終点X
+#define BEZIER_L_Y			(20.0f)		// ベジェ曲線終点Y
+#define BEZIER_L_Z			(100.0f)	// ベジェ曲線終点Z
+
+#define BEZIER_RANDOM		(20)		// ベジェ曲線用乱数
+#define BEZIER_RANDOM_Z		(200)		// ベジェ曲線用乱数(Z値用)
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -36,9 +56,11 @@ HRESULT MakeVertexSeaParticle(void);
 static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
-static int							g_TexNo;					// テクスチャ番号
 
 static SEA_PARTICLE					g_SeaParticle[MAX_SEA_PARTICLE];	// パーティクルワーク
+
+static XMFLOAT3		control0[MAX_SEA_PARTICLE], control1[MAX_SEA_PARTICLE], control2[MAX_SEA_PARTICLE];	// パーティクルの挙動制御
+
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
@@ -87,22 +109,22 @@ HRESULT InitSeaParticle(void)
 			NULL);
 	}
 
-	g_TexNo = 0;
-
 	// パーティクルワークの初期化
 	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
-		g_SeaParticle[i].type = PARTICLE_TYPE_MAX;
 		g_SeaParticle[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_SeaParticle[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_SeaParticle[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_SeaParticle[i].scl = XMFLOAT3(0.75f, 0.75f, 0.75f);
 		g_SeaParticle[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaParticle[i].time = 0.0f;
+		g_SeaParticle[i].speed = PARTICLE_SPEED;
 
 		ZeroMemory(&g_SeaParticle[i].material, sizeof(g_SeaParticle[i].material));
 		g_SeaParticle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		g_SeaParticle[i].life = 0;
-		g_SeaParticle[i].pop = 0;
+		g_SeaParticle[i].tex_No = 0;
+		g_SeaParticle[i].life = MAX_LIFE;
+		//g_SeaParticle[i].pop = 0;
 		g_SeaParticle[i].use = FALSE;
 	}
 
@@ -148,56 +170,51 @@ void UpdateSeaParticle(void)
 	
 	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
+		//if (g_SeaParticle[i].use == FALSE)
+		//{
+		//	SetSeaParticle();
+		//}
+
 		// パーティクルワーク処理
-		if(g_SeaParticle[i].use == TRUE)		// 使用中
+		if (g_SeaParticle[i].use == TRUE)		// 使用中
 		{
-			switch (g_SeaParticle[i].type)
+			// パーティクルの処理
+			g_SeaParticle[i].life--;
+
+			if (g_SeaParticle[i].life <= VALUE_START_SUB)
+			{	// 寿命が１０フレーム切ったら段々透明になっていく
+				g_SeaParticle[i].material.Diffuse.w -= VALUE_SUB;
+				if (g_SeaParticle[i].material.Diffuse.w < 0.0f)
+				{
+					g_SeaParticle[i].material.Diffuse.w = 0.0f;
+				}
+			}
+
+			if (g_SeaParticle[i].life <= 0)
 			{
-			case PARTICLE_TYPE_TAKO:
+				g_SeaParticle[i].use = FALSE;
+			}
 
-				// タコの場合の処理
-				g_SeaParticle[i].life--;
+			// パーティクルの挙動
+			{
+				g_SeaParticle[i].time += g_SeaParticle[i].speed;
 
-				if (g_SeaParticle[i].life <= 10)
-				{	// 寿命が１０フレーム切ったら段々透明になっていく
-					g_SeaParticle[i].material.Diffuse.w -= 0.1f;
-					if (g_SeaParticle[i].material.Diffuse.w < 0.0f)
-					{
-						g_SeaParticle[i].material.Diffuse.w = 0.0f;
-					}
-				}
-
-				if (g_SeaParticle[i].life <= 0)
+				if (1.0f <= g_SeaParticle[i].time)
 				{
-					g_SeaParticle[i].use = FALSE;
+					g_SeaParticle[i].time = 0.0f;
 				}
 
-				// タコの場合の挙動
-				{
+				g_SeaParticle[i].pos.x = ((1.0f - g_SeaParticle[i].time) * (1.0f - g_SeaParticle[i].time) * control0[i].x) +
+					(2 * g_SeaParticle[i].time * (1.0f - g_SeaParticle[i].time) * control1[i].x) +
+					(g_SeaParticle[i].time * g_SeaParticle[i].time * control2[i].x);
 
-				}
+				g_SeaParticle[i].pos.y = ((1.0f - g_SeaParticle[i].time) * (1.0f - g_SeaParticle[i].time) * control0[i].y) +
+					(2 * g_SeaParticle[i].time * (1.0f - g_SeaParticle[i].time) * control1[i].y) +
+					(g_SeaParticle[i].time * g_SeaParticle[i].time * control2[i].y);
 
-				break;
-
-			case PARTICLE_TYPE_SAME:
-
-				// タコの場合の処理
-				g_SeaParticle[i].life--;
-
-				if (g_SeaParticle[i].life <= 10)
-				{	// 寿命が１０フレーム切ったら段々透明になっていく
-					g_SeaParticle[i].material.Diffuse.w -= 0.1f;
-					if (g_SeaParticle[i].material.Diffuse.w < 0.0f)
-					{
-						g_SeaParticle[i].material.Diffuse.w = 0.0f;
-					}
-				}
-
-				if (g_SeaParticle[i].life <= 0)
-				{
-					g_SeaParticle[i].use = FALSE;
-				}
-				break;
+				g_SeaParticle[i].pos.z = ((1.0f - g_SeaParticle[i].time) * (1.0f - g_SeaParticle[i].time) * control0[i].z) +
+					(2 * g_SeaParticle[i].time * (1.0f - g_SeaParticle[i].time) * control1[i].z) +
+					(g_SeaParticle[i].time * g_SeaParticle[i].time * control2[i].z);
 			}
 		}
 	}
@@ -231,13 +248,15 @@ void DrawSeaParticle(void)
 	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// テクスチャ設定
-	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
 	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
-		if(g_SeaParticle[i].use == TRUE && g_SeaParticle[i].pop <= 0.0f)
+
+		if(g_SeaParticle[i].use == TRUE)
 		{
+			// テクスチャ設定
+			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_SeaParticle[i].tex_No]);
+
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
 
@@ -355,20 +374,132 @@ void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col)
 }
 
 //=============================================================================
-// パーティクルの発生処理
+// タコ用パーティクルの発生処理
 //=============================================================================
-//int SetSeaParticle(int type, XMFLOAT3 pos, int life)
-//{
-//	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
-//	{
-//		if(!g_SeaParticle[i].use)
-//		{
-//			g_SeaParticle[i].type = type;
-//			g_SeaParticle[i].pos  = pos;
-//			g_SeaParticle[i].life = life;
-//			g_SeaParticle[i].use  = TRUE;
-//
-//			return;
-//		}
-//	}
-//}
+void SetSeaParticleTako(void)
+{
+	TAKO *tako = GetTako();
+
+	for (int i = 0; i < MAX_TAKO; i++)
+	{
+		if (tako[i].mode == WAIT)
+		{
+			for (int j = 0; j < MAX_SEA_PARTICLE; j++)
+			{
+				if (g_SeaParticle[j].use == FALSE)
+				{
+					g_SeaParticle[j].use = TRUE;
+					g_SeaParticle[j].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+					g_SeaParticle[j].life = MAX_LIFE;
+					g_SeaParticle[j].pos = tako[i].pos;
+
+					// 噴水みたいにパーティクルを発生させる処理(タコは三軸に放射)
+					// 右の放物線
+					if (j % 2 == 0)
+					{
+						// ベジェ開始位置
+						control0[j] = tako[i].pos;
+
+						// ポイント
+						control1[j].x = tako[i].pos.x + BEZIER_P_X;
+						control1[j].y = tako[i].pos.y + BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM);
+						control1[j].z = tako[i].pos.z;
+
+						// ベジェゴール位置
+						control2[j].x = tako[i].pos.x + BEZIER_L_X + (float)(rand() % BEZIER_RANDOM);
+						control2[j].y = tako[i].pos.y - BEZIER_L_Y;
+						control2[j].z = tako[i].pos.z + BEZIER_L_Z - (float)(rand() % BEZIER_RANDOM_Z);
+					}
+					// 左の放物線
+					else if (j % 2 == 1)
+					{
+						// ベジェ開始位置
+						control0[j] = tako[i].pos;
+
+						// ポイント
+						control1[j].x = tako[i].pos.x - BEZIER_P_X;
+						control1[j].y = tako[i].pos.y + BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM);
+						control1[j].z = tako[i].pos.z;
+
+						// ベジェゴール位置
+						control2[j].x = tako[i].pos.x - BEZIER_L_X - (float)(rand() % BEZIER_RANDOM);
+						control2[j].y = tako[i].pos.y - BEZIER_L_Y;
+						control2[j].z = tako[i].pos.z + BEZIER_L_Z - (float)(rand() % BEZIER_RANDOM_Z);
+					}
+					//g_SeaParticle[j].pos.y += 10.0f;
+					g_SeaParticle[j].tex_No = rand() % TEXTURE_MAX;
+					break;
+				}
+			}
+		}
+	}
+
+}
+
+//=============================================================================
+// サメ用パーティクルの発生処理
+//=============================================================================
+void SetSeaParticleSame(void)
+{
+	SAME *same = GetSame();
+
+	if (same->mode == DOWN_LAST)
+	{
+		for (int i = 0; i < MAX_SEA_PARTICLE; i++)
+		{
+			if (g_SeaParticle[i].use == FALSE)
+			{
+				g_SeaParticle[i].use = TRUE;
+				g_SeaParticle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+				g_SeaParticle[i].life = MAX_LIFE;
+				g_SeaParticle[i].pos.x = same->pos.x;
+				g_SeaParticle[i].pos.y = same->pos.y + BEZIER_F_Y;
+				g_SeaParticle[i].pos.z = same->pos.z - BEZIER_F_Y;
+
+
+				// 噴水みたいにパーティクルを発生させる処理（サメはZ軸は固定）
+				// 右の放物線
+				if (i % 2 == 0)
+				{
+					// ベジェ開始位置
+					control0[i].x = same->pos.x;
+					control0[i].y = same->pos.y + BEZIER_F_Y;
+					control0[i].z = same->pos.z - BEZIER_F_Y;
+
+
+					// ポイント
+					control1[i].x = same->pos.x + BEZIER_P_X;
+					control1[i].y = (same->pos.y + BEZIER_F_Y) + (BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM));
+					control1[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ベジェゴール位置
+					control2[i].x = same->pos.x + BEZIER_L_X + (float)(rand() % BEZIER_RANDOM);
+					control2[i].y = same->pos.y - BEZIER_L_Y;
+					control2[i].z = same->pos.z - BEZIER_F_Y;
+				}
+				// 左の放物線
+				else if (i % 2 == 1)
+				{
+					// ベジェ開始位置
+					control0[i].x = same->pos.x;
+					control0[i].y = same->pos.y + BEZIER_F_Y;
+					control0[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ポイント
+					control1[i].x = same->pos.x - BEZIER_P_X;
+					control1[i].y = (same->pos.y + BEZIER_F_Y) + (BEZIER_P_Y + (float)(rand() % BEZIER_RANDOM));
+					control1[i].z = same->pos.z - BEZIER_F_Y;
+
+					// ベジェゴール位置
+					control2[i].x = same->pos.x - BEZIER_L_X - (float)(rand() % BEZIER_RANDOM);
+					control2[i].y = same->pos.y - BEZIER_L_Y;
+					control2[i].z = same->pos.z - BEZIER_F_Y;
+				}
+				//g_SeaParticle[i].pos.y += 10.0f;
+				g_SeaParticle[i].tex_No = rand() % TEXTURE_MAX;
+				break;
+			}
+		}
+	}
+
+}

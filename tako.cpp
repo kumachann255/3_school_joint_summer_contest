@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// ƒ‚ƒfƒ‹ˆ— [tako.cpp]
+// ãƒ¢ãƒ‡ãƒ«å‡¦ç† [tako.cpp]
 // Author : 
 //
 //=============================================================================
@@ -20,42 +20,47 @@
 #include "collision.h"
 #include "score.h"
 #include "combo.h"
+#include "sea_particle.h"
 #include "tutorial.h"
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define	MODEL_TAKO		"data/MODEL/tako_1.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_TAKO_1	"data/MODEL/tako_2.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_TAKO_2	"data/MODEL/tako_3.obj"			// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
+#define	MODEL_TAKO		"data/MODEL/tako_1.obj"			// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_TAKO_1	"data/MODEL/tako_2.obj"			// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_TAKO_2	"data/MODEL/tako_3.obj"			// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
 
-#define	VALUE_MOVE			(0.1f)							// ˆÚ“®—Ê
-#define	VALUE_ROTATE		(XM_PI * 0.02f)					// ‰ñ“]—Ê
+#define	VALUE_MOVE			(0.1f)							// ç§»å‹•é‡
+#define	VALUE_ROTATE		(XM_PI * 0.02f)					// å›è»¢é‡
 
-#define TAKO_SHADOW_SIZE	(0.4f)							// ‰e‚Ì‘å‚«‚³
-#define TAKO_OFFSET_Y		(7.0f)							// ƒvƒŒƒCƒ„[‚Ì‘«Œ³‚ğ‚ ‚í‚¹‚é
+#define TAKO_SHADOW_SIZE	(0.4f)							// å½±ã®å¤§ãã•
+#define TAKO_OFFSET_Y		(7.0f)							// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è¶³å…ƒã‚’ã‚ã‚ã›ã‚‹
 
-#define TAKO_SCL_INIT		(0.1f)							// ƒ^ƒR‚Ì‘å‚«‚³‚Ì‰Šú’lİ’è
-#define TAKO_POS_Y			(50.0f)							// ƒ^ƒR‚Ì‚‚³‰Šú’lİ’è
-#define TAKO_POS_CATCH		(70.0f)							// ƒ^ƒR‚ÌƒLƒƒƒbƒ`ƒAƒNƒVƒ‡ƒ“”­¶‚Ì‚‚³
-#define TAKO_POS_ADDITION	(0.5f)							// ƒ^ƒR‚Ìƒ|ƒWƒVƒ‡ƒ“‰ÁZ—p
-#define VALUE_HOMING		(0.1f)							// ƒ^ƒRˆø‚«Šñ‚¹’l
-#define FRONT_COLLISION		(20.0f)							// è‘O‚ÅÁ‚·ˆÊ’u‚Ì“–‚½‚è”»’è’l
-//*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
-//*****************************************************************************
-
+#define TAKO_SCL_INIT		(0.1f)							// ã‚¿ã‚³ã®å¤§ãã•ã®åˆæœŸå€¤è¨­å®š
+#define TAKO_POS_Y			(50.0f)							// ã‚¿ã‚³ã®é«˜ã•åˆæœŸå€¤è¨­å®š
+#define TAKO_POS_CATCH		(70.0f)							// ã‚¿ã‚³ã®ã‚­ãƒ£ãƒƒãƒã‚¢ã‚¯ã‚·ãƒ§ãƒ³ç™ºç”Ÿæ™‚ã®é«˜ã•
+#define TAKO_POS_ADDITION	(2.5f)							// ã‚¿ã‚³ã®ãƒã‚¸ã‚·ãƒ§ãƒ³åŠ ç®—ç”¨
+#define VALUE_HOMING		(0.1f)							// ã‚¿ã‚³å¼•ãå¯„ã›å€¤
+#define FRONT_COLLISION		(20.0f)							// æ‰‹å‰ã§æ¶ˆã™ä½ç½®ã®å½“ãŸã‚Šåˆ¤å®šå€¤
+#define TAKO_PARTICLE_POP	(5)								// ã‚¿ã‚³ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãƒãƒƒãƒ—é–“éš”
+#define POP_TIME			(20)							// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãƒãƒƒãƒ—æ™‚é–“
 
 //*****************************************************************************
-// ƒOƒ[ƒoƒ‹•Ï”
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
-TAKO				g_Tako[MAX_TAKO];							// ƒvƒŒƒCƒ„[
-TAKO				g_Tako_middle[MAX_TAKO];					// ƒvƒŒƒCƒ„[
-TAKO				g_Tako_last[MAX_TAKO];					// ƒvƒŒƒCƒ„[
 
+
+//*****************************************************************************
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+//*****************************************************************************
+TAKO				g_Tako[MAX_TAKO];							// ã‚¿ã‚³
+TAKO				g_Tako_middle[MAX_TAKO];					// ã‚¿ã‚³
+TAKO				g_Tako_last[MAX_TAKO];						// ã‚¿ã‚³
+
+static int pSetCount = 0;										// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚»ãƒƒãƒˆç”¨ã‚«ã‚¦ãƒ³ãƒˆ
 
 //=============================================================================
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //=============================================================================
 HRESULT InitTako(void)
 {
@@ -68,8 +73,8 @@ HRESULT InitTako(void)
 		g_Tako[i].rot = { 0.0f, 0.0f, 0.0f };
 		g_Tako[i].scl = { TAKO_SCL_INIT, TAKO_SCL_INIT, TAKO_SCL_INIT };
 
-		g_Tako[i].angle = 0.0f;			// ˆÚ“®ƒXƒs[ƒhƒNƒŠƒA
-		g_Tako[i].size = TAKO_SIZE;	// “–‚½‚è”»’è‚Ì‘å‚«‚³
+		g_Tako[i].angle = 0.0f;			// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¯ãƒªã‚¢
+		g_Tako[i].size = TAKO_SIZE;	// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 		g_Tako[i].rockOnNum = 0;
 
 		g_Tako[i].use = FALSE;
@@ -85,8 +90,8 @@ HRESULT InitTako(void)
 		g_Tako_middle[i].rot = { 0.0f, 0.0f, 0.0f };
 		g_Tako_middle[i].scl = { 1.0f, 1.0f, 1.0f };
 
-		g_Tako_middle[i].angle = 0.0f;			// ˆÚ“®ƒXƒs[ƒhƒNƒŠƒA
-		g_Tako_middle[i].size = TAKO_SIZE;	// “–‚½‚è”»’è‚Ì‘å‚«‚³
+		g_Tako_middle[i].angle = 0.0f;			// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¯ãƒªã‚¢
+		g_Tako_middle[i].size = TAKO_SIZE;	// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 
 		g_Tako_middle[i].use = FALSE;
 
@@ -97,8 +102,8 @@ HRESULT InitTako(void)
 		g_Tako_last[i].rot = { 0.0f, 0.0f, 0.0f };
 		g_Tako_last[i].scl = { 1.0f, 1.0f, 1.0f };
 
-		g_Tako_last[i].angle = 0.0f;			// ˆÚ“®ƒXƒs[ƒhƒNƒŠƒA
-		g_Tako_last[i].size = TAKO_SIZE;	// “–‚½‚è”»’è‚Ì‘å‚«‚³
+		g_Tako_last[i].angle = 0.0f;			// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¯ãƒªã‚¢
+		g_Tako_last[i].size = TAKO_SIZE;	// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 
 		g_Tako_last[i].use = FALSE;
 
@@ -108,13 +113,13 @@ HRESULT InitTako(void)
 }
 
 //=============================================================================
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //=============================================================================
 void UninitTako(void)
 {
 	for (int i = 0; i < MAX_TAKO; i++)
 	{
-		// ƒ‚ƒfƒ‹‚Ì‰ğ•úˆ—
+		// ãƒ¢ãƒ‡ãƒ«ã®è§£æ”¾å‡¦ç†
 		if (g_Tako[i].load)
 		{
 			UnloadModel(&g_Tako[i].model);
@@ -124,7 +129,7 @@ void UninitTako(void)
 }
 
 //=============================================================================
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 //=============================================================================
 void UpdateTako(void)
 {
@@ -141,7 +146,7 @@ void UpdateTako(void)
 		//	continue;
 		if (g_Tako[i].use == TRUE)
 		{
-			//ƒTƒ”š’e@g_Tako‚É‚ÍˆÚ“®‚³‚¹‚éƒTƒCƒg‚ğ“ü‚ê‚éB
+			//ã‚µãƒ¡çˆ†å¼¾ã€€g_Takoã«ã¯ç§»å‹•ã•ã›ã‚‹ã‚µã‚¤ãƒˆã‚’å…¥ã‚Œã‚‹ã€‚
 			switch (g_Tako[i].mode)
 			{
 			//case WAIT:
@@ -172,6 +177,7 @@ void UpdateTako(void)
 				break;
 
 			case CATCH:
+				// ã‚¨ãƒãƒŸãƒ¼ã®é ­ä¸Šã‹ã‚‰è½ã¡ã¦ã„ã
 				g_Tako[i].pos.x = rockOn[g_Tako[i].rockOnNum].pos.x;
 				g_Tako[i].pos.y -= TAKO_POS_ADDITION;
 				g_Tako[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
@@ -185,14 +191,32 @@ void UpdateTako(void)
 
 				if (g_Tako[i].pos.y < 0.0f)
 				{
+					pSetCount = 0;
 					g_Tako_middle[i].use = FALSE;
 					g_Tako_last[i].use = TRUE;
-					g_Tako[i].mode = RELEASE;
+					g_Tako[i].mode = WAIT;
 				}
 				break;
 
-			case RELEASE:
+			case WAIT:
+				// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç™ºç”Ÿç”¨å¾…æ©Ÿæ™‚é–“
+				pSetCount++;
+				if (pSetCount % TAKO_PARTICLE_POP == 0)
+				{
+					SetSeaParticleTako();
+				}
 
+				g_Tako[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+				g_Tako_last[i].pos = rockOn[g_Tako[i].rockOnNum].pos;
+
+				if (pSetCount == POP_TIME)
+				{
+					pSetCount = 0;
+					g_Tako[i].mode = RELEASE;
+				}
+
+
+			case RELEASE:
 				XMVECTOR pos1 = XMLoadFloat3(&cam->pos);
 				XMVECTOR pos2 = XMLoadFloat3(&g_Tako[i].pos);
 				pos2 += (pos1 - pos2) * VALUE_HOMING;
@@ -211,10 +235,10 @@ void UpdateTako(void)
 
 					ReleaseShadow(enemy[i].shadowIdx);
 
-					// ƒXƒRƒA‚ğ‘«‚·
+					// ã‚¹ã‚³ã‚¢ã‚’è¶³ã™
 					//AddScore(100);
 
-					// ƒRƒ“ƒ{‚ğ‘«‚·
+					// ã‚³ãƒ³ãƒœã‚’è¶³ã™
 					//AddCombo(1);
 					ResetComboTime();
 
@@ -222,14 +246,14 @@ void UpdateTako(void)
 				break;
 			}
 
-			// “–‚½‚Á‚½ŒãƒGƒlƒ~[‚Ì‹““®ˆ—
+			// å½“ãŸã£ãŸå¾Œã‚¨ãƒãƒŸãƒ¼ã®æŒ™å‹•å‡¦ç†
 			{
-				ENEMY *enemy = GetEnemy();		// ƒGƒlƒ~[‚Ìƒ|ƒCƒ“ƒ^[‚ğ‰Šú‰»
-				ENEMY_HELI *enemyheli = GetEnemyHeli();		// ƒGƒlƒ~[‚Ìƒ|ƒCƒ“ƒ^[‚ğ‰Šú‰»
+				ENEMY *enemy = GetEnemy();		// ã‚¨ãƒãƒŸãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã‚’åˆæœŸåŒ–
+				ENEMY_HELI *enemyheli = GetEnemyHeli();		// ã‚¨ãƒãƒŸãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã‚’åˆæœŸåŒ–
 
-				// ‘¼ƒGƒlƒ~[‚Ìˆ—
+				// ä»–ã‚¨ãƒãƒŸãƒ¼ã®å‡¦ç†
 
-				// “G‚ÆƒTƒƒIƒuƒWƒFƒNƒg
+				// æ•µã¨ã‚µãƒ¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				for (int j = 0; j < MAX_ENEMY; j++)
 				{
 					if (g_Tako[i].mode == RELEASE)
@@ -237,7 +261,7 @@ void UpdateTako(void)
 						if (CollisionBC(g_Tako[i].pos, enemy[j].pos, g_Tako[i].size, enemy[j].size))
 						{
 							if (enemy[j].isHit == TRUE) break;
-							// “GƒLƒƒƒ‰ƒNƒ^[‚Í“|‚³‚ê‚é
+							// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã¯å€’ã•ã‚Œã‚‹
 							enemy[j].use = FALSE;
 
 							if (GetStage() == tutorial) SetTutorialEnemy(TRUE);
@@ -246,7 +270,7 @@ void UpdateTako(void)
 					}
 				}
 
-				// ƒwƒŠ‚Ìˆ—
+				// ãƒ˜ãƒªã®å‡¦ç†
 				for (int j = 0; j < MAX_ENEMY_HELI; j++)
 				{
 					if (g_Tako[i].mode == RELEASE)
@@ -254,7 +278,7 @@ void UpdateTako(void)
 						if (CollisionBC(g_Tako[i].pos, enemyheli[j].pos, g_Tako[i].size, enemyheli[j].size))
 						{
 							if (enemyheli[j].isHit == TRUE) break;
-							// “GƒLƒƒƒ‰ƒNƒ^[‚Í“|‚³‚ê‚é
+							// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã¯å€’ã•ã‚Œã‚‹
 							enemyheli[j].use = FALSE;
 						}
 					}
@@ -267,8 +291,8 @@ void UpdateTako(void)
 
 
 
-#ifdef _DEBUG	// ƒfƒoƒbƒOî•ñ‚ğ•\¦‚·‚é
-	//PrintDebugProc("Enemy:ª ¨ « ©@Space\n");
+#ifdef _DEBUG	// ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹
+	//PrintDebugProc("Enemy:â†‘ â†’ â†“ â†ã€€Space\n");
 	//PrintDebugProc("Enemy:X:%f Y:%f Z:%f\n", g_Tako[i].pos.x, g_Tako[i].pos.y, g_Tako[i].pos.z);
 	//PrintDebugProc("Enemyangle%f\n", g_Tako[i].angle);
 
@@ -276,7 +300,7 @@ void UpdateTako(void)
 }
 
 //=============================================================================
-// •`‰æˆ—
+// æç”»å‡¦ç†
 //=============================================================================
 void DrawTako(void)
 {
@@ -284,103 +308,103 @@ void DrawTako(void)
 	{
 		if (g_Tako[i].use == TRUE)
 		{
-			// ƒJƒŠƒ“ƒO–³Œø
+			// ã‚«ãƒªãƒ³ã‚°ç„¡åŠ¹
 			SetCullingMode(CULL_MODE_NONE);
 
 			XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 			mtxWorld = XMMatrixIdentity();
 
-			// ƒXƒP[ƒ‹‚ğ”½‰f
+			// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ 
 			mtxScl = XMMatrixScaling(g_Tako[i].scl.x, g_Tako[i].scl.y, g_Tako[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// ‰ñ“]‚ğ”½‰f
+			// å›è»¢ã‚’åæ˜ 
 			mtxRot = XMMatrixRotationRollPitchYaw(g_Tako[i].rot.x, g_Tako[i].rot.y + XM_PI, g_Tako[i].rot.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			// ˆÚ“®‚ğ”½‰f
+			// ç§»å‹•ã‚’åæ˜ 
 			mtxTranslate = XMMatrixTranslation(g_Tako[i].pos.x, g_Tako[i].pos.y, g_Tako[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 			SetWorldMatrix(&mtxWorld);
 
 			XMStoreFloat4x4(&g_Tako[i].mtxWorld, mtxWorld);
 
-			// ƒ‚ƒfƒ‹•`‰æ
+			// ãƒ¢ãƒ‡ãƒ«æç”»
 			DrawModel(&g_Tako[i].model);
 
-			// ƒJƒŠƒ“ƒOİ’è‚ğ–ß‚·
+			// ã‚«ãƒªãƒ³ã‚°è¨­å®šã‚’æˆ»ã™
 			SetCullingMode(CULL_MODE_BACK);
 		}
 
 		if (g_Tako_middle[i].use == TRUE)
 		{
-			// ƒJƒŠƒ“ƒO–³Œø
+			// ã‚«ãƒªãƒ³ã‚°ç„¡åŠ¹
 			SetCullingMode(CULL_MODE_NONE);
 
 			XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 			mtxWorld = XMMatrixIdentity();
 
-			// ƒXƒP[ƒ‹‚ğ”½‰f
+			// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ 
 			mtxScl = XMMatrixScaling(g_Tako_middle[i].scl.x, g_Tako_middle[i].scl.y, g_Tako_middle[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// ‰ñ“]‚ğ”½‰f
+			// å›è»¢ã‚’åæ˜ 
 			mtxRot = XMMatrixRotationRollPitchYaw(g_Tako_middle[i].rot.x, g_Tako_middle[i].rot.y + XM_PI, g_Tako_middle[i].rot.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			// ˆÚ“®‚ğ”½‰f
+			// ç§»å‹•ã‚’åæ˜ 
 			mtxTranslate = XMMatrixTranslation(g_Tako_middle[i].pos.x, g_Tako_middle[i].pos.y, g_Tako_middle[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 			SetWorldMatrix(&mtxWorld);
 
 			XMStoreFloat4x4(&g_Tako_middle[i].mtxWorld, mtxWorld);
 
-			// ƒ‚ƒfƒ‹•`‰æ
+			// ãƒ¢ãƒ‡ãƒ«æç”»
 			DrawModel(&g_Tako_middle[i].model);
 
-			// ƒJƒŠƒ“ƒOİ’è‚ğ–ß‚·
+			// ã‚«ãƒªãƒ³ã‚°è¨­å®šã‚’æˆ»ã™
 			SetCullingMode(CULL_MODE_BACK);
 		}
 
 		if (g_Tako_last[i].use == TRUE)
 		{
-			// ƒJƒŠƒ“ƒO–³Œø
+			// ã‚«ãƒªãƒ³ã‚°ç„¡åŠ¹
 			SetCullingMode(CULL_MODE_NONE);
 
 			XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 			mtxWorld = XMMatrixIdentity();
 
-			// ƒXƒP[ƒ‹‚ğ”½‰f
+			// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ 
 			mtxScl = XMMatrixScaling(g_Tako_last[i].scl.x, g_Tako_last[i].scl.y, g_Tako_last[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// ‰ñ“]‚ğ”½‰f
+			// å›è»¢ã‚’åæ˜ 
 			mtxRot = XMMatrixRotationRollPitchYaw(g_Tako_last[i].rot.x, g_Tako_last[i].rot.y + XM_PI, g_Tako_last[i].rot.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			// ˆÚ“®‚ğ”½‰f
+			// ç§»å‹•ã‚’åæ˜ 
 			mtxTranslate = XMMatrixTranslation(g_Tako_last[i].pos.x, g_Tako_last[i].pos.y, g_Tako_last[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 			SetWorldMatrix(&mtxWorld);
 
 			XMStoreFloat4x4(&g_Tako_last[i].mtxWorld, mtxWorld);
 
-			// ƒ‚ƒfƒ‹•`‰æ
+			// ãƒ¢ãƒ‡ãƒ«æç”»
 			DrawModel(&g_Tako_last[i].model);
 
-			// ƒJƒŠƒ“ƒOİ’è‚ğ–ß‚·
+			// ã‚«ãƒªãƒ³ã‚°è¨­å®šã‚’æˆ»ã™
 			SetCullingMode(CULL_MODE_BACK);
 		}
 	}
@@ -388,7 +412,7 @@ void DrawTako(void)
 
 
 //=============================================================================
-// ƒvƒŒƒCƒ„[î•ñ‚ğæ“¾
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã‚’å–å¾—
 //=============================================================================
 TAKO *GetTako(void)
 {
@@ -396,7 +420,7 @@ TAKO *GetTako(void)
 }
 
 //=============================================================================
-//ƒ^ƒR‚Ì”­¶
+//ã‚¿ã‚³ã®ç™ºç”Ÿ
 //=============================================================================
 void SetTako(void)
 {
@@ -422,7 +446,7 @@ void SetTako(void)
 			{
 				if (g_Tako[j].use == FALSE)
 				{
-					// ƒRƒ“ƒ{‚ğ‘«‚·
+					// ã‚³ãƒ³ãƒœã‚’è¶³ã™
 					AddCombo(1);
 					ResetComboTime();
 

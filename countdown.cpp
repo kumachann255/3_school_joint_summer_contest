@@ -139,7 +139,7 @@ HRESULT InitCountDown(void)
 	g_Pos2[2].x += TEXTURE_WIDTH;
 
 	// ŽŸ‚ÌƒXƒe[ƒW‚És‚Á‚Ä‚¢‚é‚½‚ß1Œ¸‚ç‚·
-	g_Stage = GetStage() - 1;
+	g_Stage = GetStage();
 	switch (g_Stage)
 	{
 	case stage1:
@@ -223,7 +223,11 @@ void UpdateCountDown(void)
 		switch (GetModeOld())
 		{
 		case MODE_GAME_CITY:
-			if(GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_CITY);
+			if (g_Stage == stage0)
+			{
+				SetStage(stage1);
+				SetFade(FADE_OUT, MODE_GAME_CITY);
+			}
 			else
 			{
 				SetStage(tutorial);
@@ -232,7 +236,11 @@ void UpdateCountDown(void)
 			break;
 
 		case MODE_GAME_SEA:
-			if (GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_SEA);
+			if (g_Stage == stage0)
+			{
+				SetStage(stage1);
+				SetFade(FADE_OUT, MODE_GAME_SEA);
+			}
 			else
 			{
 				SetStage(stage0);
@@ -241,6 +249,7 @@ void UpdateCountDown(void)
 			break;
 
 		case MODE_GAME_SKY:
+			SetStage(stage1);
 			SetFade(FADE_OUT, MODE_GAME_SKY);
 			break;
 		}
@@ -299,7 +308,7 @@ void DrawCountDown(void)
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-	// ƒƒS‚ð•`‰æ
+	// ”wŒi‚ð•`‰æ
 	{
 		// ƒeƒNƒXƒ`ƒƒÝ’è
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);

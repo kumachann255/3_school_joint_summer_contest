@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // モデル処理 [player.cpp]
 // Author : 
@@ -435,28 +435,33 @@ void DrawSkyEnemy(void)
 			DrawModel(&g_SkyEnemy[g_SkyEnemy[i].EnemyType].model);
       
 
-			//// コリジョン用のボックスの描画
-			//// ワールドマトリックスの初期化
-			//mtxWorld = XMMatrixIdentity();
 
-			//// スケールを反映
-			//mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
-			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+#ifdef _DEBUG	// デバッグ時のみ表示
 
-			//// 回転を反映
-			//mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
-			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+			// コリジョン用のボックスの描画
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
 
-			//// 移動を反映
-			//mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
-			//mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			//// ワールドマトリックスの設定
-			//SetWorldMatrix(&mtxWorld);
-			//XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			//// モデル描画
-			//DrawModel(&g_Collision[0].model);
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
+			XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
+
+			// モデル描画
+			DrawModel(&g_Collision[0].model);
+#endif
+
 		}
 	}
 
