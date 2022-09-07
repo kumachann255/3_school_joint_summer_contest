@@ -52,7 +52,7 @@
 #define COOLTIME_CUP		(180)		// カップのクールタイム
 #define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
 #define COOLTIME_SHARK		(180)		// サメのクールタイム
-#define COOLTIME_METEOR		(100)		// メテオのクールタイム
+#define COOLTIME_METEOR		(20)		// メテオのクールタイム
 
 #define PLAYER_MOVE_ROT		(0.03f)		// プレイヤーの左右の移動速度
 
