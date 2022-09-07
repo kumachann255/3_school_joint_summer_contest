@@ -49,7 +49,7 @@
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
 #define COOLTIME_BOM		(180)		// ボムのクールタイム
-#define COOLTIME_CUP		(180)		// カップのクールタイム
+#define COOLTIME_CUP		(150)		// カップのクールタイム
 #define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
 #define COOLTIME_SHARK		(180)		// サメのクールタイム
 #define COOLTIME_METEOR		(180)		// メテオのクールタイム
