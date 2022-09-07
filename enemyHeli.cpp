@@ -24,8 +24,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY_HELI		"data/MODEL/heri.obj"		// 読み込むモデル名
-#define	MODEL_HELI_PARTS		"data/MODEL/puropera.obj"	// 読み込むモデル名
+#define	MODEL_ENEMY_09			"data/MODEL/enemy09.obj"		// 読み込むモデル名
+#define	MODEL_HELI_PARTS		"data/MODEL/puropera.obj"		// 読み込むモデル名
 
 #define	VALUE_MOVE				(3.0f)						// 移動量
 #define	VALUE_ROTATE			(0.5f)						// 回転量
@@ -83,11 +83,11 @@ HRESULT InitEnemyHeli(void)
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
 		g_EnemyHeli[i].load = TRUE;
-		LoadModel(MODEL_ENEMY_HELI, &g_EnemyHeli[i].model);
+		LoadModel(MODEL_ENEMY_09, &g_EnemyHeli[i].model);
 
 		g_EnemyHeli[i].pos = XMFLOAT3(0.0f, ENEMY_HELI_OFFSET_Y, 20.0f);
 		g_EnemyHeli[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_EnemyHeli[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_EnemyHeli[i].scl = XMFLOAT3(0.6f, 0.6f, 0.6f);
 
 		g_EnemyHeli[i].spd = 0.0f;			// 移動スピードクリア
 		g_EnemyHeli[i].size = ENEMY_HELI_SIZE;	// 当たり判定の大きさ
@@ -461,42 +461,42 @@ void DrawEnemyHeli(void)
 		DrawModel(&g_EnemyHeli[i].model);
 
 		// パーツの階層アニメーション
-		for (int i = 0; i < HELI_PARTS_MAX; i++)
-		{
-			// ワールドマトリックスの初期化
-			mtxWorld = XMMatrixIdentity();
+		//for (int i = 0; i < HELI_PARTS_MAX; i++)
+		//{
+		//	// ワールドマトリックスの初期化
+		//	mtxWorld = XMMatrixIdentity();
 
-			// スケールを反映
-			mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+		//	// スケールを反映
+		//	mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
+		//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// 回転を反映
-			mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+		//	// 回転を反映
+		//	mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
+		//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+		//	// 移動を反映
+		//	mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
+		//	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
-			{
-				mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
-				// ↑
-				// g_EnemyHeli[i].mtxWorldを指している
-			}
+		//	if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
+		//	{
+		//		mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
+		//		// ↑
+		//		// g_EnemyHeli[i].mtxWorldを指している
+		//	}
 
-			XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
+		//	XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
 
-			// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
-			if (g_Parts[i].use == FALSE) continue;
+		//	// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
+		//	if (g_Parts[i].use == FALSE) continue;
 
-			// ワールドマトリックスの設定
-			SetWorldMatrix(&mtxWorld);
+		//	// ワールドマトリックスの設定
+		//	SetWorldMatrix(&mtxWorld);
 
 
-			// モデル描画
-			DrawModel(&g_Parts[i].model);
-		}
+		//	// モデル描画
+		//	DrawModel(&g_Parts[i].model);
+		//}
 
 		// リムライトの設定
 		SetFuchi(FALSE);

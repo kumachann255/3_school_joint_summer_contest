@@ -12,17 +12,18 @@
 #include "player.h"
 #include "score.h"
 #include "gameUI.h"
+#include "timingBar.h"
 
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_WIDTH				(200)	// キャラサイズ
-#define TEXTURE_HEIGHT				(200)	// 
+#define TEXTURE_WIDTH				(CONDUCTOR_TEXTURE_X)	// キャラサイズ
+#define TEXTURE_HEIGHT				(CONDUCTOR_TEXTURE_Y)	// 
 #define TEXTURE_MAX					(4)		// テクスチャの数
 
-#define TEXTRUE_X					(130.0f)	// HPの表示位置
-#define TEXTRUE_Y					(130.0f)	// HPの表示位置
+#define TEXTRUE_X					(CONDUCTOR_POS_X)	// HPの表示位置
+#define TEXTRUE_Y					(CONDUCTOR_POS_Y)	// HPの表示位置
 
 
 //*****************************************************************************
