@@ -41,11 +41,6 @@
 #define DISTANCE_ONPU_SEA			(40)		// 海ステージの音符の間隔(フレーム)
 #define DISTANCE_ONPU_SKY			(40)		// 空ステージの音符の間隔(フレーム)
 
-#define CONDUCTOR_POS_X				(850.0f)	// 指揮者の位置
-#define CONDUCTOR_POS_Y				(SENHU_Y)	// 指揮者の位置
-#define CONDUCTOR_TEXTURE_X			(170.0f)	// ターゲットのサイズ
-#define CONDUCTOR_TEXTURE_Y			(170.0f)
-
 
 enum {
 	miss,
@@ -302,18 +297,6 @@ void DrawTImingBar(void)
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
-
-	// 指揮者の描画
-	// テクスチャ設定
-	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_Conductor.texNum]);
-
-	// １枚のポリゴンの頂点とテクスチャ座標を設定
-	SetSpriteColor(g_VertexBuffer, g_Conductor.pos.x, g_Conductor.pos.y, CONDUCTOR_TEXTURE_X, CONDUCTOR_TEXTURE_Y, 0.0f, 0.0f, 1.0f, 1.0f,
-		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-
-	// ポリゴン描画
-	GetDeviceContext()->Draw(4, 0);
-
 }
 
 

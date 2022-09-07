@@ -24,6 +24,10 @@
 #define TARGET_X			(150.0f)	// ターゲットの表示位置
 #define TARGET_Y			(SENHU_Y)	// ターゲットの表示位置
 
+#define CONDUCTOR_POS_X				(850.0f)	// 指揮者の位置
+#define CONDUCTOR_POS_Y				(SENHU_Y)	// 指揮者の位置
+#define CONDUCTOR_TEXTURE_X			(170.0f)	// 指揮者のサイズ
+#define CONDUCTOR_TEXTURE_Y			(170.0f)
 
 
 // 音符の構造体

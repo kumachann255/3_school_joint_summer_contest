@@ -17,11 +17,13 @@
 //*****************************************************************************
 #define TEXTURE_WIDTH				(500.0f)	// キャラサイズ
 #define TEXTURE_HEIGHT				(300.0f)	// 
+#define TEXTURE_HOWTO_WIDTH			(700.0f)	// キャラサイズ
+#define TEXTURE_HOWTO_HEIGHT		(450.0f)	// 
 
 #define TEXTURE_MAX					(tutorialMax)		// テクスチャの数
 
-#define TEXTURE_OFFSET_Y			(60.0f)		// 表示位置調整
-#define TEXTURE_OFFSET_X			(180.0f)	// 表示位置調整
+#define TEXTURE_OFFSET_Y			(-90.0f)	// 表示位置調整
+#define TEXTURE_OFFSET_X			(120.0f)		// 表示位置調整
 
 #define TUTORIAL_MAX				(2)			// チュートリアル
 
@@ -108,6 +110,8 @@ HRESULT InitTutorial(void)
 		{	// テキスト
 			g_Tutorial[i].w = TEXTURE_WIDTH;
 			g_Tutorial[i].h = TEXTURE_HEIGHT;
+			g_Tutorial[i].pos.x += TEXTURE_OFFSET_X;
+			g_Tutorial[i].pos.y += TEXTURE_OFFSET_Y;
 		}
 	}
 
@@ -195,6 +199,19 @@ void UpdateTutorial(void)
 						g_Tutorial[i].use = FALSE;
 					}
 					g_Tutorial[1].texNo++;
+				}
+
+				if ((g_Tutorial[1].texNo == howto0) || (g_Tutorial[1].texNo == howto1))
+				{
+					g_Tutorial[1].pos = { SCREEN_WIDTH / 2 ,SCREEN_HEIGHT / 2 , 0.0f };
+					g_Tutorial[1].w = TEXTURE_HOWTO_WIDTH;
+					g_Tutorial[1].h = TEXTURE_HOWTO_HEIGHT;
+				}
+				else
+				{
+					g_Tutorial[1].pos = { SCREEN_WIDTH / 2 + TEXTURE_OFFSET_X ,SCREEN_HEIGHT / 2 + TEXTURE_OFFSET_Y , 0.0f };
+					g_Tutorial[1].w = TEXTURE_WIDTH;
+					g_Tutorial[1].h = TEXTURE_HEIGHT;
 				}
 			}
 			else

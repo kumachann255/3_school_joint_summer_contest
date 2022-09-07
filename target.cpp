@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// タイトル画面処理 [target.cpp]
+// ターゲットUI処理 [target.cpp]
 // Author : 
 //
 //=============================================================================
@@ -220,12 +220,8 @@ XMVECTOR Screenpos(XMVECTOR World_Pos)
 {
 	CAMERA *camera = GetCamera();
 
-	// 空ステージの場合は少し調整する
-	float y = camera->at.y;
-	if (GetMode() == MODE_GAME_SKY) y += OFFSET_Y;
-
 	XMVECTOR Eye = XMVectorSet(camera->pos.x, camera->pos.y, camera->pos.z, 0.0f);
-	XMVECTOR At = XMVectorSet(camera->at.x, y, camera->at.z, 0.0f);
+	XMVECTOR At = XMVectorSet(camera->at.x, camera->at.y, camera->at.z, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX g_View = XMMatrixLookAtLH(Eye, At, Up);
