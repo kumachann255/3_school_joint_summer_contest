@@ -135,22 +135,20 @@ void UpdateSame(void)
 	ATTACKRANGE *attackR = GetAttackR();
 	PLAYER *player = GetPlayer();
 
-	// サメ爆弾　g_Sameには移動させるサイトを入れる。
-	// switch文のため、g_Sameの引数をベースに管理する。
-	switch (g_Same.mode)
+	if (g_Same.use == TRUE)
 	{
-	case GURUGURU:
-		g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
-		g_Same.pos.y = attackR->pos.y;
-		g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
-		
-		g_sAtama.pos = attackR->pos;
-		g_sKuchi.pos = attackR->pos;
-
-		// ヒレの移動
-		if (GetKeyboardPress(DIK_SPACE) && player->rockOn == FALSE)
+		// サメ爆弾　g_Sameには移動させるサイトを入れる。
+// switch文のため、g_Sameの引数をベースに管理する。
+		switch (g_Same.mode)
 		{
-			g_Same.use = TRUE;
+		case GURUGURU:
+			g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
+			g_Same.pos.y = attackR->pos.y;
+			g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
+
+			g_sAtama.pos = attackR->pos;
+			g_sKuchi.pos = attackR->pos;
+
 			g_Same.rot.y -= HIRE_ROT_ADDTION; // ヒレのY軸での回転
 			// サークルの中心から半径100をぐるぐる回るための加算
 			g_Same.angle += VALUE_MOVE;
@@ -161,136 +159,158 @@ void UpdateSame(void)
 				g_Same.angle = 0.0f;
 				g_Same.mode = DOWN_FIRST;
 			}
-		}
-		break;
+			break;
 
-	case DOWN_FIRST:
-		// 下降処理
-		g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
-		g_Same.pos.y -= DOWN_ADDTION_1;
-		g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
+			//g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
+			//g_Same.pos.y = attackR->pos.y;
+			//g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
 
-		g_sAtama.pos.x = attackR->pos.x;
-		g_sAtama.pos.y -= DOWN_ADDTION_1;
-		g_sAtama.pos.z = attackR->pos.z;
-		g_sKuchi.pos.x = attackR->pos.x;
-		g_sKuchi.pos.y -= DOWN_ADDTION_1;
-		g_sKuchi.pos.z = attackR->pos.z;
+			//g_sAtama.pos = attackR->pos;
+			//g_sKuchi.pos = attackR->pos;
 
-		if (g_Same.pos.y < MAX_DOWN)
-		{
-			g_Same.pos.x = attackR->pos.x;
-			g_Same.pos.z = attackR->pos.z;
+			//// ヒレの移動
+			//if (GetKeyboardPress(DIK_SPACE) && player->rockOn == FALSE)
+			//{
+			//	g_Same.use = TRUE;
+			//	g_Same.rot.y -= HIRE_ROT_ADDTION; // ヒレのY軸での回転
+			//	// サークルの中心から半径100をぐるぐる回るための加算
+			//	g_Same.angle += VALUE_MOVE;
 
-			// 下降最低値までいったらヒレのモデルはFALSEにするがswitch用に他の情報は残す
-			g_Same.rot.y = 0.0f;
-			g_Same.mode = PACKNCYO;
-			//g_Same.use = FALSE;
-			
-			g_sAtama.use = TRUE;
-			g_sKuchi.use = TRUE;
-		}
-		break;
-
-	case PACKNCYO:
-		// 上昇噛みつき処理(上昇してからはその位置で固定)
-		//g_Same.pos.x = attackR->pos.x;
-		g_Same.pos.y += UP_ADDTION;
-		//g_Same.pos.z = attackR->pos.z;
-
-		//g_sAtama.pos.x = attackR->pos.x;
-		g_sAtama.pos.y += UP_ADDTION;
-		//g_sAtama.pos.z = attackR->pos.z;
-
-		g_sKuchi.rot.x -= KUCHI_ROT_ADDTION;
-		//g_sKuchi.pos.x = attackR->pos.x;
-		g_sKuchi.pos.y += UP_ADDTION;
-		//g_sKuchi.pos.z = attackR->pos.z;
+			//	if (g_Same.angle > XM_2PI)
+			//	{
+			//		// 一周したら別モードへ遷移
+			//		g_Same.angle = 0.0f;
+			//		g_Same.mode = DOWN_FIRST;
+			//	}
+			//}
+			//break;
 
 
-		if (g_Same.pos.y > MAX_UP)
-		{
-			// 最大上昇値までいったらシーン遷移
-			g_sKuchi.rot.x = -MAX_KUCHI_ROT;	// 下顎の回転を止めて下顎の回転最大値値を代入
-			g_Same.mode = DOWN_LAST;
-		}
-		break;
+		case DOWN_FIRST:
+			// 下降処理
+			g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
+			g_Same.pos.y -= DOWN_ADDTION_1;
+			g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
 
-	case DOWN_LAST:
-		// 下降処理
-		g_Same.pos.y  -= DOWN_ADDTION_2;
-		g_sAtama.pos.y -= DOWN_ADDTION_2;
-		g_sKuchi.pos.y -= DOWN_ADDTION_2;
+			g_sAtama.pos.x = attackR->pos.x;
+			g_sAtama.pos.y -= DOWN_ADDTION_1;
+			g_sAtama.pos.z = attackR->pos.z;
+			g_sKuchi.pos.x = attackR->pos.x;
+			g_sKuchi.pos.y -= DOWN_ADDTION_1;
+			g_sKuchi.pos.z = attackR->pos.z;
 
-		if (g_Same.pos.y < MAX_DOWN)
-		{
-			// 頭と口のモデルをFALSEにする
-			g_Same.use = FALSE;
-			g_sAtama.use = FALSE;
-			g_sKuchi.use = FALSE;
-			g_sKuchi.rot.x = 0.0f; // 下顎の回転量の初期化
-			g_Same.mode = GURUGURU;
-		}
-		break;
-	}
-
-	// 当たった後エネミーの挙動処理
-	{
-		ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
-		ENEMY_HELI *enemyheli = GetEnemyHeli();		// エネミーのポインターを初期化
-
-		// 他エネミーの処理
-
-		// 敵とサメオブジェクト
-		for (int i = 0; i < MAX_ENEMY; i++)
-		{
-			if (g_Same.mode == PACKNCYO)
+			if (g_Same.pos.y < MAX_DOWN)
 			{
-				if (CollisionBC(g_Same.pos, enemy[i].pos, g_Same.size, enemy[i].size))
-				{
-					if (enemy[i].isHit == TRUE) break;
-					if (enemy[i].use == TRUE)
-					{
-						// スコアを足す
-						AddScore(100);
+				g_Same.pos.x = attackR->pos.x;
+				g_Same.pos.z = attackR->pos.z;
 
-						// コンボを足す
-						AddCombo(1);
-						ResetComboTime();
+				// 下降最低値までいったらヒレのモデルはFALSEにするがswitch用に他の情報は残す
+				g_Same.rot.y = 0.0f;
+				g_Same.mode = PACKNCYO;
+				//g_Same.use = FALSE;
+
+				g_sAtama.use = TRUE;
+				g_sKuchi.use = TRUE;
+			}
+			break;
+
+		case PACKNCYO:
+			// 上昇噛みつき処理(上昇してからはその位置で固定)
+			//g_Same.pos.x = attackR->pos.x;
+			g_Same.pos.y += UP_ADDTION;
+			//g_Same.pos.z = attackR->pos.z;
+
+			//g_sAtama.pos.x = attackR->pos.x;
+			g_sAtama.pos.y += UP_ADDTION;
+			//g_sAtama.pos.z = attackR->pos.z;
+
+			g_sKuchi.rot.x -= KUCHI_ROT_ADDTION;
+			//g_sKuchi.pos.x = attackR->pos.x;
+			g_sKuchi.pos.y += UP_ADDTION;
+			//g_sKuchi.pos.z = attackR->pos.z;
+
+
+			if (g_Same.pos.y > MAX_UP)
+			{
+				// 最大上昇値までいったらシーン遷移
+				g_sKuchi.rot.x = -MAX_KUCHI_ROT;	// 下顎の回転を止めて下顎の回転最大値値を代入
+				g_Same.mode = DOWN_LAST;
+			}
+			break;
+
+		case DOWN_LAST:
+			// 下降処理
+			g_Same.pos.y -= DOWN_ADDTION_2;
+			g_sAtama.pos.y -= DOWN_ADDTION_2;
+			g_sKuchi.pos.y -= DOWN_ADDTION_2;
+
+			if (g_Same.pos.y < MAX_DOWN)
+			{
+				// 頭と口のモデルをFALSEにする
+				g_Same.use = FALSE;
+				g_sAtama.use = FALSE;
+				g_sKuchi.use = FALSE;
+				g_sKuchi.rot.x = 0.0f; // 下顎の回転量の初期化
+				g_Same.mode = GURUGURU;
+			}
+			break;
+		}
+
+		// 当たった後エネミーの挙動処理
+		{
+			ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
+			ENEMY_HELI *enemyheli = GetEnemyHeli();		// エネミーのポインターを初期化
+
+			// 他エネミーの処理
+
+			// 敵とサメオブジェクト
+			for (int i = 0; i < MAX_ENEMY; i++)
+			{
+				if (g_Same.mode == PACKNCYO)
+				{
+					if (CollisionBC(g_Same.pos, enemy[i].pos, g_Same.size, enemy[i].size))
+					{
+						if (enemy[i].isHit == TRUE) break;
+						if (enemy[i].use == TRUE)
+						{
+							// スコアを足す
+							AddScore(100);
+
+							// コンボを足す
+							AddCombo(1);
+							ResetComboTime();
+						}
+						// 敵キャラクターは倒される
+						enemy[i].use = FALSE;
 					}
-					// 敵キャラクターは倒される
-					enemy[i].use = FALSE;
+				}
+			}
+
+			// ヘリの処理
+			for (int j = 0; j < MAX_ENEMY_HELI; j++)
+			{
+				if (g_Same.mode == PACKNCYO)
+				{
+					if (CollisionBC(g_Same.pos, enemyheli[j].pos, g_Same.size, enemyheli[j].size))
+					{
+						if (enemyheli[j].isHit == TRUE) break;
+						if (enemyheli[j].use == TRUE)
+						{
+							// スコアを足す
+							AddScore(100);
+
+							// コンボを足す
+							AddCombo(1);
+							ResetComboTime();
+						}
+						// 敵キャラクターは倒される
+						enemyheli[j].use = FALSE;
+					}
 				}
 			}
 		}
 
-		// ヘリの処理
-		for (int j = 0; j < MAX_ENEMY_HELI; j++)
-		{
-			if (g_Same.mode == PACKNCYO)
-			{
-				if (CollisionBC(g_Same.pos, enemyheli[j].pos, g_Same.size, enemyheli[j].size))
-				{
-					if (enemyheli[j].isHit == TRUE) break;
-					if (enemyheli[j].use == TRUE)
-					{
-						// スコアを足す
-						AddScore(100);
-
-						// コンボを足す
-						AddCombo(1);
-						ResetComboTime();
-					}
-					// 敵キャラクターは倒される
-					enemyheli[j].use = FALSE;
-				}
-			}
-		}
-
 	}
-
-
-
 
 #ifdef _DEBUG	// デバッグ情報を表示する
 	//PrintDebugProc("g_Same:↑ → ↓ ←　Space\n");
@@ -423,6 +443,8 @@ void SetSame(void)
 {
 	if (g_Same.use == FALSE && g_Same.mode == GURUGURU)
 	{
+		g_Same.use = TRUE;
+
 		ATTACKRANGE *attackR = GetAttackR();
 
 		g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);

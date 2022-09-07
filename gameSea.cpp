@@ -203,8 +203,6 @@ HRESULT InitGameSea(void)
 
 	case stage0:
 	case stage1:
-	case stage2:
-	case stage3:
 		// BGM再生
 		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
@@ -366,7 +364,7 @@ void UpdateGameSea(void)
 	// 壁処理の更新
 	UpdateMeshWall();
 
-	// 木の更新処理
+	// 海オブジェクトの更新処理
 	UpdateSeaFieldObj();
 
 	// スカイドームの更新処理
@@ -649,6 +647,7 @@ void CheckHitSea(void)
 					// スコアを足す
 					AddScore(100);
 
+					// コンボはsame.cppで加算している
 					// コンボを足す
 					//AddCombo(1);
 					//ResetComboTime();

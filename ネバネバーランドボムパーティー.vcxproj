@@ -179,6 +179,7 @@
     <ClCompile Include="score.cpp" />
     <ClCompile Include="sea_fieldobj.cpp" />
     <ClCompile Include="sea_meshfield.cpp" />
+    <ClCompile Include="sea_particle.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sky.cpp" />
     <ClCompile Include="sky_enemy.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="score.h" />
     <ClInclude Include="sea_fieldobj.h" />
     <ClInclude Include="sea_meshfield.h" />
+    <ClInclude Include="sea_particle.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sky.h" />
     <ClInclude Include="sky_bigmeteor.h" />

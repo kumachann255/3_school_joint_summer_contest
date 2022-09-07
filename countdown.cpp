@@ -152,11 +152,6 @@ HRESULT InitCountDown(void)
 
 	switch (g_Stage)
 	{
-	case stage2:
-		// SE再生
-		PlaySound(SOUND_LABEL_SE_cheers03);
-		break;
-
 	case stage1:
 		// SE再生
 		PlaySound(SOUND_LABEL_SE_cheers02);
@@ -231,7 +226,7 @@ void UpdateCountDown(void)
 			if(GetStage() == stage1) SetFade(FADE_OUT, MODE_GAME_CITY);
 			else
 			{
-				SetStage(stage0);
+				SetStage(tutorial);
 				SetFade(FADE_OUT, MODE_GAME_SEA);
 			}
 			break;
@@ -251,6 +246,7 @@ void UpdateCountDown(void)
 		}
 	}
 
+	int unko = 3;
 
 	// お祝いテクスチャ
 	switch (g_Stage)

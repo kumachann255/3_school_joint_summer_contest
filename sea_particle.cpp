@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// メテオのパーティクル処理 [particleMeteor.cpp]
-// Author : 熊澤義弘
+// パーティクル処理 [sea_particle.cpp]
+// Author : 熊澤義弘＋大塚勝亮
 //
 //=============================================================================
 #include "main.h"
@@ -10,39 +10,25 @@
 #include "camera.h"
 #include "model.h"
 #include "shadow.h"
-#include "particle.h"
-#include "particleMeteor.h"
-#include "sky_smallmeteor.h"
+#include "sea_particle.h"
+#include "cup.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define TEXTURE_MAX			(1)			// テクスチャの数
+#define TEXTURE_MAX			(21)			// テクスチャの数
 
-#define	PARTICLE_SIZE_X		(15.0f)		// 頂点サイズ・パーティクルサイズ
-#define	PARTICLE_SIZE_Y		(15.0f)		// 頂点サイズ・パーティクルサイズ
+#define	SEA_PARTICLE_SIZE_X	(30.0f)		// 頂点サイズ・パーティクルサイズ
+#define	SEA_PARTICLE_SIZE_Y	(30.0f)		// 頂点サイズ・パーティクルサイズ
 
-#define	MAX_PARTICLE		(1024)		// パーティクル最大数
+#define	MAX_PARTICLE		(512)		// パーティクル最大数
 
-#define METEOR_POP_RAND		(10.0f)		// 発生位置の乱数
-
-#define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
-#define METEOR_MOVE_XY		(5.0f)		// xy軸の移動量の乱数
-
-#define MAX_METEOR_COLOR	(0.5f)		// カラーの乱数
-#define MIN_METEOR_COLOR	(0.2f)		// カラーの乱数
-
-#define MAX_METEOR_LIFE		(50)		// カラーの乱数
-#define MIN_METEOR_LIFE		(50)		// カラーの乱数
-
-#define METEOR_LIFE_ALFA	(20)		// カラーの乱数
-
-#define METEOR_FLAM_NUM		(3)			// 1フレームに何個出すか
+#define	MAX_SEA_PARTICLE	(10)		// パーティクル最大数
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT MakeVertexParticleMeteor(void);
+HRESULT MakeVertexSeaParticle(void);
 
 //*****************************************************************************
 // グローバル変数
@@ -52,11 +38,31 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;					// テクスチャ番号
 
-static PARTICLE						g_ParticleMeteor[MAX_PARTICLE];		// パーティクルワーク
+static SEA_PARTICLE					g_SeaParticle[MAX_SEA_PARTICLE];	// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/effect000.jpg",
+	"data/TEXTURE/onpu01_01.png",
+	"data/TEXTURE/onpu01_02.png",
+	"data/TEXTURE/onpu01_03.png",
+	"data/TEXTURE/onpu02_01.png",
+	"data/TEXTURE/onpu02_02.png",
+	"data/TEXTURE/onpu02_03.png",
+	"data/TEXTURE/onpu03_01.png",
+	"data/TEXTURE/onpu03_02.png",
+	"data/TEXTURE/onpu03_03.png",
+	"data/TEXTURE/onpu04_01.png",
+	"data/TEXTURE/onpu04_02.png",
+	"data/TEXTURE/onpu04_03.png",
+	"data/TEXTURE/onpu05_01.png",
+	"data/TEXTURE/onpu05_02.png",
+	"data/TEXTURE/onpu05_03.png",
+	"data/TEXTURE/onpu06_01.png",
+	"data/TEXTURE/onpu06_02.png",
+	"data/TEXTURE/onpu06_03.png",
+	"data/TEXTURE/onpu07_01.png",
+	"data/TEXTURE/onpu07_02.png",
+	"data/TEXTURE/onpu07_03.png",
 };
 
 static BOOL						g_Load = FALSE;
@@ -64,10 +70,10 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitParticleMeteor(void)
+HRESULT InitSeaParticle(void)
 {
 	// 頂点情報の作成
-	MakeVertexParticleMeteor();
+	MakeVertexSeaParticle();
 
 	// テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -84,20 +90,20 @@ HRESULT InitParticleMeteor(void)
 	g_TexNo = 0;
 
 	// パーティクルワークの初期化
-	for(int i = 0; i < MAX_PARTICLE; i++)
+	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
-		g_ParticleMeteor[i].type = 0;
-		g_ParticleMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_ParticleMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_ParticleMeteor[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		g_ParticleMeteor[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaParticle[i].type = PARTICLE_TYPE_MAX;
+		g_SeaParticle[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaParticle[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaParticle[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_SeaParticle[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		ZeroMemory(&g_ParticleMeteor[i].material, sizeof(g_ParticleMeteor[i].material));
-		g_ParticleMeteor[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		ZeroMemory(&g_SeaParticle[i].material, sizeof(g_SeaParticle[i].material));
+		g_SeaParticle[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		g_ParticleMeteor[i].life = 0;
-		g_ParticleMeteor[i].pop = 0.0f;
-		g_ParticleMeteor[i].use = FALSE;
+		g_SeaParticle[i].life = 0;
+		g_SeaParticle[i].pop = 0;
+		g_SeaParticle[i].use = FALSE;
 	}
 
 
@@ -108,7 +114,7 @@ HRESULT InitParticleMeteor(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitParticleMeteor(void)
+void UninitSeaParticle(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -135,83 +141,72 @@ void UninitParticleMeteor(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateParticleMeteor(void)
+void UpdateSeaParticle(void)
 {
-	S_METEOR *meteorS = GetS_Meteor();
-
-	for(int i = 0; i < MAX_PARTICLE; i++)
+	//PLAYER *pPlayer = GetPlayer();
+	//g_posBase = pPlayer->pos;
+	
+	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
 		// パーティクルワーク処理
-		if(g_ParticleMeteor[i].use)		// 使用中
+		if(g_SeaParticle[i].use == TRUE)		// 使用中
 		{
-			g_ParticleMeteor[i].life--;
-			
-			if (g_ParticleMeteor[i].life <= METEOR_LIFE_ALFA)
-			{	// 寿命が１０フレーム切ったら段々透明になっていく
-				g_ParticleMeteor[i].material.Diffuse.w -= 1.0f / METEOR_LIFE_ALFA;
-				if (g_ParticleMeteor[i].material.Diffuse.w < 0.0f)
-				{
-					g_ParticleMeteor[i].material.Diffuse.w = 0.0f;
-				}
-			}
-
-			if (g_ParticleMeteor[i].life <= 0)
+			switch (g_SeaParticle[i].type)
 			{
-				g_ParticleMeteor[i].use = FALSE;
-			}
+			case PARTICLE_TYPE_TAKO:
 
-			// 移動処理
-			g_ParticleMeteor[i].pos.x += g_ParticleMeteor[i].move.x;
-			g_ParticleMeteor[i].pos.y += g_ParticleMeteor[i].move.y;
-			g_ParticleMeteor[i].pos.z += g_ParticleMeteor[i].move.z;
-		}
-	}
+				// タコの場合の処理
+				g_SeaParticle[i].life--;
 
-	//エフェクトの発生処理
-	{
-		for (int i = 0; i < MAX_S_METEOR; i++)
-		{
-			if (meteorS[i].use)
-			{
-				for (int p = 0; p < METEOR_FLAM_NUM; p++)
-				{
-					XMFLOAT3 pos, move, scl;
-					XMFLOAT4 col;
-					int life;
-
-					// 発生位置を設定
-					pos.x = meteorS[i].pos.x + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
-					pos.y = meteorS[i].pos.y + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
-					pos.z = meteorS[i].pos.z + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
-
-					// 移動量を設定
-					move.x = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.z = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.y = meteorS[i].randMove.y * METEOR_MOVE_Y;
-
-					// カラー設定
-					col.x = 0.8f;
-					col.y = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
-					col.z = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
-					col.w = 1.0f;
-
-					// 寿命の設定
-					life = (rand() % MAX_METEOR_LIFE) + MIN_METEOR_LIFE;
-
-					scl = { 1.0f,1.0f,1.0f };
-
-					SetParticleMeteor(pos, scl, move, col, life);
+				if (g_SeaParticle[i].life <= 10)
+				{	// 寿命が１０フレーム切ったら段々透明になっていく
+					g_SeaParticle[i].material.Diffuse.w -= 0.1f;
+					if (g_SeaParticle[i].material.Diffuse.w < 0.0f)
+					{
+						g_SeaParticle[i].material.Diffuse.w = 0.0f;
+					}
 				}
+
+				if (g_SeaParticle[i].life <= 0)
+				{
+					g_SeaParticle[i].use = FALSE;
+				}
+
+				// タコの場合の挙動
+				{
+
+				}
+
+				break;
+
+			case PARTICLE_TYPE_SAME:
+
+				// タコの場合の処理
+				g_SeaParticle[i].life--;
+
+				if (g_SeaParticle[i].life <= 10)
+				{	// 寿命が１０フレーム切ったら段々透明になっていく
+					g_SeaParticle[i].material.Diffuse.w -= 0.1f;
+					if (g_SeaParticle[i].material.Diffuse.w < 0.0f)
+					{
+						g_SeaParticle[i].material.Diffuse.w = 0.0f;
+					}
+				}
+
+				if (g_SeaParticle[i].life <= 0)
+				{
+					g_SeaParticle[i].use = FALSE;
+				}
+				break;
 			}
 		}
 	}
 }
 
-
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawParticleMeteor(void)
+void DrawSeaParticle(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
@@ -220,7 +215,7 @@ void DrawParticleMeteor(void)
 	SetLightEnable(FALSE);
 
 	// 加算合成に設定
-	SetBlendState(BLEND_MODE_ADD);
+	//SetBlendState(BLEND_MODE_ADD);
 
 	// Z比較無し
 	SetDepthEnable(FALSE);
@@ -239,9 +234,9 @@ void DrawParticleMeteor(void)
 	// テクスチャ設定
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-	for(int i = 0; i < MAX_PARTICLE; i++)
+	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
 	{
-		if(g_ParticleMeteor[i].use)
+		if(g_SeaParticle[i].use == TRUE && g_SeaParticle[i].pop <= 0.0f)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -268,18 +263,18 @@ void DrawParticleMeteor(void)
 			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
 
 			// スケールを反映
-			mtxScl = XMMatrixScaling(g_ParticleMeteor[i].scl.x, g_ParticleMeteor[i].scl.y, g_ParticleMeteor[i].scl.z);
+			mtxScl = XMMatrixScaling(g_SeaParticle[i].scl.x, g_SeaParticle[i].scl.y, g_SeaParticle[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_ParticleMeteor[i].pos.x, g_ParticleMeteor[i].pos.y, g_ParticleMeteor[i].pos.z);
+			mtxTranslate = XMMatrixTranslation(g_SeaParticle[i].pos.x, g_SeaParticle[i].pos.y, g_SeaParticle[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 			// ワールドマトリックスの設定
 			SetWorldMatrix(&mtxWorld);
 
 			// マテリアル設定
-			SetMaterial(g_ParticleMeteor[i].material);
+			SetMaterial(g_SeaParticle[i].material);
 
 			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
@@ -303,7 +298,7 @@ void DrawParticleMeteor(void)
 //=============================================================================
 // 頂点情報の作成
 //=============================================================================
-HRESULT MakeVertexParticleMeteor(void)
+HRESULT MakeVertexSeaParticle(void)
 {
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -322,10 +317,10 @@ HRESULT MakeVertexParticleMeteor(void)
 		VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
 
 		// 頂点座標の設定
-		vertex[0].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
-		vertex[1].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
-		vertex[2].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
-		vertex[3].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[0].Position = XMFLOAT3(-SEA_PARTICLE_SIZE_X / 2, SEA_PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[1].Position = XMFLOAT3(SEA_PARTICLE_SIZE_X / 2, SEA_PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[2].Position = XMFLOAT3(-SEA_PARTICLE_SIZE_X / 2, -SEA_PARTICLE_SIZE_Y / 2, 0.0f);
+		vertex[3].Position = XMFLOAT3(SEA_PARTICLE_SIZE_X / 2, -SEA_PARTICLE_SIZE_Y / 2, 0.0f);
 
 		// 法線の設定
 		vertex[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
@@ -354,35 +349,26 @@ HRESULT MakeVertexParticleMeteor(void)
 //=============================================================================
 // マテリアルカラーの設定
 //=============================================================================
-void SetColorParticleMeteor(int nIdxParticle, XMFLOAT4 col)
+void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col)
 {
-	g_ParticleMeteor[nIdxParticle].material.Diffuse = col;
+	g_SeaParticle[nIdxSeaParticle].material.Diffuse = col;
 }
 
 //=============================================================================
 // パーティクルの発生処理
 //=============================================================================
-int SetParticleMeteor(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
-{
-	int nIdxParticle = -1;
-
-	for(int i = 0; i < MAX_PARTICLE; i++)
-	{
-		if(!g_ParticleMeteor[i].use)
-		{
-			g_ParticleMeteor[i].pos  = pos;
-			g_ParticleMeteor[i].rot  = { 0.0f, 0.0f, 0.0f };
-			g_ParticleMeteor[i].scl  = { 1.0f, 1.0f, 1.0f };
-			g_ParticleMeteor[i].move = move;
-			g_ParticleMeteor[i].material.Diffuse = col;
-			g_ParticleMeteor[i].life = life;
-			g_ParticleMeteor[i].use  = TRUE;
-
-			nIdxParticle = i;
-
-			break;
-		}
-	}
-
-	return nIdxParticle;
-}
+//int SetSeaParticle(int type, XMFLOAT3 pos, int life)
+//{
+//	for(int i = 0; i < MAX_SEA_PARTICLE; i++)
+//	{
+//		if(!g_SeaParticle[i].use)
+//		{
+//			g_SeaParticle[i].type = type;
+//			g_SeaParticle[i].pos  = pos;
+//			g_SeaParticle[i].life = life;
+//			g_SeaParticle[i].use  = TRUE;
+//
+//			return;
+//		}
+//	}
+//}
