@@ -678,8 +678,6 @@ void SetEnemy(void)
 
 BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num)
 {
-	CameraPos.y = 5.0f;
-
 	XMFLOAT3 start = CameraPos;
 	XMFLOAT3 end = Pos;
 	XMFLOAT3 org = *HitPosition;
