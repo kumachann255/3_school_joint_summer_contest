@@ -14,6 +14,7 @@
 #include "player.h"
 #include "attackRange.h"
 #include "bom.h"
+#include "combo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -184,6 +185,11 @@ void UpdateOrbit(void)
 				time /= MAX_ORBIT;
 				time *= nCntParticle;
 
+				// スケールの初期化
+				g_Orbit[nCntParticle].scale.x = 1.0f;
+				g_Orbit[nCntParticle].scale.y = 1.0f;
+				g_Orbit[nCntParticle].scale.z = 1.0f;
+
 				// ベジェ曲線算出
 				g_Orbit[nCntParticle].pos.x =	((1.0f - time) * (1.0f - time) * pPlayer->pos.x) + 
 												(2 * time * (1.0f - time) * control.x) + 
@@ -197,6 +203,15 @@ void UpdateOrbit(void)
 					(2 * time * (1.0f - time) * control.y) +
 					(time * time * AttackR->pos.y);
 
+				// カップの場合は直線にする
+				if (GetCombo() >= COMBO_CHANGE_ACTION && GetMode() == MODE_GAME_CITY)
+				{
+					g_Orbit[nCntParticle].pos.y = 1.0f;
+					
+					g_Orbit[nCntParticle].scale.x = 3.0f;
+					g_Orbit[nCntParticle].scale.y = 3.0f;
+					g_Orbit[nCntParticle].scale.z = 3.0f;
+				}
 			}
 		}
 	}

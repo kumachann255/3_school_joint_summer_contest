@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // ゲーム画面処理 [gameSky.cpp]
 // Author : 熊澤義弘
@@ -39,6 +39,7 @@
 #include "rockOn.h"
 #include "fieldobj.h"
 #include "particleMeteor.h"
+#include "particleSky.h"
 
 
 //*****************************************************************************
@@ -60,6 +61,7 @@ void CheckHitSky(void);
 static int	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 static BOOL	g_bPause = TRUE;	// ポーズON/OFF
+static BOOL g_DeathParticl;
 
 static int					g_Stage;
 
@@ -176,6 +178,8 @@ HRESULT InitGameSky(void)
 	// メテオのパーティクルの初期化
 	InitParticleMeteor();
 
+	// 空ステージのエネミーを倒したときのパーティクルの初期化
+	InitParticleSky();
 
 	g_Stage = GetStage();
 
@@ -192,13 +196,12 @@ HRESULT InitGameSky(void)
 
 	case stage0:
 	case stage1:
-	case stage2:
-	case stage3:
 		// BGM再生
 		//PlaySound(SOUND_LABEL_BGM_bgm_stage002);
 		break;
 	}
 
+	g_DeathParticl = FALSE;
 
 	return S_OK;
 }
@@ -208,6 +211,9 @@ HRESULT InitGameSky(void)
 //=============================================================================
 void UninitGameSky(void)
 {
+	// 空ステージのエネミーを倒したときのパーティクルの終了処理
+	UninitParticleSky();
+
 	// メテオのパーティクルの終了処理
 	UninitParticleMeteor();
 
@@ -364,6 +370,10 @@ void UpdateGameSky(void)
 
 	// メテオのパーティクルの更新処理
 	UpdateParticleMeteor();
+
+	// 空ステージのエネミーを倒したときのパーティクルの更新処理
+	UpdateParticleSky();
+
 }
 
 //=============================================================================
@@ -407,6 +417,10 @@ void DrawGameSky0(void)
 
 	// メテオのパーティクルの描画処理
 	DrawParticleMeteor();
+
+	// 空ステージのエネミーを倒したときのパーティクルの描画処理
+	DrawParticleSky();
+
 
 
 	// 2Dの物を描画する処理
@@ -543,6 +557,16 @@ void CheckHitSky(void)
 			if (CollisionBC(s_meteor[i].pos,sky_enemy[j].pos,s_meteor[i].size,sky_enemy[j].size))
 			{
 				sky_enemy[j].use = FALSE;
+				sky_enemy[j].particleOn = TRUE;
+
+				g_DeathParticl = TRUE;
+
+				// スコアを足す
+				AddScore(100);
+
+				// コンボを足す
+				AddCombo(1);
+				ResetComboTime();
 			}
 		}
 	}
@@ -557,3 +581,7 @@ void CheckHitSky(void)
 }
 
 
+BOOL GetDeathPartical(void)
+{
+	return g_DeathParticl;
+}

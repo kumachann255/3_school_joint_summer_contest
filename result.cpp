@@ -12,18 +12,20 @@
 #include "sound.h"
 #include "sprite.h"
 #include "score.h"
+#include "title.h"
+
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)	// 背景サイズ
 #define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
-#define TEXTURE_MAX					(16)				// テクスチャの数
+#define TEXTURE_MAX					(resultMax)				// テクスチャの数
 
 #define TEXTURE_WIDTH_LOGO			(480)			// ロゴサイズ
 #define TEXTURE_HEIGHT_LOGO			(80)			// 
 
-#define RESULT_MAX					(17)				// ON/OFFスイッチが必要なテクスチャ数
+#define RESULT_MAX					(17)		// ON/OFFスイッチが必要なテクスチャ数
 
 #define RANK_C_BORDER				(15000)
 #define RANK_B_BORDER				(30000)
@@ -33,25 +35,29 @@
 #define MOVE_VOLUME					(20.0f)		// カーブの半径
 #define MOVE_SPEED					(0.1f)		// カーブの速度
 
-//enum 
-//{
-//	result_bg,
-//	result_effect,
-//	rank_effect,
-//	stage1,
-//	stage2,
-//	stage3,
-//	stage4,
-//	MaxCombo,
-//	TotalScore,
-//	BomEffect,
-//	ComboNum,
-//	FinalScore,
-//	RankA,
-//	RankB,
-//	RankC,
-//	RankS
-//};
+enum {
+	result_bg,
+	result_effect,
+	rank_effect,
+	city_stage1,
+	city_stage2,
+	sea_stage1,
+	sea_stage2,
+	sky_stage1,
+	sky_stage2,
+	MaxCombo,
+	TotalScore,
+	BomEffect,
+	ComboNum,
+	FinalScore,
+	RankA,
+	RankB,
+	RankC,
+	RankS,
+	resultMax,
+};
+
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -69,8 +75,10 @@ static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/rank_effect.png",
 	"data/TEXTURE/stage1.png",
 	"data/TEXTURE/stage2.png",
-	"data/TEXTURE/stage3.png",
-	"data/TEXTURE/stage4.png",
+	"data/TEXTURE/stage1.png",
+	"data/TEXTURE/stage2.png",
+	"data/TEXTURE/stage1.png",
+	"data/TEXTURE/stage2.png",
 	"data/TEXTURE/max_combo.png",
 	"data/TEXTURE/totalscore.png",
 	"data/TEXTURE/speech_boom.png",
@@ -80,26 +88,20 @@ static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/rankB.png",
 	"data/TEXTURE/rankC.png",
 	"data/TEXTURE/rankS.png",
-
 };
 
-//static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用	デバッグ用
+//static BOOL						g_Use;					// TRUE:使っている  FALSE:未使用	デバッグ用
 
-static BOOL						g_Use[RESULT_MAX];						// TRUE:使っている  FALSE:未使用
+static BOOL						g_Use[RESULT_MAX];			// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
 static XMFLOAT3					g_Pos;						// ポリゴンの座標
-static int						g_TexNo[RESULT_MAX];					// テクスチャ番号
+static int						g_TexNo[RESULT_MAX];		// テクスチャ番号
 
 static int						g_time;
-
 static int						g_totale;
-
 static XMFLOAT4					g_Colar;
-
 static int						g_timeRank;
-
 static BOOL						g_soundFlag;
-
 static BOOL						g_Load = FALSE;
 
 
@@ -122,7 +124,6 @@ HRESULT InitResult(void)
 			NULL);
 	}
 
-
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -132,25 +133,23 @@ HRESULT InitResult(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
 	// 変数の初期化
 	g_w     = TEXTURE_WIDTH;
 	g_h     = TEXTURE_HEIGHT;
 	g_Pos   = { g_w / 3.6f, 130.0f, 0.0f };
 
 	g_time = 0;
-
 	g_totale = 0;
-
 	g_Colar.w = 0.0f;
-
 	g_timeRank = 0;
-
 	g_soundFlag = FALSE;
 
 	for (int i = 0; i < stage_max; i++)
 	{
-		g_totale += GetMainScore(i);
+		for (int p = 0; p < modeMax; p++)
+		{
+		g_totale += GetMainScore(p, i);
+		}
 	}
 
 	// 最大を超えていた場合99999で固定
@@ -167,68 +166,76 @@ HRESULT InitResult(void)
 
 		switch (i)
 		{
-
 		case 0:
-			g_TexNo[i] = 3;	// ステージ１ロゴ
+			g_TexNo[i] = city_stage1;	// ステージ１ロゴ
 			break;
 
 		case 1:
-			g_TexNo[i] = 4;	// ステージ2ロゴ
+			g_TexNo[i] = city_stage2;	// ステージ2ロゴ
 
 			break;
 
 		case 2:
-			g_TexNo[i] = 5;	// ステージ3ロゴ
+			g_TexNo[i] = sea_stage1;	// ステージ1ロゴ
 			break;
 
 		case 3:
-			g_TexNo[i] = 6;	// ステージ4ロゴ
+			g_TexNo[i] = sea_stage2;	// ステージ2ロゴ
 
 			break;
 
 		case 4:
-			g_TexNo[i] = 8;	//トータルロゴ
-
+			g_TexNo[i] = sky_stage1;	// ステージ1ロゴ
 			break;
 
 		case 5:
-			g_TexNo[i] = 10; // トータルスコア
+			g_TexNo[i] = sky_stage2;	// ステージ2ロゴ
+
 			break;
 
 		case 6:
-			g_TexNo[i] = 7;	// 最大コンボロゴ
+			g_TexNo[i] = TotalScore;	//トータルロゴ
+
 			break;
 
 		case 7:
-			g_TexNo[i] = 10; // 最大コンボ数
+			g_TexNo[i] = FinalScore;	// トータルスコア
 			break;
 
 		case 8:
-			g_TexNo[i] = 12;	// rankA
+			g_TexNo[i] = MaxCombo;		// 最大コンボロゴ
 			break;
 
 		case 9:
-			g_TexNo[i] = 13;	// rankB
+			g_TexNo[i] = ComboNum;		// 最大コンボ数
 			break;
 
 		case 10:
-			g_TexNo[i] = 14;	// rankC
+			g_TexNo[i] = RankA;	// rankA
 			break;
 
 		case 11:
-			g_TexNo[i] = 15;	// rankS
+			g_TexNo[i] = RankB;	// rankB
 			break;
 
 		case 12:
-			g_TexNo[i] = 9;		// ランク表示エフェクト
+			g_TexNo[i] = RankC;	// rankC
 			break;
 
 		case 13:
-			g_TexNo[i] = 2;		// ランクSエフェクト
+			g_TexNo[i] = RankS;	// rankS
 			break;
 
 		case 14:
-			g_TexNo[i] = 9;		// ランクS表示エフェクト
+			g_TexNo[i] = BomEffect;		// ランク表示エフェクト
+			break;
+
+		case 15:
+			g_TexNo[i] = rank_effect;		// ランクSエフェクト
+			break;
+
+		case 16:
+			g_TexNo[i] = BomEffect;		// ランクS表示エフェクト
 			break;
 
 		default:
@@ -273,7 +280,6 @@ void UninitResult(void)
 //=============================================================================
 void UpdateResult(void)
 {
-
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{// Enter押したら、ステージを切り替える
 		SetFade(FADE_OUT, MODE_ENDROLL);
@@ -288,13 +294,11 @@ void UpdateResult(void)
 		SetFade(FADE_OUT, MODE_ENDROLL);
 	}
 
-
-
 	g_time++;
 
-	for (int i = 0; i < stage_max; i++)
+	for (int i = 0; i < stage_max * modeMax; i++)
 	{
-		if (g_time == 45 * (i + 1))
+		if (g_time == 35 * (i + 1))
 		{
 			g_Use[i] = TRUE;
 			PlaySound(SOUND_LABEL_SE_comboSound01);
@@ -303,30 +307,28 @@ void UpdateResult(void)
 
 	if (g_time == 250 )
 	{
-		g_Use[4] = TRUE;
+		g_Use[6] = TRUE;
 		PlaySound(SOUND_LABEL_SE_stickingSound01);
 	}
 
 	if (g_time == 330)
 	{
-		g_Use[5] = TRUE;
+		g_Use[7] = TRUE;
 		PlaySound(SOUND_LABEL_SE_stickingSound01);
 	}
 
 	if (g_time == 390)
 	{
-		g_Use[6] = TRUE;
-		g_Use[7] = TRUE;
+		g_Use[8] = TRUE;
+		g_Use[9] = TRUE;
 		PlaySound(SOUND_LABEL_SE_stickingSound01);
 	}
 
 	if (g_time >= 440)
 	{
-
 		if (g_timeRank == 0)
 		{
 			g_Colar.w += 0.04f;
-
 		}
 
 		if (g_Colar.w >= 1.0f)
@@ -334,46 +336,39 @@ void UpdateResult(void)
 			g_Colar.w = 1.0f;
 			g_timeRank++;
 
-
 			if (0 <= g_totale && g_totale < RANK_C_BORDER)
 			{
-				g_Use[10] = TRUE;
 				g_Use[12] = TRUE;
-
-
+				g_Use[14] = TRUE;
 			}
 			if (RANK_C_BORDER <= g_totale && g_totale < RANK_B_BORDER)
 			{
-				g_Use[9] = TRUE;
-				g_Use[12] = TRUE;
-
-
+				g_Use[11] = TRUE;
+				g_Use[14] = TRUE;
 			}
 			if (RANK_B_BORDER <= g_totale && g_totale < RANK_A_BORDER)
 			{
-				g_Use[8] = TRUE;
-				g_Use[12] = TRUE;
-
-
+				g_Use[10] = TRUE;
+				g_Use[14] = TRUE;
+				SetGameClear(TRUE);
 			}
 			if ( g_totale >= RANK_S_BORDER)
 			{
-				g_Use[11] = TRUE;
 				g_Use[13] = TRUE;
-				g_Use[14] = TRUE;
-
-
+				g_Use[15] = TRUE;
+				g_Use[16] = TRUE;
+				SetGameClear(TRUE);
 			}
 		}
 
-		if ((g_timeRank >60) && (g_Colar.w > 0.0f))
+		if ((g_timeRank > 60) && (g_Colar.w > 0.0f))
 		{
 			g_Colar.w -= 0.04f;
 
 		}
 	}
 
-	if ((g_Use[13]) && (!g_soundFlag))
+	if ((g_Use[15]) && (!g_soundFlag))
 	{
 		PlaySound(SOUND_LABEL_SE_selectBomb01);
 		g_soundFlag = TRUE;
@@ -414,7 +409,6 @@ void DrawResult(void)
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-
 	// リザルトのエフェクトを描画
 	{
 		// テクスチャ設定
@@ -427,14 +421,10 @@ void DrawResult(void)
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-
-
-
 	// ステージのロゴを描画
 	{
-		for (int i = 0; i < stage_max; i++)
+		for (int i = 0; i < stage_max * modeMax; i++)
 		{
-
 			if (g_Use[i] == TRUE)
 			{
 				GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo[i]]);
@@ -444,66 +434,61 @@ void DrawResult(void)
 
 				// ポリゴン描画
 				GetDeviceContext()->Draw(4, 0);
-
 			}
 		}
 	}
-
 
 	// 各ステージのスコア表示
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[11]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[FinalScore]);
 
-		for (int m = 0; m < stage_max; m++)
+		for (int p = 0; p < modeMax; p++)
 		{
-
-			// 桁数分処理する
-			int number = GetMainScore(m);
-			for (int i = 0; i < SCORE_DIGIT; i++)
+			for (int m = 0; m < stage_max; m++)
 			{
-				// 今回表示する桁の数字
-				float x = (float)(number % 10);
-
-				// スコアの位置やテクスチャー座標を反映
-				float pw = 22;			// スコアの表示幅
-				float ph = 40;			// スコアの表示高さ
-				float px = 450.0f - i * pw;	// スコアの表示位置X
-				float py = 130.0f + (m * 55.0f);			// スコアの表示位置Y
-
-				float tw = 1.0f / 10;		// テクスチャの幅
-				float th = 1.0f / 1;		// テクスチャの高さ
-				float tx = x * tw;			// テクスチャの左上X座標
-				float ty = 0.0f;			// テクスチャの左上Y座標
-
-				if (g_Use[m] == TRUE)
+				// 桁数分処理する
+				int number = GetMainScore(p, m);
+				for (int i = 0; i < SCORE_DIGIT; i++)
 				{
-					// １枚のポリゴンの頂点とテクスチャ座標を設定
-					SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
-						XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+					// 今回表示する桁の数字
+					float x = (float)(number % 10);
 
-					// ポリゴン描画
-					GetDeviceContext()->Draw(4, 0);
+					// スコアの位置やテクスチャー座標を反映
+					float pw = 22;				// スコアの表示幅
+					float ph = 40;				// スコアの表示高さ
+					float px = 450.0f - i * pw;					// スコアの表示位置X
+					float py = 130.0f + ((p * (55.0f * stage_max)) + m * 55.0f);		// スコアの表示位置Y
 
+					float tw = 1.0f / 10;		// テクスチャの幅
+					float th = 1.0f / 1;		// テクスチャの高さ
+					float tx = x * tw;			// テクスチャの左上X座標
+					float ty = 0.0f;			// テクスチャの左上Y座標
+
+					if (g_Use[(p * stage_max) + m] == TRUE)
+					{
+						// １枚のポリゴンの頂点とテクスチャ座標を設定
+						SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
+							XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+
+						// ポリゴン描画
+						GetDeviceContext()->Draw(4, 0);
+					}
+
+					// 次の桁へ
+					number /= 10;
 				}
-
-				// 次の桁へ
-				number /= 10;
 			}
 		}
-
 	}
 
-
 	// トータルロゴを描画
-	if (g_Use[4] == TRUE)
+	if (g_Use[6] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[8]);
-
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[TotalScore]);
 
 		{
-
 			// １枚のポリゴンの頂点とテクスチャ座標を設定
 			SetSpriteLeftTop(g_VertexBuffer, 510.0f, 120.0f, g_w / 4, g_h / 8, 0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -512,12 +497,11 @@ void DrawResult(void)
 		}
 	}
 
-
 	// 合計スコア表示
-	if (g_Use[5] == TRUE)
+	if (g_Use[7] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[10]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[FinalScore]);
 
 		// 桁数分処理する
 		int number = g_totale;
@@ -527,15 +511,15 @@ void DrawResult(void)
 			float x = (float)(number % 10);
 
 			// スコアの位置やテクスチャー座標を反映
-			float pw = 60;			// スコアの表示幅
-			float ph = 130;			// スコアの表示高さ
-			float px = 750.0f - i * pw;	// スコアの表示位置X
-			float py = 250.0f;			// スコアの表示位置Y
+			float pw = 60;					// スコアの表示幅
+			float ph = 130;					// スコアの表示高さ
+			float px = 750.0f - i * pw;		// スコアの表示位置X
+			float py = 250.0f;				// スコアの表示位置Y
 
-			float tw = 1.0f / 10;		// テクスチャの幅
-			float th = 1.0f / 1;		// テクスチャの高さ
-			float tx = x * tw;			// テクスチャの左上X座標
-			float ty = 0.0f;			// テクスチャの左上Y座標
+			float tw = 1.0f / 10;			// テクスチャの幅
+			float th = 1.0f / 1;			// テクスチャの高さ
+			float tx = x * tw;				// テクスチャの左上X座標
+			float ty = 0.0f;				// テクスチャの左上Y座標
 
 			// １枚のポリゴンの頂点とテクスチャ座標を設定
 			SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
@@ -543,129 +527,113 @@ void DrawResult(void)
 
 			// ポリゴン描画
 			GetDeviceContext()->Draw(4, 0);
-				
-
 
 			// 次の桁へ
 			number /= 10;
 		}
 	 }
 
+	//// 最大コンボのロゴを描画
+	//if(g_Use[8] == TRUE)
+	//{
+	//	// テクスチャ設定
+	//	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[MaxCombo]);
 
-	// 最大コンボのロゴを描画
-	if(g_Use[6] == TRUE)
-	{
-		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[7]);
+	//	// １枚のポリゴンの頂点とテクスチャ座標を設定
+	//	SetSpriteLeftTop(g_VertexBuffer, 200.0f, 350.0f, g_w / 6, g_h / 10, 0.0f, 0.0f, 1.0f, 1.0f);
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-		SetSpriteLeftTop(g_VertexBuffer, 200.0f, 350.0f, g_w / 6, g_h / 10, 0.0f, 0.0f, 1.0f, 1.0f);
-
-		// ポリゴン描画
-		GetDeviceContext()->Draw(4, 0);
-	}
-
-
-	// 最大コンボ数を描画
-	if(g_Use[7] == TRUE)
-	{
-		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[10]);
-
-		// 桁数分処理する
-		int number = GetComboMax();
-		for (int i = 0; i < COMBO_MAX_DIGIT; i++)
-		{
-			// 今回表示する桁の数字
-			float x = (float)(number % 10);
-
-			// スコアの位置やテクスチャー座標を反映
-			float pw = 40;			// スコアの表示幅
-			float ph = 110;			// スコアの表示高さ
-			float px = 470.0f - i * pw;	// スコアの表示位置X
-			float py = 380.0f;			// スコアの表示位置Y
-
-			float tw = 1.0f / 10;		// テクスチャの幅
-			float th = 1.0f / 1;		// テクスチャの高さ
-			float tx = x * tw;			// テクスチャの左上X座標
-			float ty = 0.0f;			// テクスチャの左上Y座標
-
-			// １枚のポリゴンの頂点とテクスチャ座標を設定
-			SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
-				XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-
-			// ポリゴン描画
-			GetDeviceContext()->Draw(4, 0);
+	//	// ポリゴン描画
+	//	GetDeviceContext()->Draw(4, 0);
+	//}
 
 
+	//// 最大コンボ数を描画
+	//if(g_Use[9] == TRUE)
+	//{
+	//	// テクスチャ設定
+	//	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[ComboNum]);
 
-			// 次の桁へ
-			number /= 10;
-		}
-	}
+	//	// 桁数分処理する
+	//	int number = GetComboMax();
+	//	for (int i = 0; i < COMBO_MAX_DIGIT; i++)
+	//	{
+	//		// 今回表示する桁の数字
+	//		float x = (float)(number % 10);
 
+	//		// スコアの位置やテクスチャー座標を反映
+	//		float pw = 40;				// スコアの表示幅
+	//		float ph = 110;				// スコアの表示高さ
+	//		float px = 470.0f - i * pw;	// スコアの表示位置X
+	//		float py = 380.0f;			// スコアの表示位置Y
 
+	//		float tw = 1.0f / 10;		// テクスチャの幅
+	//		float th = 1.0f / 1;		// テクスチャの高さ
+	//		float tx = x * tw;			// テクスチャの左上X座標
+	//		float ty = 0.0f;			// テクスチャの左上Y座標
+
+	//		// １枚のポリゴンの頂点とテクスチャ座標を設定
+	//		SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
+	//			XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	//		// ポリゴン描画
+	//		GetDeviceContext()->Draw(4, 0);
+
+	//		// 次の桁へ
+	//		number /= 10;
+	//	}
+	//}
 
 	// ランクを描画
-	if (g_Use[8] == TRUE)
-	{
-		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo[8]]);
-
-
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-		SetSpriteLeftTop(g_VertexBuffer, 490.0f, 280.0f, g_w / 4, g_h / 3, 0.0f, 0.0f, 1.0f, 1.0f);
-
-		// ポリゴン描画
-		GetDeviceContext()->Draw(4, 0);
-
-	}
-
-	if (g_Use[9] == TRUE)
-	{
-		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[13]);
-
-
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-		SetSpriteLeftTop(g_VertexBuffer, 490.0f, 280.0f, g_w / 4, g_h / 3, 0.0f, 0.0f, 1.0f, 1.0f);
-
-		// ポリゴン描画
-		GetDeviceContext()->Draw(4, 0);
-
-	}
-
 	if (g_Use[10] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo[10]]);
-
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[RankA]);
 
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		SetSpriteLeftTop(g_VertexBuffer, 490.0f, 280.0f, g_w / 4, g_h / 3, 0.0f, 0.0f, 1.0f, 1.0f);
 
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
-
 	}
 
 	if (g_Use[11] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[15]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[RankB]);
 
+		// １枚のポリゴンの頂点とテクスチャ座標を設定
+		SetSpriteLeftTop(g_VertexBuffer, 490.0f, 280.0f, g_w / 4, g_h / 3, 0.0f, 0.0f, 1.0f, 1.0f);
+
+		// ポリゴン描画
+		GetDeviceContext()->Draw(4, 0);
+	}
+
+	if (g_Use[12] == TRUE)
+	{
+		// テクスチャ設定
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[RankC]);
+
+		// １枚のポリゴンの頂点とテクスチャ座標を設定
+		SetSpriteLeftTop(g_VertexBuffer, 490.0f, 280.0f, g_w / 4, g_h / 3, 0.0f, 0.0f, 1.0f, 1.0f);
+
+		// ポリゴン描画
+		GetDeviceContext()->Draw(4, 0);
+	}
+
+	if (g_Use[13] == TRUE)
+	{
+		// テクスチャ設定
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[RankS]);
 
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		SetSpriteLeftTop(g_VertexBuffer, 320, 130 , g_w / 3, g_h / 2 , 0.0f, 0.0f, 1.0f, 1.0f);
 
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
-		
 	}
 
-
 	// ランクSエフェクトを描画
-	if (g_Use[13] == TRUE)
+	if (g_Use[14] == TRUE)
 	{
 		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[2]);
@@ -679,10 +647,10 @@ void DrawResult(void)
 
 
 	// ランク表示前のエフェクトを描画
-	if (g_Use[12] == TRUE)
+	//if (g_Use[15] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[9]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[BomEffect]);
 
 		// スコアの位置やテクスチャー座標を反映
 		float pw = 270;			// スコアの表示幅
@@ -699,22 +667,20 @@ void DrawResult(void)
 		SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
 			XMFLOAT4(1.0f, 1.0f, 1.0f, g_Colar.w));
 
-
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
-
 	}
 
 	// ランクS表示前のエフェクトを描画
-	if (g_Use[14] == TRUE)
+	if (g_Use[16] == TRUE)
 	{
 		// テクスチャ設定
-		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[9]);
+		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[BomEffect]);
 
 		// スコアの位置やテクスチャー座標を反映
-		float pw = g_w / 1.5f ;			// スコアの表示幅
+		float pw = g_w / 1.5f ;		// スコアの表示幅
 		float ph = g_h ;			// スコアの表示高さ
-		float px = 480.0f;		// スコアの表示位置X
+		float px = 480.0f;			// スコアの表示位置X
 		float py = 260.0f;			// スコアの表示位置Y
 
 		float tw = 1.0f;			// テクスチャの幅
@@ -726,14 +692,7 @@ void DrawResult(void)
 		SetSpriteColor(g_VertexBuffer, px, py, pw, ph, tx, ty, tw, th,
 			XMFLOAT4(1.0f, 1.0f, 1.0f, g_Colar.w));
 
-
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
-
 	}
-
 }
-
-
-
-

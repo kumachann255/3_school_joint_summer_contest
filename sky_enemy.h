@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 //=============================================================================
 //
 // モデル処理 [sky_enemy.h]
@@ -70,6 +70,8 @@ struct SKY_ENEMY
 
 	int					type;				// エネミーのタイプ（0:パトカー、1:白バイ
 	BOOL				fuchi;				// リムライトのオンオフ
+
+	BOOL				particleOn;
 
 };
 

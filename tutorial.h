@@ -10,6 +10,20 @@
 //*****************************************************************************
 // É}ÉNÉçíËã`
 //*****************************************************************************
+enum {
+	tutorial00 = 1,
+	tutorial01,
+	tutorial02,
+	howto0,
+	tutorial03,
+	tutorial04,
+	tutorial05,
+	tutorial00sea,
+	tutorial01sea,
+	howto1,
+	tutorial02sea,
+	tutorialMax,
+};
 
 
 struct TUTORIAL

@@ -11,8 +11,9 @@
 #include "model.h"
 #include "shadow.h"
 #include "particle.h"
-#include "particleMeteor.h"
-#include "sky_smallmeteor.h"
+#include "particleSky.h"
+#include "sky_enemy.h"
+
 
 //*****************************************************************************
 // マクロ定義
@@ -24,25 +25,25 @@
 
 #define	MAX_PARTICLE		(1024)		// パーティクル最大数
 
-#define METEOR_POP_RAND		(10.0f)		// 発生位置の乱数
+#define SKY_ENEMY_POP_RAND		(10.0f)		// 発生位置の乱数
 
 #define METEOR_MOVE_Y		(0.4f)		// y軸の落ちる速度の減速倍率
-#define METEOR_MOVE_XY		(5.0f)		// xy軸の移動量の乱数
+#define SKY_MOVE_XY			(3.0f)		// xy軸の移動量の乱数
 
-#define MAX_METEOR_COLOR	(0.5f)		// カラーの乱数
-#define MIN_METEOR_COLOR	(0.2f)		// カラーの乱数
+#define MAX_SKY_ENEMY_COLOR	(0.5f)		// カラーの乱数
+#define MIN_SKY_ENEMY_COLOR	(0.2f)		// カラーの乱数
 
-#define MAX_METEOR_LIFE		(50)		// カラーの乱数
-#define MIN_METEOR_LIFE		(50)		// カラーの乱数
+#define MAX_SKY_ENEMY_LIFE		(50)		// カラーの乱数
+#define MIN_SKY_ENEMY_LIFE		(50)		// カラーの乱数
 
-#define METEOR_LIFE_ALFA	(20)		// カラーの乱数
+#define SKY_ENEMY_LIFE_ALFA	(20)		// カラーの乱数
 
-#define METEOR_FLAM_NUM		(3)			// 1フレームに何個出すか
+#define SKY_ENEMY_FLAM_NUM		(10)			// 1フレームに何個出すか
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT MakeVertexParticleMeteor(void);
+HRESULT MakeVertexParticleSky(void);
 
 //*****************************************************************************
 // グローバル変数
@@ -52,11 +53,11 @@ static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
 static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;					// テクスチャ番号
 
-static PARTICLE						g_ParticleMeteor[MAX_PARTICLE];		// パーティクルワーク
+static PARTICLE						g_ParticleSky[MAX_PARTICLE];		// パーティクルワーク
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/effect000.jpg",
+	"data/TEXTURE/onpu01.png",
 };
 
 static BOOL						g_Load = FALSE;
@@ -64,10 +65,10 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT InitParticleMeteor(void)
+HRESULT InitParticleSky(void)
 {
 	// 頂点情報の作成
-	MakeVertexParticleMeteor();
+	MakeVertexParticleSky();
 
 	// テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -86,18 +87,18 @@ HRESULT InitParticleMeteor(void)
 	// パーティクルワークの初期化
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		g_ParticleMeteor[i].type = 0;
-		g_ParticleMeteor[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_ParticleMeteor[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_ParticleMeteor[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		g_ParticleMeteor[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleSky[i].type = 0;
+		g_ParticleSky[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleSky[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_ParticleSky[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_ParticleSky[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		ZeroMemory(&g_ParticleMeteor[i].material, sizeof(g_ParticleMeteor[i].material));
-		g_ParticleMeteor[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		ZeroMemory(&g_ParticleSky[i].material, sizeof(g_ParticleSky[i].material));
+		g_ParticleSky[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		g_ParticleMeteor[i].life = 0;
-		g_ParticleMeteor[i].pop = 0.0f;
-		g_ParticleMeteor[i].use = FALSE;
+		g_ParticleSky[i].life = 0;
+		g_ParticleSky[i].pop = 0.0f;
+		g_ParticleSky[i].use = FALSE;
 	}
 
 
@@ -108,7 +109,7 @@ HRESULT InitParticleMeteor(void)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitParticleMeteor(void)
+void UninitParticleSky(void)
 {
 	if (g_Load == FALSE) return;
 
@@ -135,83 +136,85 @@ void UninitParticleMeteor(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateParticleMeteor(void)
+void UpdateParticleSky(void)
 {
-	S_METEOR *meteorS = GetS_Meteor();
+	SKY_ENEMY *sky_enemy = GetSkyEnemy();
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
 		// パーティクルワーク処理
-		if(g_ParticleMeteor[i].use)		// 使用中
+		if(g_ParticleSky[i].use)		// 使用中
 		{
-			g_ParticleMeteor[i].life--;
+			g_ParticleSky[i].life--;
 			
-			if (g_ParticleMeteor[i].life <= METEOR_LIFE_ALFA)
+			if (g_ParticleSky[i].life <= SKY_ENEMY_LIFE_ALFA)
 			{	// 寿命が１０フレーム切ったら段々透明になっていく
-				g_ParticleMeteor[i].material.Diffuse.w -= 1.0f / METEOR_LIFE_ALFA;
-				if (g_ParticleMeteor[i].material.Diffuse.w < 0.0f)
+				g_ParticleSky[i].material.Diffuse.w -= 1.0f / SKY_ENEMY_LIFE_ALFA;
+				if (g_ParticleSky[i].material.Diffuse.w < 0.0f)
 				{
-					g_ParticleMeteor[i].material.Diffuse.w = 0.0f;
+					g_ParticleSky[i].material.Diffuse.w = 0.0f;
 				}
 			}
 
-			if (g_ParticleMeteor[i].life <= 0)
+			if (g_ParticleSky[i].life <= 0)
 			{
-				g_ParticleMeteor[i].use = FALSE;
+				g_ParticleSky[i].use = FALSE;
 			}
 
 			// 移動処理
-			g_ParticleMeteor[i].pos.x += g_ParticleMeteor[i].move.x;
-			g_ParticleMeteor[i].pos.y += g_ParticleMeteor[i].move.y;
-			g_ParticleMeteor[i].pos.z += g_ParticleMeteor[i].move.z;
+			g_ParticleSky[i].pos.x += g_ParticleSky[i].move.x;
+			g_ParticleSky[i].pos.y += g_ParticleSky[i].move.y;
+			g_ParticleSky[i].pos.z += g_ParticleSky[i].move.z;
 		}
 	}
 
+
 	//エフェクトの発生処理
 	{
-		for (int i = 0; i < MAX_S_METEOR; i++)
+		for (int i = 0; i < MAX_SKY_ENEMY; i++)
 		{
-			if (meteorS[i].use)
+			if (sky_enemy[i].particleOn)
 			{
-				for (int p = 0; p < METEOR_FLAM_NUM; p++)
+				sky_enemy[i].particleOn = FALSE;
+
+				for (int p = 0; p < SKY_ENEMY_FLAM_NUM; p++)
 				{
 					XMFLOAT3 pos, move, scl;
 					XMFLOAT4 col;
 					int life;
 
 					// 発生位置を設定
-					pos.x = meteorS[i].pos.x + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
-					pos.y = meteorS[i].pos.y + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
-					pos.z = meteorS[i].pos.z + RamdomFloat(2, METEOR_POP_RAND, -METEOR_POP_RAND);
+					pos.x = sky_enemy[i].pos.x + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					pos.y = sky_enemy[i].pos.y + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
+					pos.z = sky_enemy[i].pos.z + RamdomFloat(2, SKY_ENEMY_POP_RAND, -SKY_ENEMY_POP_RAND);
 
 					// 移動量を設定
-					move.x = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.z = RamdomFloat(2, METEOR_MOVE_XY, -METEOR_MOVE_XY);
-					move.y = meteorS[i].randMove.y * METEOR_MOVE_Y;
+					move.x = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
+					move.z = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
+					move.y = RamdomFloat(2, SKY_MOVE_XY, -SKY_MOVE_XY);
 
 					// カラー設定
 					col.x = 0.8f;
-					col.y = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
-					col.z = RamdomFloat(2, MAX_METEOR_COLOR, MIN_METEOR_COLOR);
+					col.y = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
+					col.z = RamdomFloat(2, MAX_SKY_ENEMY_COLOR, MIN_SKY_ENEMY_COLOR);
 					col.w = 1.0f;
 
 					// 寿命の設定
-					life = (rand() % MAX_METEOR_LIFE) + MIN_METEOR_LIFE;
+					life = (rand() % MAX_SKY_ENEMY_LIFE) + MIN_SKY_ENEMY_LIFE;
 
 					scl = { 1.0f,1.0f,1.0f };
 
-					SetParticleMeteor(pos, scl, move, col, life);
+					SetParticleSky(pos, move, scl, col, life);
 				}
 			}
 		}
 	}
 }
 
-
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawParticleMeteor(void)
+void DrawParticleSky(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA *cam = GetCamera();
@@ -241,7 +244,7 @@ void DrawParticleMeteor(void)
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(g_ParticleMeteor[i].use)
+		if(g_ParticleSky[i].use)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -268,18 +271,18 @@ void DrawParticleMeteor(void)
 			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
 
 			// スケールを反映
-			mtxScl = XMMatrixScaling(g_ParticleMeteor[i].scl.x, g_ParticleMeteor[i].scl.y, g_ParticleMeteor[i].scl.z);
+			mtxScl = XMMatrixScaling(g_ParticleSky[i].scl.x, g_ParticleSky[i].scl.y, g_ParticleSky[i].scl.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_ParticleMeteor[i].pos.x, g_ParticleMeteor[i].pos.y, g_ParticleMeteor[i].pos.z);
+			mtxTranslate = XMMatrixTranslation(g_ParticleSky[i].pos.x, g_ParticleSky[i].pos.y, g_ParticleSky[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 			// ワールドマトリックスの設定
 			SetWorldMatrix(&mtxWorld);
 
 			// マテリアル設定
-			SetMaterial(g_ParticleMeteor[i].material);
+			SetMaterial(g_ParticleSky[i].material);
 
 			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
@@ -303,7 +306,7 @@ void DrawParticleMeteor(void)
 //=============================================================================
 // 頂点情報の作成
 //=============================================================================
-HRESULT MakeVertexParticleMeteor(void)
+HRESULT MakeVertexParticleSky(void)
 {
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -354,29 +357,30 @@ HRESULT MakeVertexParticleMeteor(void)
 //=============================================================================
 // マテリアルカラーの設定
 //=============================================================================
-void SetColorParticleMeteor(int nIdxParticle, XMFLOAT4 col)
+void SetColorParticleSky(int nIdxParticle, XMFLOAT4 col)
 {
-	g_ParticleMeteor[nIdxParticle].material.Diffuse = col;
+	g_ParticleSky[nIdxParticle].material.Diffuse = col;
 }
 
 //=============================================================================
 // パーティクルの発生処理
 //=============================================================================
-int SetParticleMeteor(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
+int SetParticleSky(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT3 scl, XMFLOAT4 col, int life)
 {
 	int nIdxParticle = -1;
 
 	for(int i = 0; i < MAX_PARTICLE; i++)
 	{
-		if(!g_ParticleMeteor[i].use)
+		if(!g_ParticleSky[i].use)
 		{
-			g_ParticleMeteor[i].pos  = pos;
-			g_ParticleMeteor[i].rot  = { 0.0f, 0.0f, 0.0f };
-			g_ParticleMeteor[i].scl  = { 1.0f, 1.0f, 1.0f };
-			g_ParticleMeteor[i].move = move;
-			g_ParticleMeteor[i].material.Diffuse = col;
-			g_ParticleMeteor[i].life = life;
-			g_ParticleMeteor[i].use  = TRUE;
+			g_ParticleSky[i].pos  = pos;
+			g_ParticleSky[i].rot  = { 0.0f, 0.0f, 0.0f };
+			g_ParticleSky[i].scl  = { 1.0f, 1.0f, 1.0f };
+			g_ParticleSky[i].move = move;
+			g_ParticleSky[i].material.Diffuse = col;
+			g_ParticleSky[i].life = life;
+			g_ParticleSky[i].use  = TRUE;
+			
 
 			nIdxParticle = i;
 

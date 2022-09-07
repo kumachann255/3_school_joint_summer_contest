@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 //
 // メイン処理 [main.cpp]
 // Author : 熊澤義弘
@@ -44,7 +44,7 @@
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"ネバネバーランドボムパーティー"		// ウインドウのキャプション名
+#define WINDOW_NAME		"Little Melody"		// ウインドウのキャプション名
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -72,9 +72,9 @@ char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 int	g_Mode = MODE_GAME_CITY;					// 起動時の画面を設定
 
 
-int g_Stage = stage0;							// 現在のステージ
+int g_Stage = stage0;						// 現在のステージ
 
-int g_Score[stage_max] = { 0, 0, 0, 0 };	// 各ステージのスコアを保存
+int g_Score[modeMax][stage_max] = { { 10, 20,},{ 30, 40,},{ 50, 60,} };	// 各ステージのスコアを保存
 
 int g_ComboMax = 0;								// 最大コンボ数を保存
 
@@ -698,16 +698,33 @@ void SetStage(int stage)
 //=============================================================================
 void SetMainScore(int score)
 {
-	g_Score[g_Stage] = score;
+	if (g_Stage == tutorial) return;
+
+	int mode = 0;
+	switch (GetMode())
+	{
+	case MODE_GAME_CITY:
+		mode = city;
+		break;
+
+	case MODE_GAME_SEA:
+		mode = sea;
+		break;
+
+	case MODE_GAME_SKY:
+		mode = sky;
+		break;
+	}
+	g_Score[mode][g_Stage] = score;
 }
 
 
 //=============================================================================
 // スコアを取得
 //=============================================================================
-int GetMainScore(int stage)
+int GetMainScore(int mode, int stage)
 {
-	return g_Score[stage];
+	return g_Score[mode][stage];
 }
 
 
@@ -718,7 +735,10 @@ void ResetMainScore(void)
 {
 	for (int i = 0; i < stage_max; i++)
 	{
-		g_Score[i] = 0;
+		for (int p = 0; p < modeMax; p++)
+		{
+			g_Score[p][i] = 0;
+		}
 	}
 
 	g_ComboMax = 0;

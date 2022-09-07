@@ -39,6 +39,7 @@ struct PARTICLE
 	
 	BOOL			use;			// 使用しているかどうか
 
+	float			radian;			// カップ用ラジアン
 };
 
 //*****************************************************************************
@@ -49,6 +50,6 @@ void UninitParticle(void);
 void UpdateParticle(void);
 void DrawParticle(void);
 
-int SetParticle(int type, int texNo, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life);
+int SetParticle(int adr, int type, int texNo, XMFLOAT3 pos, XMFLOAT3 scl, XMFLOAT3 move, XMFLOAT4 col, float pop, int life);
 void SetColorParticle(int nIdxParticle, XMFLOAT4 col);
 
