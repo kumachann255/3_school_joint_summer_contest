@@ -157,7 +157,7 @@ HRESULT InitGameSea(void)
 	InitPlayerHP();
 
 	// パーティクルの初期化
-	InitParticle();
+	//InitParticle();
 
 	// 海パーティクルの初期化
 	InitSeaParticle();
@@ -255,7 +255,7 @@ void UninitGameSea(void)
 	UninitSeaParticle();
 
 	// パーティクルの終了処理
-	UninitParticle();
+	//UninitParticle();
 
 	// プレイヤーのHPの終了処理
 	UninitPlayerHP();
@@ -381,7 +381,7 @@ void UpdateGameSea(void)
 	UpdateBullet();
 
 	// パーティクルの更新処理
-	UpdateParticle();
+	//UpdateParticle();
 
 	// 海パーティクルの更新処理
 	UpdateSeaParticle();
@@ -488,7 +488,7 @@ void DrawGameSea0(void)
 	DrawSky();
 
 	// パーティクルの描画処理
-	DrawParticle();
+	//DrawParticle();
 
 	// 海パーティクルの描画処理
 	DrawSeaParticle();

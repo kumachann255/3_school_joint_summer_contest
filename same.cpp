@@ -60,7 +60,8 @@ SAME				g_Same;							// プレイヤー
 SAME				g_sAtama;
 SAME				g_sKuchi;
 
-static int pSetCount = 0;										// パーティクルセット用カウント
+static int pSetCount = 0;							// パーティクルセット用カウント
+//static int bSetCount = 0;							// 爆発セット用カウント
 
 static float		g_radius;						// エネミー回転用
 static float		g_rot;							// エネミー回転用
@@ -294,6 +295,8 @@ void UpdateSame(void)
 							ResetComboTime();
 						}
 						// 敵キャラクターは倒される
+						XMFLOAT3 pos = enemy[i].pos;
+						SetSeaBonb(pos);
 						enemy[i].use = FALSE;
 					}
 				}
@@ -317,6 +320,8 @@ void UpdateSame(void)
 							ResetComboTime();
 						}
 						// 敵キャラクターは倒される
+						XMFLOAT3 pos = enemy[j].pos;
+						SetSeaBonb(pos);
 						enemyheli[j].use = FALSE;
 					}
 				}

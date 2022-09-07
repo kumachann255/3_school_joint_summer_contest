@@ -262,6 +262,8 @@ void UpdateTako(void)
 						{
 							if (enemy[j].isHit == TRUE) break;
 							// 敵キャラクターは倒される
+							XMFLOAT3 pos = enemy[j].pos;
+							SetSeaBonb(pos);
 							enemy[j].use = FALSE;
 
 							if (GetStage() == tutorial) SetTutorialEnemy(TRUE);
@@ -279,6 +281,8 @@ void UpdateTako(void)
 						{
 							if (enemyheli[j].isHit == TRUE) break;
 							// 敵キャラクターは倒される
+							XMFLOAT3 pos = enemy[i].pos;
+							SetSeaBonb(pos);
 							enemyheli[j].use = FALSE;
 						}
 					}
