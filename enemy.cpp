@@ -494,6 +494,9 @@ void DrawEnemy(void)
 {
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
+	// フォグ有効
+	SetFogEnable(TRUE);
+
 	// カリング無効
 	SetCullingMode(CULL_MODE_NONE);
 
@@ -604,6 +607,9 @@ void DrawEnemy(void)
 #endif
 
 	}
+	
+	// フォグ有効
+	SetFogEnable(FALSE);
 
 	// カリング設定を戻す
 	SetCullingMode(CULL_MODE_BACK);

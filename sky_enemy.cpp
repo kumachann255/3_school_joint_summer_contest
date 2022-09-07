@@ -31,6 +31,8 @@
 #define	MODEL_SKY_ENEMY_B	"data/MODEL/enemy05.obj"			// エネミー黒
 #define MODEL_SKY_ENEMY_D	"data/MODEL/enemy09.obj"			// なんかちょっと怖いやつ 
 
+#define	MODEL_SKY_ENEMY			"data/MODEL/m.obj"				// 読み込むモデル名
+#define	MODEL_SKY_ENEMY_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
 #define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 #define	VALUE_MOVE				(2.0f)							// 移動量
