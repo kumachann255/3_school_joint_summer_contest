@@ -7,17 +7,13 @@
 #pragma once
 
 //*****************************************************************************
-// 構造体定義
+// マクロ定義
 //*****************************************************************************
 
-// パーティクルの種類
-enum
-{
-	PARTICLE_TYPE_TAKO,			// タコ用
-	PARTICLE_TYPE_SAME,			// サメ用
-	PARTICLE_TYPE_MAX,
-};
 
+//*****************************************************************************
+// 構造体定義
+//*****************************************************************************
 
 struct SEA_PARTICLE
 {
@@ -31,7 +27,9 @@ struct SEA_PARTICLE
 	int				type;			// タイプ
 	int				life;			// 寿命
 	int				pop;			// 表示タイミング
-	
+	int				tex_No;			// 使用テクスチャ番号
+	float			speed;			// 移動スピード
+	float			time;			// 時間
 	BOOL			use;			// 使用しているかどうか
 
 };
@@ -44,6 +42,8 @@ void UninitSeaParticle(void);
 void UpdateSeaParticle(void);
 void DrawSeaParticle(void);
 
-//int SetSeaParticleSetSeaParticle(int type, XMFLOAT3 pos, int life);
-//void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col);
+void SetSeaParticleTako();
+void SetSeaParticleSame();
+
+void SetColorSeaParticle(int nIdxSeaParticle, XMFLOAT4 col);
 

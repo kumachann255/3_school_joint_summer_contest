@@ -20,6 +20,7 @@
 #include "collision.h"
 #include "score.h"
 #include "combo.h"
+#include "sea_particle.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -44,6 +45,8 @@
 #define KUCHI_ROT_ADDTION	(0.05f)							// 下顎回転量
 #define MAX_KUCHI_ROT		(XM_PI * 0.5f)					// 下顎最大回転量
 
+#define SAME_PARTICLE_POP	(5)								// サメパーティクルポップ間隔
+#define POP_TIME			(20)							// パーティクルポップ時間
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -56,6 +59,8 @@
 SAME				g_Same;							// プレイヤー
 SAME				g_sAtama;
 SAME				g_sKuchi;
+
+static int pSetCount = 0;										// パーティクルセット用カウント
 
 static float		g_radius;						// エネミー回転用
 static float		g_rot;							// エネミー回転用
@@ -86,7 +91,7 @@ HRESULT InitSame(void)
 
 	g_sAtama.pos = { 0.0f, SAME_OFFSET_Y, 0.0f };
 	g_sAtama.rot = { -0.77f, 0.0f, 0.0f };
-	g_sAtama.scl = { 4.0f, 4.0f, 4.0f };
+	g_sAtama.scl = { 3.0f, 3.0f, 3.0f };
 
 	g_sAtama.angle = 0.0f;			// 移動スピードクリア
 	g_sAtama.size = SAME_SIZE;	// 当たり判定の大きさ
@@ -100,7 +105,7 @@ HRESULT InitSame(void)
 
 	g_sKuchi.pos = { 0.0f, SAME_OFFSET_Y, 0.0f };
 	g_sKuchi.rot = { 0.0f, 0.0f, 0.0f };
-	g_sKuchi.scl = { 4.0f, 4.0f, 4.0f };
+	g_sKuchi.scl = { 3.0f, 3.0f, 3.0f };
 
 	g_sKuchi.angle = 0.0f;			// 移動スピードクリア
 	g_sKuchi.size = SAME_SIZE;	// 当たり判定の大きさ
@@ -239,6 +244,13 @@ void UpdateSame(void)
 			break;
 
 		case DOWN_LAST:
+			// パーティクルの発生
+			pSetCount++;
+			if (pSetCount % SAME_PARTICLE_POP == 0)
+			{
+				SetSeaParticleSame();
+			}
+
 			// 下降処理
 			g_Same.pos.y -= DOWN_ADDTION_2;
 			g_sAtama.pos.y -= DOWN_ADDTION_2;
@@ -247,6 +259,7 @@ void UpdateSame(void)
 			if (g_Same.pos.y < MAX_DOWN)
 			{
 				// 頭と口のモデルをFALSEにする
+				pSetCount = 0;
 				g_Same.use = FALSE;
 				g_sAtama.use = FALSE;
 				g_sKuchi.use = FALSE;
