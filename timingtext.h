@@ -33,3 +33,5 @@ void UpdateTimingText(void);
 void DrawTimingText(void);
 
 void SetTimingText(int text);
+
+void SetNoteMove(float onpu_speed);

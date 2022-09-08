@@ -37,10 +37,34 @@ DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
 	//// BGM
+	// タイトル
 	{ (char*)"data/BGM/bgm_title.wav", -1 },	// タイトルBGM
+	{ (char*)"data/BGM/bgm_title_0.wav", -1 },	// タイトルBGM
+	{ (char*)"data/BGM/bgm_title_1.wav", -1 },	// タイトルBGM
+	{ (char*)"data/BGM/bgm_title_2.wav", -1 },	// タイトルBGM
+	{ (char*)"data/BGM/bgm_title_3.wav", -1 },	// タイトルBGM
+	{ (char*)"data/BGM/bgm_title_4.wav", -1 },	// タイトルBGM
+
+
+	// オープニング
+	{ (char*)"data/BGM/bgm_opening_1_1.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_1_2.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_1_3.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_2_1.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_2_2.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_2_3.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_3_1.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_3_2.wav", -1 },	// タイトルBG
+	{ (char*)"data/BGM/bgm_opening_3_3.wav", -1 },	// タイトルBG
+
+
+	// エンドロール
+	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
+
+
 	{ (char*)"data/BGM/bgm_stage001.wav", -1 },	// ステージBGM1
 	{ (char*)"data/BGM/bgm_stage002.wav", -1 },	// ステージBGM2
-	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
+
 	// 空ステージ
 	{ (char*)"data/BGM/bgm_sky_stage_1.wav", -1 },	// 空ステージBGMサンプル１
 	{ (char*)"data/BGM/bgm_sky_stage_2.wav", -1 },	// 空ステージBGMサンプル２
@@ -74,11 +98,18 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/titleClick02.wav", 0 },		// タイトルモード選択音2
 	{ (char*)"data/SE/titleClick03.wav", 0 },		// タイトルモード選択音3
 	{ (char*)"data/SE/titleClick04.wav", 0 },		// タイトルモード選択音4
-	{ (char*)"data/SE/logo.wav", 0 },				// タイトルモード選択音3
-	{ (char*)"data/SE/logoD.wav", 0 },				// タイトルモード選択音4
+	{ (char*)"data/SE/titleClick05.wav", 0 },		// タイトルモード選択音5
+
+	{ (char*)"data/SE/logo.wav", 0 },				// 
+	{ (char*)"data/SE/logoD.wav", 0 },				// 
 	{ (char*)"data/SE/rhythm.wav", 0 },				// リズムの音
 	{ (char*)"data/SE/timing_miss.wav", 0 },		// ミスの音
 	{ (char*)"data/SE/timing_good.wav", 0 },		// GOODの音
+
+	// オープニング
+	{ (char*)"data/SE/nextPage.wav", 0 },			// 
+
+
 	// 空ステージ
 	{ (char*)"data/SE/enemy_pop.wav", 0 },			// エネミーポップ音
 	{ (char*)"data/SE/meteor_shot.wav", 0 },		// メテオ発射音
@@ -248,9 +279,9 @@ BOOL InitSound(HWND hWnd)
 
 
 	// 空ステージのBGMとSEの音量調整
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_1, 1.0f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_1, 0.8f);
 	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_2, 1.0f);
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_3, 1.0f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_3, 0.4f);
 
 	SetSourceVolume(SOUND_LABEL_SE_enemy_pop,		 1.0f);
 	SetSourceVolume(SOUND_LABEL_SE_meteor_shot,		 1.0f);

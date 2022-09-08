@@ -136,11 +136,15 @@ HRESULT InitTitle(void)
 	exit_pos = XMFLOAT3(g_w / 2.7f, g_h - 40, 0.0f);
 
 	// BGM再生
-	PlaySound(SOUND_LABEL_BGM_bgm_title);
+	PlaySound(SOUND_LABEL_BGM_bgm_title_2);
 
 	// 初期化
-	if (g_GameClear) g_TexNo = title_clear;
+	if (g_GameClear)
+	{
+		g_TexNo = title_clear;
+		PlaySound(SOUND_LABEL_BGM_bgm_title_0);
 
+	}
 	// カメラの初期化
 	UninitCamera();
 	InitCamera();
@@ -238,7 +242,7 @@ void UpdateTitle(void)
 		{// Enter押したら、ステージを切り替える
 
 			// SEの挿入（モード選択音）
-			PlaySound(SOUND_LABEL_SE_selectBomb01);
+			PlaySound(SOUND_LABEL_SE_titleClick05);
 
 			if (start_texno == title_start_pushed)
 			{
@@ -280,7 +284,7 @@ void UpdateTitle(void)
 		else if (IsButtonTriggered(0, BUTTON_START))
 		{
 			// SEの挿入（モード選択音）
-			PlaySound(SOUND_LABEL_SE_selectBomb01);
+			PlaySound(SOUND_LABEL_SE_titleClick05);
 
 			if (start_texno == title_start_pushed)
 			{

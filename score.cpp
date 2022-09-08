@@ -88,7 +88,7 @@ HRESULT InitScore(void)
 	g_Pos   = { 930.0f, 50.0f, 0.0f };
 	g_TexNo = 0;
 
-	g_Score = 100000;	// スコアの初期化
+	g_Score = 0;	// スコアの初期化
 
 	g_Load = TRUE;
 	return S_OK;

@@ -30,6 +30,7 @@
 #include "enemy.h"
 #include "sky_enemy.h"
 #include "targetObj.h"
+#include "gameSky.h"
 
 
 //*****************************************************************************
@@ -116,7 +117,15 @@ HRESULT InitPlayer(void)
 
 	g_Player.spd = 0.0f;			// 移動スピードクリア
 	g_Player.size = PLAYER_SIZE;	// 当たり判定の大きさ
+	if (GetMode() == MODE_GAME_SKY)
+	{
+		g_Player.hp = PLAYER_MAX_HP_SKY;
+	}
+	else
+	{
 	g_Player.hp = PLAYER_MAX_HP;
+
+	}
 	g_Player.action = FALSE;
 	g_Player.use = TRUE;
 	g_Player.angle = 0.0f;
