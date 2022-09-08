@@ -469,6 +469,9 @@ void UpdateFieldObj(void)
 //=============================================================================
 void DrawFieldObj(void)
 {
+	// フォグ有効
+	SetFogEnable(TRUE);
+
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
 	// ビルの描画
@@ -650,6 +653,9 @@ void DrawFieldObj(void)
 		DrawModel(&g_Sign1[0].model);
 
 	}
+
+	// フォグ有効
+	SetFogEnable(FALSE);
 }
 
 //=============================================================================

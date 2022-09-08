@@ -44,7 +44,7 @@
 
 #define CAMERA_MOVE_SPEED		(0.02f)		// カメラが動くスピード
 #define CAMERA_DISTANCE			(50.0f)		// 注視点からカメラまでの距離
-#define CAMERA_SPEED			(0.005f)	// ムービー中のカメラのスピード
+#define CAMERA_SPEED			(0.01f)	// ムービー中のカメラのスピード
 #define CAMERA_MOVE_DISTANCE	(300.0f)	// ムービー開始時のz座標
 
 #define MOVIE_CUTPOINT			(90.0f)		// ムービーが終わる地点を設定
@@ -415,7 +415,7 @@ void SetCameraAT(XMFLOAT3 pos)
 
 	XMFLOAT3 targetAT;
 
-	if (GetMode() != MODE_GAME_SKY)
+	if (GetMode() == MODE_GAME_CITY)
 	{
 		// 爆弾が使用されていたら爆弾に視線を送る
 		if (((bom->use) && (bom->time > 0.15f)) || (GetCameraSwitch()))
@@ -445,6 +445,19 @@ void SetCameraAT(XMFLOAT3 pos)
 				g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
 				g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
 			}
+		}
+	}
+	else if(GetMode() == MODE_GAME_SEA)
+	{
+		XMFLOAT3 targetAT = pos;
+
+		// シーンに応じてATの調整
+		targetAT.y += CAMERA_OFFSET_Y;
+
+		{
+			g_Camera.at.x = g_Camera.at.x + ((targetAT.x - g_Camera.at.x) / CAMERA_VALUE * 2.0f);
+			g_Camera.at.y = g_Camera.at.y + ((targetAT.y - g_Camera.at.y) / CAMERA_VALUE * 2.0f);
+			g_Camera.at.z = g_Camera.at.z + ((targetAT.z - g_Camera.at.z) / CAMERA_VALUE * 2.0f);
 		}
 	}
 	else

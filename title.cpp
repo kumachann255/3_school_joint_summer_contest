@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "title.h"
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -139,6 +140,11 @@ HRESULT InitTitle(void)
 
 	// 初期化
 	if (g_GameClear) g_TexNo = title_clear;
+
+	// カメラの初期化
+	UninitCamera();
+	InitCamera();
+
 
 	g_Load = TRUE;
 	return S_OK;

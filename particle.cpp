@@ -211,8 +211,8 @@ void UpdateParticle(void)
 			if (g_Particle[i].type == PARTICLE_TYPE_CUP)
 			{
 				// 拡大処理
-				g_Particle[i].scl.x += RamdomFloat(2, 0.2f, 0.1f);
-				g_Particle[i].scl.y += RamdomFloat(2, 0.2f, 0.1f);
+				g_Particle[i].scl.x += RamdomFloat(2, 0.1f, 0.05f);
+				g_Particle[i].scl.y += RamdomFloat(2, 0.1f, 0.05f);
 			}
 
 
@@ -255,15 +255,18 @@ void UpdateParticle(void)
 				XMFLOAT3 move = { 0.0f, 0.0f, 0.0f };
 				XMFLOAT4 col;
 
+				// テクスチャ番号を設定
+				texNo = rand() % 21 + 1;
+
 				// 発生位置を設定
-				pos.x = cup[0].pos.x + RamdomFloat(2, 40.0f, -40.0f);
-				pos.y = cup[0].pos.y + RamdomFloat(2, 60.0f,  10.0f);
-				pos.z = cup[0].pos.z + RamdomFloat(2, 40.0f, -40.0f);
+				pos.x = cup[0].pos.x + RamdomFloat(2, 60.0f, -60.0f);
+				pos.y = cup[0].pos.y + RamdomFloat(2, 80.0f,  20.0f);
+				pos.z = cup[0].pos.z + RamdomFloat(2, 60.0f, -60.0f);
 
 				// サイズ設定
-				scl.x = RamdomFloat(2, 0.5f, 0.1f);
-				scl.y = RamdomFloat(2, 0.5f, 0.1f);
-				scl.z = RamdomFloat(2, 0.5f, 0.1f);
+				scl.x = 0.5f;
+				scl.y = 0.5f;
+				scl.z = 0.5f;
 
 				// カラー設定
 				col.x = 1.0f;
@@ -271,7 +274,7 @@ void UpdateParticle(void)
 				col.z = RamdomFloat(2, 1.0f, 0.5f);
 				col.w = RamdomFloat(2, 1.0f, 0.5f);
 
-				SetParticle(ADRESS_CUP, PARTICLE_TYPE_CUP, 0, pos, scl, move, col, 5.0f, 60);
+				SetParticle(ADRESS_CUP, PARTICLE_TYPE_CUP, texNo, pos, scl, move, col, 7.0f, 80);
 			}
 		}
 	}

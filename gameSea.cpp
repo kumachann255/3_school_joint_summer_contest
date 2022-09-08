@@ -485,7 +485,7 @@ void DrawGameSea0(void)
 	//DrawTree();
 
 	// スカイドームの描画処理
-	DrawSky();
+	//DrawSky();
 
 	// パーティクルの描画処理
 	//DrawParticle();
@@ -525,20 +525,14 @@ void DrawGameSea0(void)
 	// 時間の描画処理
 	DrawTime();
 
-	// プレイヤーのHPの描画処理
-	DrawPlayerHP();
-
 	// ダメージエフェクトの描画処理
-	// DrawDamageEF();
+	DrawDamageEF();
 
 	// UIの描画処理
 	DrawGameUI();
 
 	// 吹き出しの描画処理
-	// DrawSpeech();
-
-	// チュートリアルの描画処理
-	DrawTutorial();
+	DrawSpeech();
 
 	// タイミングエフェクトの描画処理
 	DrawTimingEffect();
@@ -548,6 +542,12 @@ void DrawGameSea0(void)
 
 	// タイミングテキストの描画処理
 	DrawTimingText();
+
+	// プレイヤーのHPの描画処理
+	DrawPlayerHP();
+
+	// チュートリアルの描画処理
+	DrawTutorial();
 
 
 	// ライティングを有効に
