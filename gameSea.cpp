@@ -195,20 +195,23 @@ HRESULT InitGameSea(void)
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
-	PlaySound(SOUND_LABEL_SE_stirringSound01);
+	//PlaySound(SOUND_LABEL_SE_stirringSound01);
 
 
 	switch (g_Stage)
 	{
 	case tutorial:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		PlaySound(SOUND_LABEL_BGM_bgm_tutorial);
 		break;
 
 	case stage0:
+		PlaySound(SOUND_LABEL_BGM_bgm_sea_stage_1);
+
+		break;
 	case stage1:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_stage002);
+		PlaySound(SOUND_LABEL_BGM_bgm_sea_stage_3);
 		break;
 	}
 

@@ -312,9 +312,6 @@ void UpdateEnemyHeli(void)
 			// ヘリエネミーの消去アニメーション
 			if (g_EnemyHeli[i].isHit == TRUE)				// 攻撃が当たってるか？
 			{											// Yes
-				// SEの停止
-				StopSound(SOUND_LABEL_SE_propellerSound01);
-
 				// リムライトオフ
 				g_EnemyHeli[i].fuchi = FALSE;
 
@@ -445,9 +442,6 @@ void SetEnemyHeli(void)
 	{
 		if (g_EnemyHeli[i].use == FALSE)
 		{
-			// SEのセット
-			PlaySound(SOUND_LABEL_SE_propellerSound01);
-
 			g_EnemyHeli[i].use = TRUE;
 			g_EnemyHeli[i].pos.z = ENEMY_HELI_POP_Z;
 			g_EnemyHeli[i].pos.y = ENEMY_HELI_OFFSET_Y;

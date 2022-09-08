@@ -188,10 +188,6 @@ HRESULT InitGameSky(void)
 
 	switch (g_Stage)
 	{
-	//case tutorial:
-	//	// BGM再生
-	//	PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
-	//	break;
 
 	case stage0:
 		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_3);
@@ -586,7 +582,7 @@ void CheckHitSky(void)
 				g_DeathParticl = TRUE;
 
 				// スコアを足す
-				AddScore(100);
+				AddScore(10000);
 
 				// コンボを足す
 				AddCombo(1);

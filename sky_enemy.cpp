@@ -48,7 +48,7 @@
 
 #define ENEMY_HIT_MOVE		(5.0f)						// 当たり判定後アニメーション用移動量
 
-#define ENEMY_ATTACK_0		(700)						// エネミーが点滅するまでの時間
+#define ENEMY_ATTACK_0		(1800)						// エネミーが点滅するまでの時間
 #define ENEMY_ATTACK_1		(120 + ENEMY_ATTACK_0)		// 点滅が早くなるまでの時間
 #define ENEMY_ATTACK_2		(120 + ENEMY_ATTACK_1)		// 攻撃するまでの時間
 
