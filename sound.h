@@ -18,22 +18,10 @@ enum
 	// タイトル
 	SOUND_LABEL_BGM_bgm_title,		// タイトルBGM
 	SOUND_LABEL_BGM_bgm_title_0,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_title_1,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_title_2,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_title_3,		// タイトルBGM
 	SOUND_LABEL_BGM_bgm_title_4,		// タイトルBGM
 
-
 	// オープニング
-	SOUND_LABEL_BGM_bgm_opening_1_1,		// タイトルBGM
 	SOUND_LABEL_BGM_bgm_opening_1_2,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_1_3,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_2_1,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_2_2,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_2_3,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_3_1,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_3_2,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_opening_3_3,		// タイトルBGM
 
 	// エンドロール
 	SOUND_LABEL_BGM_bgm_endroll,	// エンドロールBGM
@@ -44,11 +32,14 @@ enum
 	SOUND_LABEL_BGM_bgm_stage002,	// リザルトBGM
 
 
-
 	// 空ステージ
 	SOUND_LABEL_BGM_bgm_sky_stage_1,	// 空ステージBGMサンプル１
 	SOUND_LABEL_BGM_bgm_sky_stage_2,	// 空ステージBGMサンプル２
 	SOUND_LABEL_BGM_bgm_sky_stage_3,	// 空ステージBGMサンプル３
+
+	// リザルト
+	SOUND_LABEL_BGM_bgm_result,	// 空ステージBGMサンプル３
+
 
 
 	//// SE
@@ -90,9 +81,9 @@ enum
 	SOUND_LABEL_SE_nextPage,			// の音
 
 	// 空ステージ
+	SOUND_LABEL_SE_enemy_pop,				// エネミーポップ音
 	SOUND_LABEL_SE_meteor_shot,				// メテオ発射音
 	SOUND_LABEL_SE_meteor_hit,				// メテオヒット音
-	SOUND_LABEL_SE_enemy_pop,				// エネミーポップ音
 	SOUND_LABEL_SE_skyEnemy_death_0,		// エネミー死亡音
 	SOUND_LABEL_SE_skyEnemy_death_1,		// エネミー死亡音
 	SOUND_LABEL_SE_skyEnemy_death_2,		// エネミー死亡音

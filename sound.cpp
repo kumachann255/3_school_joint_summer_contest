@@ -40,23 +40,10 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	// タイトル
 	{ (char*)"data/BGM/bgm_title.wav", -1 },	// タイトルBGM
 	{ (char*)"data/BGM/bgm_title_0.wav", -1 },	// タイトルBGM
-	{ (char*)"data/BGM/bgm_title_1.wav", -1 },	// タイトルBGM
-	{ (char*)"data/BGM/bgm_title_2.wav", -1 },	// タイトルBGM
-	{ (char*)"data/BGM/bgm_title_3.wav", -1 },	// タイトルBGM
 	{ (char*)"data/BGM/bgm_title_4.wav", -1 },	// タイトルBGM
 
-
 	// オープニング
-	{ (char*)"data/BGM/bgm_opening_1_1.wav", -1 },	// タイトルBG
 	{ (char*)"data/BGM/bgm_opening_1_2.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_1_3.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_2_1.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_2_2.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_2_3.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_3_1.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_3_2.wav", -1 },	// タイトルBG
-	{ (char*)"data/BGM/bgm_opening_3_3.wav", -1 },	// タイトルBG
-
 
 	// エンドロール
 	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
@@ -69,6 +56,9 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/BGM/bgm_sky_stage_1.wav", -1 },	// 空ステージBGMサンプル１
 	{ (char*)"data/BGM/bgm_sky_stage_2.wav", -1 },	// 空ステージBGMサンプル２
 	{ (char*)"data/BGM/bgm_sky_stage_3.wav", -1 },	// 空ステージBGMサンプル３
+
+	// リザルト
+	{ (char*)"data/BGM/bgm_result.wav", -1 },	// タイトルBG
 
 
 	//// SE
@@ -117,6 +107,8 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/skyEnemy_death_0.wav", 0 },		// エネミー死亡音
 	{ (char*)"data/SE/skyEnemy_death_1.wav", 0 },		// エネミー死亡音
 	{ (char*)"data/SE/skyEnemy_death_2.wav", 0 },		// エネミー死亡音
+
+
 
 
 };
