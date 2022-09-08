@@ -23,6 +23,8 @@
 #define	MODEL_HORAGAI		"data/MODEL/kuzira_horage.obj"	// 読み込むモデル名
 #define	MODEL_SHIMA			"data/MODEL/sima.obj"			// 読み込むモデル名
 #define	MODEL_HITO			"data/MODEL/enemy08.obj"		// 読み込むモデル名
+#define MODEL_IWA_01		"data/MODEL/sima01.obj"			// 読み込むモデル名
+#define MODEL_IWA_02		"data/MODEL/sima02.obj"			// 読み込むモデル名
 
 #define VALUE_NAMI				(5.0f)						// 波加算量
 #define VALUE_DOWN_POSY			(0.3f)						// 下降加算量
@@ -65,6 +67,8 @@ static SEA_FOBJ				g_Shio[MAX_SEA_FOBJ_SIGN];		// 潮
 static SEA_FOBJ				g_Horagai;						// ほら貝
 static SEA_FOBJ				g_Shima;						// 島
 static SEA_FOBJ				g_Hito;							// 人
+static SEA_FOBJ				g_Iwa01[MAX_SEA_FOBJ_SIGN];	// 島01
+static SEA_FOBJ				g_Iwa02[MAX_SEA_FOBJ_SIGN];	// 島02
 
 static BOOL				g_Load = FALSE;
 
@@ -82,7 +86,10 @@ HRESULT InitSeaFieldObj(void)
 	LoadModel(MODEL_HORAGAI, &g_Horagai.model);
 	LoadModel(MODEL_SHIMA, &g_Shima.model);
 	LoadModel(MODEL_HITO, &g_Hito.model);
+	LoadModel(MODEL_IWA_01, &g_Iwa01[0].model);
+	LoadModel(MODEL_IWA_02, &g_Iwa02[0].model);
 
+	// 波のモデル初期化
 	for (int i = 0; i < MAX_SEA_WAVE; i++)
 	{
 		LoadModel(MODEL_NAMI, &g_Nami[i].model);
@@ -96,6 +103,7 @@ HRESULT InitSeaFieldObj(void)
 		GetModelDiffuse(&g_Nami[i].model, &g_Nami[i].diffuse[0]);
 	}
 
+	// クジラのモデル初期化
 	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
 	{
 		LoadModel(MODEL_KUZIRA, &g_Kuzira[i].model);
@@ -109,6 +117,7 @@ HRESULT InitSeaFieldObj(void)
 		GetModelDiffuse(&g_Kuzira[i].model, &g_Kuzira[i].diffuse[0]);
 	}
 
+	// 潮のモデルの初期化
 	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
 	{
 		LoadModel(MODEL_SHIO, &g_Shio[i].model);
@@ -122,6 +131,63 @@ HRESULT InitSeaFieldObj(void)
 		GetModelDiffuse(&g_Shio[i].model, &g_Shio[i].diffuse[0]);
 	}
 
+	// 岩01モデルの初期化
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		LoadModel(MODEL_IWA_01, &g_Iwa01[i].model);
+		g_Iwa01[i].load = TRUE;
+		g_Iwa01[i].moveFlag = up;
+		g_Iwa01[i].use = TRUE;			// TRUE:生きてる
+		// モデルのディフューズを保存しておく。色変え対応の為。
+		GetModelDiffuse(&g_Iwa01[i].model, &g_Iwa01[i].diffuse[0]);
+	}
+	g_Iwa01[0].pos = XMFLOAT3(-160.0f, 0.0f, 350.0f);
+	g_Iwa01[1].pos = XMFLOAT3(460.0f, 0.0f, 450.0f);
+	g_Iwa01[2].pos = XMFLOAT3(450.0f, 0.0f, 700.0f);
+	g_Iwa01[3].pos = XMFLOAT3(-200.0f, 0.0f, 675.0f);
+	g_Iwa01[4].pos = XMFLOAT3(-50.0f, 0.0f, 650.0f);
+
+	g_Iwa01[0].rot = XMFLOAT3(0.0f, 1.57f, 0.0f);
+	g_Iwa01[1].rot = XMFLOAT3(1.57f, 0.0f, 0.0f);
+	g_Iwa01[2].rot = XMFLOAT3(0.754f, 0.0f, 0.754f);
+	g_Iwa01[3].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_Iwa01[4].rot = XMFLOAT3(0.0f, 0.754f, 1.57f);
+
+	g_Iwa01[0].scl = XMFLOAT3(3.0f, 1.5f, 1.0f);
+	g_Iwa01[1].scl = XMFLOAT3(1.5f, 1.0f, 2.0f);
+	g_Iwa01[2].scl = XMFLOAT3(1.0f, 1.5f, 0.75f);
+	g_Iwa01[3].scl = XMFLOAT3(3.75f, 3.25f, 2.5);
+	g_Iwa01[4].scl = XMFLOAT3(2.0f, 2.0f, 2.0f);
+
+	// 岩02モデルの初期化
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		LoadModel(MODEL_IWA_02, &g_Iwa02[i].model);
+		g_Iwa02[i].load = TRUE;
+		g_Iwa02[i].moveFlag = up;
+		g_Iwa02[i].use = TRUE;			// TRUE:生きてる
+		// モデルのディフューズを保存しておく。色変え対応の為。
+		GetModelDiffuse(&g_Iwa02[i].model, &g_Iwa02[i].diffuse[0]);
+	}
+	g_Iwa02[0].pos = XMFLOAT3(350.0f, 0.0f, 490.0f);
+	g_Iwa02[1].pos = XMFLOAT3(-460.0f, 3.0f, 450.0f);
+	g_Iwa02[2].pos = XMFLOAT3(250.0f, 0.0f, 390.0f);
+	g_Iwa02[3].pos = XMFLOAT3(200.0f, 7.0f, 665.0f);
+	g_Iwa02[4].pos = XMFLOAT3(-300.0f, 0.0f, 290.0f);
+
+	g_Iwa02[0].rot = XMFLOAT3(0.0f, 1.57f, 0.0f);
+	g_Iwa02[1].rot = XMFLOAT3(1.57f, 0.0f, 0.0f);
+	g_Iwa02[2].rot = XMFLOAT3(0.754f, 0.0f, 0.754f);
+	g_Iwa02[3].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_Iwa02[4].rot = XMFLOAT3(0.0f, 0.754f, 1.57f);
+
+	g_Iwa02[0].scl = XMFLOAT3(3.0f, 1.5f, 4.0f);
+	g_Iwa02[1].scl = XMFLOAT3(1.5f, 2.0f, 2.0f);
+	g_Iwa02[2].scl = XMFLOAT3(4.0f, 1.5f, 0.75f);
+	g_Iwa02[3].scl = XMFLOAT3(3.75f, 3.25f, 2.5);
+	g_Iwa02[4].scl = XMFLOAT3(5.0f, 6.0f, 3.0f);
+
+	// ほら貝の初期化
 	g_Horagai.load = TRUE;
 	g_Horagai.pos = XMFLOAT3(20.0f, 10.0f, 20.0f);
 	g_Horagai.rot = XMFLOAT3(0.754f, 1.57f, 0.0f);
@@ -129,6 +195,7 @@ HRESULT InitSeaFieldObj(void)
 	g_Horagai.moveFlag = wait;
 	g_Horagai.use = TRUE;			// TRUE:生きてる
 
+	// 島の初期化
 	g_Shima.load = TRUE;
 	g_Shima.pos = XMFLOAT3(-10.0f, 0.0f, 10.0f);
 	g_Shima.rot = XMFLOAT3(0.0f, 0.754f, 0.0f);
@@ -136,6 +203,7 @@ HRESULT InitSeaFieldObj(void)
 	g_Shima.moveFlag = wait;
 	g_Shima.use = TRUE;			// TRUE:生きてる
 
+	// プレイヤーの初期化
 	g_Hito.load = TRUE;
 	g_Hito.pos = XMFLOAT3(0.0f, 20.0f, 10.0f);
 	g_Hito.rot = XMFLOAT3(0.0f, 3.14f, 0.0f);
@@ -178,6 +246,24 @@ void UninitSeaFieldObj(void)
 		{
 			UnloadModel(&g_Shio[i].model);
 			g_Shio[i].load = FALSE;
+		}
+	}
+
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		if (g_Iwa01[i].load)
+		{
+			UnloadModel(&g_Iwa01[i].model);
+			g_Iwa01[i].load = FALSE;
+		}
+	}
+
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		if (g_Iwa02[i].load)
+		{
+			UnloadModel(&g_Iwa02[i].model);
+			g_Iwa02[i].load = FALSE;
 		}
 	}
 
@@ -474,6 +560,65 @@ void DrawSeaFieldObj(void)
 		// モデル描画
 		DrawModel(&g_Shio[0].model);
 	}
+
+	// 岩01の描画
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		if (g_Iwa01[i].use == FALSE) continue;
+
+		// ワールドマトリックスの初期化
+		mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		mtxScl = XMMatrixScaling(g_Iwa01[i].scl.x, g_Iwa01[i].scl.y, g_Iwa01[i].scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		// 回転を反映
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Iwa01[i].rot.x, g_Iwa01[i].rot.y + XM_PI, g_Iwa01[i].rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// 移動を反映
+		mtxTranslate = XMMatrixTranslation(g_Iwa01[i].pos.x, g_Iwa01[i].pos.y, g_Iwa01[i].pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		// ワールドマトリックスの設定
+		SetWorldMatrix(&mtxWorld);
+
+		XMStoreFloat4x4(&g_Iwa01[i].mtxWorld, mtxWorld);
+
+		// モデル描画
+		DrawModel(&g_Iwa01[0].model);
+	}
+
+	// 岩02の描画
+	for (int i = 0; i < MAX_SEA_FOBJ_SIGN; i++)
+	{
+		if (g_Iwa02[i].use == FALSE) continue;
+
+		// ワールドマトリックスの初期化
+		mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		mtxScl = XMMatrixScaling(g_Iwa02[i].scl.x, g_Iwa02[i].scl.y, g_Iwa02[i].scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		// 回転を反映
+		mtxRot = XMMatrixRotationRollPitchYaw(g_Iwa02[i].rot.x, g_Iwa02[i].rot.y + XM_PI, g_Iwa02[i].rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		// 移動を反映
+		mtxTranslate = XMMatrixTranslation(g_Iwa02[i].pos.x, g_Iwa02[i].pos.y, g_Iwa02[i].pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		// ワールドマトリックスの設定
+		SetWorldMatrix(&mtxWorld);
+
+		XMStoreFloat4x4(&g_Iwa02[i].mtxWorld, mtxWorld);
+
+		// モデル描画
+		DrawModel(&g_Iwa02[0].model);
+	}
+
 
 	// ほら貝の描画
 
