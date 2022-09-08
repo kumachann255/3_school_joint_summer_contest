@@ -135,9 +135,6 @@ HRESULT InitTitle(void)
 	exit_h = TEXTURE_HEIGHT_EXIT - (TEXTURE_HEIGHT_EXIT / 3);
 	exit_pos = XMFLOAT3(g_w / 2.7f, g_h - 40, 0.0f);
 
-	// BGMÄ¶
-	PlaySound(SOUND_LABEL_BGM_bgm_title_2);
-
 	// ‰Šú‰»
 	if (g_GameClear)
 	{
@@ -145,6 +142,14 @@ HRESULT InitTitle(void)
 		PlaySound(SOUND_LABEL_BGM_bgm_title_0);
 
 	}
+	else
+	{
+		// BGMÄ¶
+		PlaySound(SOUND_LABEL_BGM_bgm_title_2);
+	}
+
+	PlaySound(SOUND_LABEL_SE_titleVoice);
+
 	// ƒJƒƒ‰‚Ì‰Šú‰»
 	UninitCamera();
 	InitCamera();

@@ -142,6 +142,9 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/piano_si.wav", 0 },			// グリッサンド
 	{ (char*)"data/SE/piano_do.wav", 0 },			// グリッサンド
 
+	{ (char*)"data/SE/titleVoice.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/logoVoice.wav", 0 },			// グリッサンド
+
 };
 
 //=============================================================================
@@ -312,6 +315,18 @@ BOOL InitSound(HWND hWnd)
 	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_0, 1.0f);
 	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_1, 1.0f);
 	SetSourceVolume(SOUND_LABEL_SE_skyEnemy_death_2, 1.0f);
+
+	// 攻撃時の掛け声の音量調整
+	SetSourceVolume(SOUND_LABEL_SE_legato, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_arpeggio, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_tremolo, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_pizzicato, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_fortissimo, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_glissando, 2.5f);
+
+	// タイトルとロゴの掛け声の音量調整
+	SetSourceVolume(SOUND_LABEL_SE_logoVoice, 2.5f);
+	SetSourceVolume(SOUND_LABEL_SE_titleVoice, 2.5f);
 
 	return TRUE;
 }

@@ -152,6 +152,7 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].hitPos = XMFLOAT3(0.0f, ENEMY_OFFSET_Y, 0.0f);	// 爆発の中心
 		g_Enemy[i].hitRot = XMFLOAT3(0.0f, 0.0f, 0.0f);				// 当たり判定後アニメーション用スピード
 		g_Enemy[i].isHit = FALSE;									// TRUE:当たってる
+		g_Enemy[i].isAtack = TRUE;
 		g_Enemy[i].hitTime = 0;										// タイミング管理用
 		g_Enemy[i].liveCount = 0;		// 生存時間をリセット
 		g_Enemy[i].type = 0;			// エネミータイプ
@@ -282,7 +283,7 @@ void UpdateEnemy(void)
 			if(g_Stage != tutorial) g_Enemy[i].liveCount++;
 
 			// 攻撃を食らっていなけらば攻撃処理
-			if (g_Enemy[i].isHit == FALSE)
+			if (g_Enemy[i].isAtack)
 			{
 				// 攻撃処理
 				if (g_Enemy[i].liveCount > ENEMY_ATTACK_2)
@@ -334,6 +335,11 @@ void UpdateEnemy(void)
 						g_Enemy[i].fuchi = FALSE;
 					}
 				}
+			}
+			else
+			{
+				// リムライトオフ
+				g_Enemy[i].fuchi = FALSE;
 			}
 
 

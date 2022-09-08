@@ -121,6 +121,9 @@ enum
 	SOUND_LABEL_SE_piano_si,				// ピアノ音 シ
 	SOUND_LABEL_SE_piano_do,				// ピアノ音 ド
 
+	SOUND_LABEL_SE_titleVoice,				// タイトルのボイス
+	SOUND_LABEL_SE_logoVoice,				// ロゴのボイス
+
 	SOUND_LABEL_MAX,	// MAX
 };
 

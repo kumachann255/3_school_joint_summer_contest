@@ -85,6 +85,7 @@ HRESULT InitLogo(void)
 	count = 0;
 
 	PlaySound(SOUND_LABEL_SE_logo);
+	PlaySound(SOUND_LABEL_SE_logoVoice);
 
 	g_Load = TRUE;
 	return S_OK;

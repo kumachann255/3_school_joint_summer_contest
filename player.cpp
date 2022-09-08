@@ -229,32 +229,6 @@ void UpdatePlayer(void)
 	// クールタイムの処理
 	if(g_Player.cooltime > 0) g_Player.cooltime--;
 
-	if (!GetKeyboardPress(DIK_LSHIFT))
-	{
-		//// 移動させちゃう
-		//if (GetKeyboardPress(DIK_LEFT))
-		//{	// 左へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//		g_Player.dir = XM_PI / 2;
-		//}
-		//if (GetKeyboardPress(DIK_RIGHT))
-		//{	// 右へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//		g_Player.dir = -XM_PI / 2;
-		//}
-		//if (GetKeyboardPress(DIK_UP))
-		//{	// 上へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//	g_Player.dir = XM_PI;
-		//}
-		//if (GetKeyboardPress(DIK_DOWN))
-		//{	// 下へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//	g_Player.dir = 0.0f;
-		//}
-	}
-
-
 #ifdef _DEBUG
 	if (GetKeyboardPress(DIK_R))
 	{
@@ -263,13 +237,6 @@ void UpdatePlayer(void)
 		g_Player.spd = 0.0f;
 	}
 #endif
-
-
-	if (GetKeyboardTrigger(DIK_K))
-	{
-		SetTimingText(GetNoteTiming());
-	}
-
 
 	//	// Key入力があったら移動処理する
 	if (g_Player.spd > 0.0f)
@@ -287,7 +254,7 @@ void UpdatePlayer(void)
 	//================================
 	if (GetMode() == MODE_GAME_SKY)
 	{
-		if (GetKeyboardPress(DIK_RIGHT))
+		if ((GetKeyboardPress(DIK_RIGHT)) || (IsButtonPressed(0, BUTTON_R)))
 		{
 			g_Player.spd = VALUE_MOVE;
 
@@ -300,7 +267,7 @@ void UpdatePlayer(void)
 			GetTargetObj()->rot.y += PLAYER_MOVE_ROT;
 		}
 
-		if (GetKeyboardPress(DIK_LEFT))
+		if ((GetKeyboardPress(DIK_LEFT)) || (IsButtonPressed(0, BUTTON_L)))
 		{
 			g_Player.spd = VALUE_MOVE;
 
@@ -311,13 +278,6 @@ void UpdatePlayer(void)
 			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 
 			GetTargetObj()->rot.y -= PLAYER_MOVE_ROT;
-		}
-
-		if (GetKeyboardTrigger(DIK_L))
-		{
-			SetS_Meteor(g_Player.pos,g_Player.rot.y);
-			SetTimingText(GetNoteTiming());
-
 		}
 	}
 

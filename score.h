@@ -37,6 +37,3 @@ void DrawScore(void);
 
 void AddScore(int add);
 int GetScore(void);
-
-
-void Seta(float a);
