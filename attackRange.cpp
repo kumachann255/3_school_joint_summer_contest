@@ -192,7 +192,7 @@ void DrawAttackR(void)
 	SetAlphaTestEnable(FALSE);
 
 	// フォグを有効に
-	SetFogEnable(TRUE);
+	SetFogEnable(FALSE);
 
 }
 

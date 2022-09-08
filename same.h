@@ -29,6 +29,7 @@ enum
 struct SAME
 {
 	XMFLOAT3		pos;		// ポリゴンの位置
+	XMFLOAT3		posBase;	// ポリゴンの位置
 	XMFLOAT3		rot;		// ポリゴンの向き(回転)
 	XMFLOAT3		scl;		// ポリゴンの大きさ(スケール)
 

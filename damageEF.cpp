@@ -42,7 +42,7 @@ static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
 static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
-
+static float					g_A;
 static int						g_time;						// 表示時間のカウント
 
 static XMFLOAT4						g_Color;					// フェードのカラー（α値）
@@ -85,10 +85,10 @@ HRESULT InitDamageEF(void)
 	g_h     = TEXTURE_HEIGHT;
 	g_Pos   = { 0.0f, 0.0f, 0.0f };
 	g_TexNo = 0;
-
+	g_A = 0.3f;
 	g_time = 0;
 
-	g_Color = { 1.0, 1.0, 1.0, 1.0 };
+	g_Color = { 1.0f, 1.0f, 1.0f, g_A };
 
 	g_Load = TRUE;
 	return S_OK;

@@ -607,6 +607,7 @@ void CheckHitCity(void)
 				// 敵キャラクターは倒される
 				enemy[i].isHit = TRUE;
 				enemy[i].hitTime = 15;
+				enemy[i].isAtack = FALSE;
 
 				offsetX = RamdomFloat(0, 20.0f, -20.0f);
 				offsetY = RamdomFloat(0, 20.0f, ENEMY_OFFSET_Y);
@@ -655,6 +656,7 @@ void CheckHitCity(void)
 				// 敵キャラクターは倒される
 				enemyHeli[i].isHit = TRUE;
 				enemyHeli[i].hitTime = 15;
+				enemy[i].isAtack = FALSE;
 
 				offsetX = RamdomFloat(0, 5.0f, -5.0f);
 				offsetY = RamdomFloat(0, 5.0f, ENEMY_HELI_OFFSET_Y - 20.0f);
@@ -702,6 +704,7 @@ void CheckHitCity(void)
 				// 敵キャラクターは倒される
 				enemy[i].cupHit = TRUE;
 				enemy[i].cupRot = TRUE;
+				enemy[i].isAtack = FALSE;
 				//enemy[i].hitTime = 15;
 
 				//offsetX = RamdomFloat(0, 20.0f, -20.0f);
@@ -747,6 +750,7 @@ void CheckHitCity(void)
 				if (enemyHeli[i].cupHit == TRUE) break;
 
 				// 敵キャラクターは倒される
+				enemy[i].isAtack = FALSE;
 				enemyHeli[i].cupHit = TRUE;
 				enemyHeli[i].cupRot = TRUE;
 				//enemyHeli[i].hitTime = 15;

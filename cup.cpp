@@ -459,7 +459,7 @@ void SetCup(void)
 		if (g_Cup[i].use == FALSE)
 		{
 			// SEのセット
-			PlaySound(SOUND_LABEL_SE_stickingSound01);
+			PlaySound(SOUND_LABEL_SE_cupRotation);
 			
 			// ランダムでモデルを出す
 			int model = rand() % 3;

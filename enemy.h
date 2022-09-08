@@ -40,13 +40,14 @@ struct ENEMY
 	XMFLOAT3			hitPos;				// 爆発の座標
 	XMFLOAT3			hitRot;				// 当たり判定後アニメーション用、毎回の移動量
 	BOOL				isHit;				// 当たってるフラグ TRUE:当たっている
-	
+	BOOL				isAtack;			// 攻撃を行うかどうか
+
 	BOOL				cupHit;				// 当たってるフラグ TRUE:当たっている
 	BOOL				cupRot;				// パラメーターセット用（カップ）
-	BOOL				sameHit;				// 当たってるフラグ TRUE:当たっている
-	BOOL				sameRot;				// パラメーターセット用（カップ）
-	BOOL				takoHit;				// 当たってるフラグ TRUE:当たっている
-	BOOL				takoRot;				// パラメーターセット用（カップ）
+	BOOL				sameHit;			// 当たってるフラグ TRUE:当たっている
+	BOOL				sameRot;			// パラメーターセット用（カップ）
+	BOOL				takoHit;			// 当たってるフラグ TRUE:当たっている
+	BOOL				takoRot;			// パラメーターセット用（カップ）
 
 	float				radian;				// 回転量
 
@@ -75,5 +76,6 @@ void DrawEnemy(void);
 ENEMY *GetEnemy(void);
 BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
 void ResetEnemyTarget(void);
+void SetEnemyPopSound(void);
 
 

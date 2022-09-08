@@ -488,7 +488,7 @@ void DrawGameSea0(void)
 	//DrawTree();
 
 	// スカイドームの描画処理
-	//DrawSky();
+	DrawSky();
 
 	// パーティクルの描画処理
 	//DrawParticle();

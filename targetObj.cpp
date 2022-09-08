@@ -14,6 +14,7 @@
 #include "target.h"
 #include "player.h"
 #include "camera.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -87,22 +88,21 @@ void UpdateTargetObj(void)
 	// 攻撃方法がサークルの場合はスキップ
 	if (!GetPlayer()->rockOn) return;
 
-	if (!GetKeyboardPress(DIK_LSHIFT))
 	{
 		// 移動させちゃう
-		if (GetKeyboardPress(DIK_A))
+		if ((GetKeyboardPress(DIK_A)) || (IsButtonPressed(0, BUTTON_LEFT)))
 		{	// 左へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
 			if (GetTargetArea(left)) g_TargetObj.rot.y -= TARGET_MOVE_VALUE_X;
 		}
-		if (GetKeyboardPress(DIK_D))
+		if ((GetKeyboardPress(DIK_D)) || (IsButtonPressed(0, BUTTON_RIGHT)))
 		{	// 右へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
 			if (GetTargetArea(right)) g_TargetObj.rot.y += TARGET_MOVE_VALUE_X;
 		}
-		if (GetKeyboardPress(DIK_W))
+		if ((GetKeyboardPress(DIK_W)) || (IsButtonPressed(0, BUTTON_UP)))
 		{	// 上へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
@@ -110,7 +110,7 @@ void UpdateTargetObj(void)
 				//g_TargetObj.rot.x -= MOVE_VALUE_X;
 			if (GetTargetArea(up)) g_TargetObj.pos.y += TARGET_MOVE_VALUE_Y;
 		}
-		if (GetKeyboardPress(DIK_S))
+		if ((GetKeyboardPress(DIK_S)) || (IsButtonPressed(0, BUTTON_DOWN)))
 		{	// 下へ移動
 
 			// ターゲットアイコンが画面外に出ていないかを確認
@@ -119,6 +119,7 @@ void UpdateTargetObj(void)
 			if (GetTargetArea(down)) g_TargetObj.pos.y -= TARGET_MOVE_VALUE_Y;
 		}
 	}
+
 
 	CAMERA *camera = GetCamera();
 

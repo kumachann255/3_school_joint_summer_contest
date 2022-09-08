@@ -12,6 +12,7 @@
 #include "sprite.h"
 #include "countdown.h"
 #include "timeUI.h"
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -251,6 +252,11 @@ void UpdateCountDown(void)
 		case MODE_GAME_SKY:
 			SetStage(stage1);
 			SetFade(FADE_OUT, MODE_GAME_SKY);
+
+			// カメラの初期化
+			UninitCamera();
+			InitCamera();
+
 			break;
 		}
 	}

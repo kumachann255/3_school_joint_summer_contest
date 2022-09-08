@@ -189,7 +189,7 @@ void UpdateTako(void)
 				g_Tako_last[i].pos.z = rockOn[g_Tako[i].rockOnNum].pos.z;
 
 
-				if (g_Tako[i].pos.y < 0.0f)
+				if (g_Tako[i].pos.y < 20.0f)
 				{
 					pSetCount = 0;
 					g_Tako_middle[i].use = FALSE;

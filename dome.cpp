@@ -137,7 +137,7 @@ void DrawDome(void)
 	}
 
 	// フォグ設定を戻す
-	SetFogEnable(TRUE);
+	SetFogEnable(FALSE);
 
 
 	// カリング設定を戻す

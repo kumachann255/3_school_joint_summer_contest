@@ -37,7 +37,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MODEL_ROCKET		"data/MODEL/rocket.obj"
-#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
+#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"	// 読み込むモデル名
 #define	MODEL_TESURI		"data/MODEL/tesuri.obj"			// 読み込むモデル名
 
 #define	VALUE_MOVE			(15.0f)							// 移動量
@@ -51,8 +51,8 @@
 
 #define COOLTIME_BOM		(180)		// ボムのクールタイム
 #define COOLTIME_CUP		(150)		// カップのクールタイム
-#define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
-#define COOLTIME_SHARK		(180)		// サメのクールタイム
+#define COOLTIME_OCTOPUS	(90)		// タコのクールタイム
+#define COOLTIME_SHARK		(270)		// サメのクールタイム
 #define COOLTIME_METEOR		(20)		// メテオのクールタイム
 
 #define PLAYER_MOVE_ROT		(0.03f)		// プレイヤーの左右の移動速度
@@ -229,32 +229,6 @@ void UpdatePlayer(void)
 	// クールタイムの処理
 	if(g_Player.cooltime > 0) g_Player.cooltime--;
 
-	if (!GetKeyboardPress(DIK_LSHIFT))
-	{
-		//// 移動させちゃう
-		//if (GetKeyboardPress(DIK_LEFT))
-		//{	// 左へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//		g_Player.dir = XM_PI / 2;
-		//}
-		//if (GetKeyboardPress(DIK_RIGHT))
-		//{	// 右へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//		g_Player.dir = -XM_PI / 2;
-		//}
-		//if (GetKeyboardPress(DIK_UP))
-		//{	// 上へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//	g_Player.dir = XM_PI;
-		//}
-		//if (GetKeyboardPress(DIK_DOWN))
-		//{	// 下へ移動
-		//	g_Player.spd = VALUE_MOVE;
-		//	g_Player.dir = 0.0f;
-		//}
-	}
-
-
 #ifdef _DEBUG
 	if (GetKeyboardPress(DIK_R))
 	{
@@ -263,13 +237,6 @@ void UpdatePlayer(void)
 		g_Player.spd = 0.0f;
 	}
 #endif
-
-
-	if (GetKeyboardTrigger(DIK_K))
-	{
-		SetTimingText(GetNoteTiming());
-	}
-
 
 	//	// Key入力があったら移動処理する
 	if (g_Player.spd > 0.0f)
@@ -287,7 +254,7 @@ void UpdatePlayer(void)
 	//================================
 	if (GetMode() == MODE_GAME_SKY)
 	{
-		if (GetKeyboardPress(DIK_RIGHT))
+		if ((GetKeyboardPress(DIK_RIGHT)) || (IsButtonPressed(0, BUTTON_R)))
 		{
 			g_Player.spd = VALUE_MOVE;
 
@@ -300,7 +267,7 @@ void UpdatePlayer(void)
 			GetTargetObj()->rot.y += PLAYER_MOVE_ROT;
 		}
 
-		if (GetKeyboardPress(DIK_LEFT))
+		if ((GetKeyboardPress(DIK_LEFT)) || (IsButtonPressed(0, BUTTON_L)))
 		{
 			g_Player.spd = VALUE_MOVE;
 
@@ -311,13 +278,6 @@ void UpdatePlayer(void)
 			g_Player.rot.y = GetCamera()->rot.y = g_Player.angle;
 
 			GetTargetObj()->rot.y -= PLAYER_MOVE_ROT;
-		}
-
-		if (GetKeyboardTrigger(DIK_L))
-		{
-			SetS_Meteor(g_Player.pos,g_Player.rot.y);
-			SetTimingText(GetNoteTiming());
-
 		}
 	}
 
@@ -364,11 +324,13 @@ void UpdatePlayer(void)
 			{
 			case MODE_GAME_CITY:
 				SetBom();
+				PlaySound(SOUND_LABEL_SE_legato);
 				break;
 
 			case MODE_GAME_SEA:
 				// タコ一本釣り
 				SetTako();
+				PlaySound(SOUND_LABEL_SE_pizzicato);
 				g_Player.cooltime = COOLTIME_OCTOPUS;
 
 				// エネミーのターゲットフラグのリセット
@@ -395,11 +357,13 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION)
 				{
 					SetBom();	// ガム爆弾
+					PlaySound(SOUND_LABEL_SE_legato);
 					g_Player.cooltime = COOLTIME_BOM;
 				}
 				else
 				{	// 派生攻撃
 					SetCup();	// コーヒーカップ
+					PlaySound(SOUND_LABEL_SE_tremolo);
 					g_Player.cooltime = COOLTIME_CUP;
 				}
 
@@ -415,6 +379,7 @@ void UpdatePlayer(void)
 				{
 					// タコ一本釣り
 					SetTako();
+					PlaySound(SOUND_LABEL_SE_pizzicato);
 					g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// エネミーのターゲットフラグのリセット
@@ -426,6 +391,7 @@ void UpdatePlayer(void)
 				else
 				{	// 派生攻撃
 					SetSame();	// 恐怖のサメ
+					PlaySound(SOUND_LABEL_SE_fortissimo);
 					g_Player.cooltime = COOLTIME_SHARK;
 				}
 
@@ -434,6 +400,7 @@ void UpdatePlayer(void)
 
 			case MODE_GAME_SKY:
 				SetS_Meteor(g_Player.pos, g_Player.rot.y);
+				PlaySound(SOUND_LABEL_SE_glissando);
 				g_Player.cooltime = COOLTIME_METEOR;
 
 				// エネミーのターゲットフラグのリセット
@@ -469,28 +436,6 @@ void UpdatePlayer(void)
 			SetCup();
 		}
 	}
-
-	// 弾発射処理(クラッカー テスト)
-	if (g_Stage != tutorial)
-	{
-		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
-		{
-			g_Player.action = TRUE;
-
-			SetCup();
-		}
-	}
-	else
-	{
-		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B)))
-			&& (!GetTutorialUse()))
-		{
-			g_Player.action = TRUE;
-
-			SetCracker();
-		}
-	}
-#endif
 
 	g_Player.spd *= 0.5f;
 

@@ -24,7 +24,7 @@
 #define SCORE1_WIDTH				(120.0f)	// ÉLÉÉÉâÉTÉCÉY
 #define SCORE1_HEIGHT				(40.0f)		// 
 
-#define TEXTURE_MAX					(6)			// ÉeÉNÉXÉ`ÉÉÇÃêî
+#define TEXTURE_MAX					(7)			// ÉeÉNÉXÉ`ÉÉÇÃêî
 
 #define MOVE_VOLUME					(20.0f)		// ÉJÅ[ÉuÇÃîºåa
 #define MOVE_SPEED					(0.1f)		// ÉJÅ[ÉuÇÃë¨ìx
@@ -32,12 +32,12 @@
 
 enum {
 	HowTo,
+	skyLR,
 	score0,
 	score1,
 	under,
 	up,
 	right,
-
 
 };
 
@@ -56,6 +56,7 @@ static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ÉeÉNÉXÉ`É
 
 static char *g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/hoetouse_ui.png",
+	"data/TEXTURE/sousa.png",
 	"data/TEXTURE/score_00.png",
 	"data/TEXTURE/score_01.png",
 	"data/TEXTURE/partypeople_down.png",
@@ -131,6 +132,13 @@ HRESULT InitGameUI(void)
 
 			break;
 
+		case skyLR:
+			g_UI[i].pos = { SCREEN_WIDTH / 2 ,SCREEN_HEIGHT / 2 - 50.0f, 0.0f };
+			g_UI[i].w = SCREEN_WIDTH;
+			g_UI[i].h = SCREEN_HEIGHT;
+
+			break;
+
 		case score0:
 			g_UI[i].pos = { 700.0f , 50.0f , 0.0f };
 			g_UI[i].w = SCORE0_WIDTH;
@@ -144,7 +152,6 @@ HRESULT InitGameUI(void)
 			g_UI[i].h = SCORE1_HEIGHT;
 
 			break;
-
 		}
 	}
 
@@ -295,7 +302,7 @@ void UpdateGameUI(void)
 //=============================================================================
 void DrawGameUI(void)
 {
-	return;
+	//return;
 
 	// í∏ì_ÉoÉbÉtÉ@ê›íË
 	UINT stride = sizeof(VERTEX_3D);
@@ -317,6 +324,7 @@ void DrawGameUI(void)
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		if (!g_UI[i].use) continue;
+		if ((i == skyLR) && (GetMode() != MODE_GAME_SKY)) continue;
 
 		// ÉeÉNÉXÉ`ÉÉê›íË
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[i]);
