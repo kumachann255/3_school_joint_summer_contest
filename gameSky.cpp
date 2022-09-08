@@ -194,9 +194,11 @@ HRESULT InitGameSky(void)
 	//	break;
 
 	case stage0:
+		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_3);
+		break;
 	case stage1:
 		// BGM再生
-		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_3);
+		PlaySound(SOUND_LABEL_BGM_bgm_sky_stage_1);
 		break;
 	}
 
@@ -558,6 +560,10 @@ void CheckHitSky(void)
 				PlaySound(SOUND_LABEL_SE_meteor_hit);
 
 				sky_enemy[j].use = FALSE;
+
+				// スコアを足す
+				AddScore(100);
+
 				switch (sky_enemy[i].EnemyType)
 				{
 				case 0:
