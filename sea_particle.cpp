@@ -26,7 +26,9 @@
 #define	VALUE_SUB			(0.1f)		// パーティクルの減算値
 #define	VALUE_START_SUB		(10)		// パーティクルの減算開始値
 
-#define	MAX_SEA_PARTICLE	(512)		// 海パーティクル最大数
+#define	MAX_SEA_PARTICLE	(128)		// 海パーティクル最大数
+#define	MAX_SEA_BOMB		(64)		// 海爆発パーティクル最大数
+
 #define	MAX_LIFE			(75)		// パーティクルの寿命
 #define PARTICLE_SPEED		(0.01f)		// パーティクルの動く速さ
 
@@ -59,11 +61,14 @@ static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチ
 
 static SEA_PARTICLE					g_SeaParticle[MAX_SEA_PARTICLE];	// パーティクルワーク
 
+static SEA_PARTICLE					g_SeaBomb[MAX_SEA_BOMB];		// 爆発パーティクルワーク
+
 static XMFLOAT3		control0[MAX_SEA_PARTICLE], control1[MAX_SEA_PARTICLE], control2[MAX_SEA_PARTICLE];	// パーティクルの挙動制御
 
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
+	"data/TEXTURE/effect000.png",
 	"data/TEXTURE/onpu01_01.png",
 	"data/TEXTURE/onpu01_02.png",
 	"data/TEXTURE/onpu01_03.png",
@@ -84,7 +89,6 @@ static char *g_TextureName[TEXTURE_MAX] =
 	"data/TEXTURE/onpu06_03.png",
 	"data/TEXTURE/onpu07_01.png",
 	"data/TEXTURE/onpu07_02.png",
-	"data/TEXTURE/onpu07_03.png",
 };
 
 static BOOL						g_Load = FALSE;
@@ -126,6 +130,25 @@ HRESULT InitSeaParticle(void)
 		g_SeaParticle[i].life = MAX_LIFE;
 		//g_SeaParticle[i].pop = 0;
 		g_SeaParticle[i].use = FALSE;
+	}
+
+	// パーティクルワークの初期化
+	for (int i = 0; i < MAX_SEA_BOMB; i++)
+	{
+		g_SeaBomb[i].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaBomb[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaBomb[i].scl = XMFLOAT3(1.5f, 1.5f, 1.5f);
+		g_SeaBomb[i].move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		g_SeaBomb[i].time = 0.0f;
+		g_SeaBomb[i].speed = 0.0f;
+
+		ZeroMemory(&g_SeaBomb[i].material, sizeof(g_SeaBomb[i].material));
+		g_SeaBomb[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		g_SeaBomb[i].tex_No = 0;
+		g_SeaBomb[i].life = MAX_LIFE;
+		//g_SeaBomb[i].pop = 0;
+		g_SeaBomb[i].use = FALSE;
 	}
 
 
@@ -195,6 +218,7 @@ void UpdateSeaParticle(void)
 				g_SeaParticle[i].use = FALSE;
 			}
 
+
 			// パーティクルの挙動
 			{
 				g_SeaParticle[i].time += g_SeaParticle[i].speed;
@@ -218,6 +242,36 @@ void UpdateSeaParticle(void)
 			}
 		}
 	}
+
+	for (int i = 0; i < MAX_SEA_BOMB; i++)
+	{
+		//if (g_SeaBomb[i].use == FALSE)
+		//{
+		//	SetSeaParticle();
+		//}
+
+		// パーティクルワーク処理
+		if (g_SeaBomb[i].use == TRUE)		// 使用中
+		{
+			// パーティクルの処理
+			g_SeaBomb[i].life--;
+
+			if (g_SeaBomb[i].life <= VALUE_START_SUB)
+			{	// 寿命が１０フレーム切ったら段々透明になっていく
+				g_SeaBomb[i].material.Diffuse.w -= VALUE_SUB;
+				if (g_SeaBomb[i].material.Diffuse.w < 0.0f)
+				{
+					g_SeaBomb[i].material.Diffuse.w = 0.0f;
+				}
+			}
+
+			if (g_SeaBomb[i].life <= 0)
+			{
+				g_SeaBomb[i].use = FALSE;
+			}
+		}
+	}
+
 }
 
 //=============================================================================
@@ -299,6 +353,58 @@ void DrawSeaParticle(void)
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
+
+	for (int i = 0; i < MAX_SEA_BOMB; i++)
+	{
+
+		if (g_SeaBomb[i].use == TRUE)
+		{
+			// テクスチャ設定
+			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_SeaBomb[i].tex_No]);
+
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
+
+			// ビューマトリックスを取得
+			mtxView = XMLoadFloat4x4(&cam->mtxView);
+
+			//mtxWorld = XMMatrixInverse(nullptr, mtxView);
+			//mtxWorld.r[3].m128_f32[0] = 0.0f;
+			//mtxWorld.r[3].m128_f32[1] = 0.0f;
+			//mtxWorld.r[3].m128_f32[2] = 0.0f;
+
+			// 処理が速いしお勧め
+			mtxWorld.r[0].m128_f32[0] = mtxView.r[0].m128_f32[0];
+			mtxWorld.r[0].m128_f32[1] = mtxView.r[1].m128_f32[0];
+			mtxWorld.r[0].m128_f32[2] = mtxView.r[2].m128_f32[0];
+
+			mtxWorld.r[1].m128_f32[0] = mtxView.r[0].m128_f32[1];
+			mtxWorld.r[1].m128_f32[1] = mtxView.r[1].m128_f32[1];
+			mtxWorld.r[1].m128_f32[2] = mtxView.r[2].m128_f32[1];
+
+			mtxWorld.r[2].m128_f32[0] = mtxView.r[0].m128_f32[2];
+			mtxWorld.r[2].m128_f32[1] = mtxView.r[1].m128_f32[2];
+			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
+
+			// スケールを反映
+			mtxScl = XMMatrixScaling(g_SeaBomb[i].scl.x, g_SeaBomb[i].scl.y, g_SeaBomb[i].scl.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(g_SeaBomb[i].pos.x, g_SeaBomb[i].pos.y, g_SeaBomb[i].pos.z);
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックスの設定
+			SetWorldMatrix(&mtxWorld);
+
+			// マテリアル設定
+			SetMaterial(g_SeaBomb[i].material);
+
+			// ポリゴンの描画
+			GetDeviceContext()->Draw(4, 0);
+		}
+	}
+
 
 	// ライティングを有効に
 	SetLightEnable(TRUE);
@@ -428,6 +534,10 @@ void SetSeaParticleTako(void)
 					}
 					//g_SeaParticle[j].pos.y += 10.0f;
 					g_SeaParticle[j].tex_No = rand() % TEXTURE_MAX;
+					if (g_SeaParticle[j].tex_No == 0)
+					{
+						g_SeaParticle[j].tex_No = 1;
+					}
 					break;
 				}
 			}
@@ -477,7 +587,7 @@ void SetSeaParticleSame(void)
 					control2[i].y = same->pos.y - BEZIER_L_Y;
 					control2[i].z = same->pos.z - BEZIER_F_Y;
 				}
-				// 左の放物線
+				// 左の放物線d
 				else if (i % 2 == 1)
 				{
 					// ベジェ開始位置
@@ -497,9 +607,35 @@ void SetSeaParticleSame(void)
 				}
 				//g_SeaParticle[i].pos.y += 10.0f;
 				g_SeaParticle[i].tex_No = rand() % TEXTURE_MAX;
+				if (g_SeaParticle[i].tex_No == 0)
+				{
+					g_SeaParticle[i].tex_No = 1;
+				}
+
 				break;
 			}
 		}
 	}
 
+}
+
+//=============================================================================
+// 爆発用パーティクルの発生処理
+//=============================================================================
+void SetSeaBonb(XMFLOAT3 pos)
+{
+	for (int i = 0; i < MAX_SEA_BOMB; i++)
+	{
+		if (g_SeaBomb[i].use == FALSE)
+		{
+			g_SeaBomb[i].use = TRUE;
+			g_SeaBomb[i].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			g_SeaBomb[i].life = MAX_LIFE;
+			g_SeaBomb[i].pos.x = pos.x + (float)(rand() % BEZIER_RANDOM) - (float)(rand() % BEZIER_RANDOM);
+			g_SeaBomb[i].pos.y = pos.y + (float)(rand() % BEZIER_RANDOM) - (float)(rand() % BEZIER_RANDOM);
+			g_SeaBomb[i].pos.z = pos.z;
+			g_SeaBomb[i].tex_No = 0;
+			break;
+		}
+	}
 }
