@@ -21,6 +21,7 @@
 #include "score.h"
 #include "combo.h"
 #include "sea_particle.h"
+#include "sound.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -76,6 +77,7 @@ HRESULT InitSame(void)
 	g_Same.load = TRUE;
 
 	g_Same.pos = { 0.0f, SAME_OFFSET_Y, 0.0f };
+	g_Same.posBase = { 0.0f, SAME_OFFSET_Y, 0.0f };
 	g_Same.rot = { 0.0f, 0.0f, 0.0f };
 	g_Same.scl = { 10.0f, 10.0f, 10.0f };
 
@@ -148,12 +150,12 @@ void UpdateSame(void)
 		switch (g_Same.mode)
 		{
 		case GURUGURU:
-			g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
-			g_Same.pos.y = attackR->pos.y;
-			g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
+			g_Same.pos.x = g_Same.posBase.x - HIRE_ROT_PI * cosf(g_Same.angle);
+			g_Same.pos.y = g_Same.posBase.y;
+			g_Same.pos.z = g_Same.posBase.z - HIRE_ROT_PI * sinf(g_Same.angle);
 
-			g_sAtama.pos = attackR->pos;
-			g_sKuchi.pos = attackR->pos;
+			g_sAtama.pos = g_Same.posBase;
+			g_sKuchi.pos = g_Same.posBase;
 
 			g_Same.rot.y -= HIRE_ROT_ADDTION; // ƒqƒŒ‚ÌYŽ²‚Å‚Ì‰ñ“]
 			// ƒT[ƒNƒ‹‚Ì’†S‚©‚ç”¼Œa100‚ð‚®‚é‚®‚é‰ñ‚é‚½‚ß‚Ì‰ÁŽZ
@@ -194,21 +196,21 @@ void UpdateSame(void)
 
 		case DOWN_FIRST:
 			// ‰º~ˆ—
-			g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
+			g_Same.pos.x = g_Same.posBase.x - HIRE_ROT_PI * cosf(g_Same.angle);
 			g_Same.pos.y -= DOWN_ADDTION_1;
-			g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
+			g_Same.pos.z = g_Same.posBase.z - HIRE_ROT_PI * sinf(g_Same.angle);
 
-			g_sAtama.pos.x = attackR->pos.x;
+			g_sAtama.pos.x = g_Same.posBase.x;
 			g_sAtama.pos.y -= DOWN_ADDTION_1;
-			g_sAtama.pos.z = attackR->pos.z;
-			g_sKuchi.pos.x = attackR->pos.x;
+			g_sAtama.pos.z = g_Same.posBase.z;
+			g_sKuchi.pos.x = g_Same.posBase.x;
 			g_sKuchi.pos.y -= DOWN_ADDTION_1;
-			g_sKuchi.pos.z = attackR->pos.z;
+			g_sKuchi.pos.z = g_Same.posBase.z;
 
 			if (g_Same.pos.y < MAX_DOWN)
 			{
-				g_Same.pos.x = attackR->pos.x;
-				g_Same.pos.z = attackR->pos.z;
+				g_Same.pos.x = g_Same.posBase.x;
+				g_Same.pos.z = g_Same.posBase.z;
 
 				// ‰º~Å’á’l‚Ü‚Å‚¢‚Á‚½‚çƒqƒŒ‚Ìƒ‚ƒfƒ‹‚ÍFALSE‚É‚·‚é‚ªswitch—p‚É‘¼‚Ìî•ñ‚ÍŽc‚·
 				g_Same.rot.y = 0.0f;
@@ -217,6 +219,8 @@ void UpdateSame(void)
 
 				g_sAtama.use = TRUE;
 				g_sKuchi.use = TRUE;
+
+				PlaySound(SOUND_LABEL_SE_samePop);
 			}
 			break;
 
@@ -465,9 +469,11 @@ void SetSame(void)
 
 		ATTACKRANGE *attackR = GetAttackR();
 
-		g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
-		g_Same.pos.y = attackR->pos.y;
-		g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
+		g_Same.posBase = attackR->pos;
+
+		//g_Same.pos.x = attackR->pos.x - HIRE_ROT_PI * cosf(g_Same.angle);
+		//g_Same.pos.y = attackR->pos.y;
+		//g_Same.pos.z = attackR->pos.z - HIRE_ROT_PI * sinf(g_Same.angle);
 
 		g_sAtama.pos = attackR->pos;
 		g_sKuchi.pos = attackR->pos;

@@ -74,12 +74,14 @@
 
 #define ENEMY_HIT_MOVE		(5.0f)						// 当たり判定後アニメーション用移動量
 
-#define ENEMY_ATTACK_0		(300)						// エネミーが点滅するまでの時間
+#define ENEMY_ATTACK_0		(400)						// エネミーが点滅するまでの時間
 #define ENEMY_ATTACK_1		(120 + ENEMY_ATTACK_0)		// 点滅が早くなるまでの時間
 #define ENEMY_ATTACK_2		(120 + ENEMY_ATTACK_1)		// 攻撃するまでの時間
 
 #define ENEMY_BLINKING0		(50)						// 点滅の間隔
 #define ENEMY_BLINKING1		(14)						// 点滅の間隔
+
+#define ROCKON_SE_MAX		(8)
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -453,6 +455,9 @@ void UpdateEnemy(void)
 				target[0].count++;
 
 				SetRockOn();
+
+				// SEの再生
+				SetEnemyPopSound();
 			}
 			////////////////////////////////////////////////////////////////////////
 			//// 姿勢制御
@@ -602,11 +607,10 @@ void DrawEnemy(void)
 		// モデル描画
 		DrawModel(&g_Collision[0].model);
 
+#endif
 
 		// リムライトの設定
 		SetFuchi(FALSE);
-#endif
-
 	}
 	
 	// フォグ有効
@@ -634,10 +638,6 @@ void SetEnemy(void)
 	{
 		if (g_Enemy[i].use == FALSE)
 		{
-			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
-			// SEのセット
-			PlaySound(SOUND_LABEL_SE_siren01);
-
 			g_Enemy[i].use = TRUE;
 			g_Enemy[i].pos.z = ENEMY_POP_Z;
 			g_Enemy[i].pos.y = ENEMY_OFFSET_Y;
@@ -669,7 +669,16 @@ void SetEnemy(void)
 			g_Collision[i].use = TRUE;
 			g_Collision[i].pos = g_Enemy[i].pos;
 
+			switch (GetMode())
+			{
+			case MODE_GAME_CITY:
+				PlaySound(SOUND_LABEL_SE_enemy_pop);
+				break;
 
+			case MODE_GAME_SEA:
+				PlaySound(SOUND_LABEL_SE_enemyPop_sea_0);
+				break;
+			}
 
 			return;
 		}
@@ -725,31 +734,45 @@ void ResetEnemyTarget(void)
 	}
 }
 
-// スクリーン座標をワールド座標へ変換
-//void SetScreenToWorld(void)
-//{
-//	TARGET *target = GetTarget();
-//	float sx, sy;
-//	float z = 1.0f;
-//	XMFLOAT3 ans;
-//	XMMATRIX *view;
-//	XMMATRIX *proj;
-//
-//	D3D11_VIEWPORT vp;
-//	vp.Width = (FLOAT)SCREEN_WIDTH;
-//	vp.Height = (FLOAT)SCREEN_HEIGHT;
-//	vp.MinDepth = 0.0f;
-//	vp.MaxDepth = 1.0f;
-//	vp.TopLeftX = 0;
-//	vp.TopLeftY = 0;
-//
-//	ans.x = sx = target->pos.x;
-//	ans.y = sy = target->pos.y;
-//	ans.z = z;
-//
-//	XMMATRIX invMat, inv_proj, inv_view;
-//	XMStoreFloat4x4(&g_Camera.mtxProjection, mtxProjection);
-//
-//	XMMatrixInverse(vp, invMat);
-//}
 
+// エネミーのロックオン音を再生(ランダム)
+void SetEnemyPopSound(void)
+{
+	// ロックオンのSE再生
+	int data = rand() % ROCKON_SE_MAX;
+	switch (data)
+	{
+	case 0:
+		PlaySound(SOUND_LABEL_SE_piano_do00);
+		break;
+
+	case 1:
+		PlaySound(SOUND_LABEL_SE_piano_re);
+		break;
+
+	case 2:
+		PlaySound(SOUND_LABEL_SE_piano_mi);
+		break;
+
+	case 3:
+		PlaySound(SOUND_LABEL_SE_piano_fa);
+		break;
+
+	case 4:
+		PlaySound(SOUND_LABEL_SE_piano_so);
+		break;
+
+	case 5:
+		PlaySound(SOUND_LABEL_SE_piano_ra);
+		break;
+
+	case 6:
+		PlaySound(SOUND_LABEL_SE_piano_si);
+		break;
+
+	case 7:
+		PlaySound(SOUND_LABEL_SE_piano_do);
+		break;
+
+	}
+}

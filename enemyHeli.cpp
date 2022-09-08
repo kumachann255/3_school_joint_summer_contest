@@ -78,13 +78,11 @@ static int			g_Stage;
 //=============================================================================
 HRESULT InitEnemyHeli(void)
 {
-	LoadModel(MODEL_ENEMY_HELI, &g_EnemyHeli[0].model);
+	LoadModel(MODEL_ENEMY_09, &g_EnemyHeli[0].model);
 
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
 		g_EnemyHeli[i].load = TRUE;
-
-		LoadModel(MODEL_ENEMY_09, &g_EnemyHeli[i].model);
 
 		g_EnemyHeli[i].pos = XMFLOAT3(0.0f, ENEMY_HELI_OFFSET_Y, 20.0f);
 		g_EnemyHeli[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);

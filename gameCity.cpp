@@ -697,6 +697,7 @@ void CheckHitCity(void)
 				if (enemy[i].isHit == TRUE) break;
 
 				// 敵キャラクターは倒される
+				enemy[i].isHit = TRUE;
 				enemy[i].cupHit = TRUE;
 				enemy[i].cupRot = TRUE;
 				//enemy[i].hitTime = 15;
@@ -744,6 +745,7 @@ void CheckHitCity(void)
 				if (enemyHeli[i].cupHit == TRUE) break;
 
 				// 敵キャラクターは倒される
+				enemyHeli[i].isHit = TRUE;
 				enemyHeli[i].cupHit = TRUE;
 				enemyHeli[i].cupRot = TRUE;
 				//enemyHeli[i].hitTime = 15;

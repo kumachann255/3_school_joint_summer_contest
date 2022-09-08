@@ -184,7 +184,8 @@ void UpdateCombo(void)
 	g_ComboTime++;
 
 	// コンボ継続時間が切れたらリセット
-	if (g_ComboTime >= COMBO_TIME)
+	// 空ステージはコンボが切れない
+	if ((g_ComboTime >= COMBO_TIME) && (GetMode() != MODE_GAME_SKY))
 	{
 		g_Combo = 0;
 		g_Combo_result = 0;

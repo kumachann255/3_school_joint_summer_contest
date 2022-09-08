@@ -114,10 +114,33 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/enemy_pop.wav", 0 },			// エネミーポップ音
 	{ (char*)"data/SE/meteor_shot.wav", 0 },		// メテオ発射音
 	{ (char*)"data/SE/meteor_hit.wav", 0 },			// メテオヒット音
-	{ (char*)"data/SE/skyEnemy_death_0.wav", 0 },		// エネミー死亡音
-	{ (char*)"data/SE/skyEnemy_death_1.wav", 0 },		// エネミー死亡音
-	{ (char*)"data/SE/skyEnemy_death_2.wav", 0 },		// エネミー死亡音
+	{ (char*)"data/SE/skyEnemy_death_0.wav", 0 },	// エネミー死亡音
+	{ (char*)"data/SE/skyEnemy_death_1.wav", 0 },	// エネミー死亡音
+	{ (char*)"data/SE/skyEnemy_death_2.wav", 0 },	// エネミー死亡音
 
+	// 攻撃時の掛け声
+	{ (char*)"data/SE/legato.wav", 0 },				// レガート
+	{ (char*)"data/SE/arpeggio.wav", 0 },			// アルペジオ
+	{ (char*)"data/SE/tremolo.wav", 0 },			// トレモロ
+	{ (char*)"data/SE/pizzicato.wav", 0 },			// ピチカート
+	{ (char*)"data/SE/fortissimo.wav", 0 },			// フォルテッシモ
+	{ (char*)"data/SE/glissando.wav", 0 },			// グリッサンド
+
+	{ (char*)"data/SE/cupRotation.wav", 0 },			// グリッサンド
+
+	{ (char*)"data/SE/enemyPop_sea_0.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/enemyPop_sea_1.wav", 0 },			// グリッサンド
+
+	{ (char*)"data/SE/samePop.wav", 0 },			// グリッサンド
+
+	{ (char*)"data/SE/piano_do00.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_re.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_mi.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_fa.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_so.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_ra.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_si.wav", 0 },			// グリッサンド
+	{ (char*)"data/SE/piano_do.wav", 0 },			// グリッサンド
 
 };
 

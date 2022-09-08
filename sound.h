@@ -97,6 +97,29 @@ enum
 	SOUND_LABEL_SE_skyEnemy_death_1,		// エネミー死亡音
 	SOUND_LABEL_SE_skyEnemy_death_2,		// エネミー死亡音
 
+	// 攻撃時の掛け声
+	SOUND_LABEL_SE_legato,					// レガート
+	SOUND_LABEL_SE_arpeggio,				// アルペジオ
+	SOUND_LABEL_SE_tremolo,					// トレモロ
+	SOUND_LABEL_SE_pizzicato,				// ピチカート
+	SOUND_LABEL_SE_fortissimo,				// フォルテッシモ
+	SOUND_LABEL_SE_glissando,				// グリッサンド
+
+	SOUND_LABEL_SE_cupRotation,				// コーヒーカップの回る音
+
+	SOUND_LABEL_SE_enemyPop_sea_0,			// 海ステージのエネミーのポップ音
+	SOUND_LABEL_SE_enemyPop_sea_1,			// 海ステージのエネミーのポップ音
+
+	SOUND_LABEL_SE_samePop,					// サメの音
+
+	SOUND_LABEL_SE_piano_do00,				// ピアノ音 ド
+	SOUND_LABEL_SE_piano_re,				// ピアノ音 レ
+	SOUND_LABEL_SE_piano_mi,				// ピアノ音 ミ
+	SOUND_LABEL_SE_piano_fa,				// ピアノ音 ファ
+	SOUND_LABEL_SE_piano_so,				// ピアノ音 ソ
+	SOUND_LABEL_SE_piano_ra,				// ピアノ音 ラ
+	SOUND_LABEL_SE_piano_si,				// ピアノ音 シ
+	SOUND_LABEL_SE_piano_do,				// ピアノ音 ド
 
 	SOUND_LABEL_MAX,	// MAX
 };

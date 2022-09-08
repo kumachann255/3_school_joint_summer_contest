@@ -37,7 +37,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MODEL_ROCKET		"data/MODEL/rocket.obj"
-#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"			// 読み込むモデル名
+#define	MODEL_PLAYER		"data/MODEL/player_sora.obj"	// 読み込むモデル名
 #define	MODEL_TESURI		"data/MODEL/tesuri.obj"			// 読み込むモデル名
 
 #define	VALUE_MOVE			(15.0f)							// 移動量
@@ -51,8 +51,8 @@
 
 #define COOLTIME_BOM		(180)		// ボムのクールタイム
 #define COOLTIME_CUP		(150)		// カップのクールタイム
-#define COOLTIME_OCTOPUS	(180)		// タコのクールタイム
-#define COOLTIME_SHARK		(180)		// サメのクールタイム
+#define COOLTIME_OCTOPUS	(90)		// タコのクールタイム
+#define COOLTIME_SHARK		(270)		// サメのクールタイム
 #define COOLTIME_METEOR		(20)		// メテオのクールタイム
 
 #define PLAYER_MOVE_ROT		(0.03f)		// プレイヤーの左右の移動速度
@@ -364,11 +364,13 @@ void UpdatePlayer(void)
 			{
 			case MODE_GAME_CITY:
 				SetBom();
+				PlaySound(SOUND_LABEL_SE_legato);
 				break;
 
 			case MODE_GAME_SEA:
 				// タコ一本釣り
 				SetTako();
+				PlaySound(SOUND_LABEL_SE_pizzicato);
 				g_Player.cooltime = COOLTIME_OCTOPUS;
 
 				// エネミーのターゲットフラグのリセット
@@ -395,11 +397,13 @@ void UpdatePlayer(void)
 				if (GetCombo() < COMBO_CHANGE_ACTION)
 				{
 					SetBom();	// ガム爆弾
+					PlaySound(SOUND_LABEL_SE_legato);
 					g_Player.cooltime = COOLTIME_BOM;
 				}
 				else
 				{	// 派生攻撃
 					SetCup();	// コーヒーカップ
+					PlaySound(SOUND_LABEL_SE_tremolo);
 					g_Player.cooltime = COOLTIME_CUP;
 				}
 
@@ -415,6 +419,7 @@ void UpdatePlayer(void)
 				{
 					// タコ一本釣り
 					SetTako();
+					PlaySound(SOUND_LABEL_SE_pizzicato);
 					g_Player.cooltime = COOLTIME_OCTOPUS;
 
 					// エネミーのターゲットフラグのリセット
@@ -426,6 +431,7 @@ void UpdatePlayer(void)
 				else
 				{	// 派生攻撃
 					SetSame();	// 恐怖のサメ
+					PlaySound(SOUND_LABEL_SE_fortissimo);
 					g_Player.cooltime = COOLTIME_SHARK;
 				}
 
@@ -434,6 +440,7 @@ void UpdatePlayer(void)
 
 			case MODE_GAME_SKY:
 				SetS_Meteor(g_Player.pos, g_Player.rot.y);
+				PlaySound(SOUND_LABEL_SE_glissando);
 				g_Player.cooltime = COOLTIME_METEOR;
 
 				// エネミーのターゲットフラグのリセット
@@ -465,27 +472,6 @@ void UpdatePlayer(void)
 			g_Player.action = TRUE;
 
 			SetCup();
-		}
-	}
-
-	// 弾発射処理(クラッカー テスト)
-	if (g_Stage != tutorial)
-	{
-		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B))) && (GetCoolTime() == 0))
-		{
-			g_Player.action = TRUE;
-
-			SetCup();
-		}
-	}
-	else
-	{
-		if (((GetKeyboardTrigger(DIK_2)) || (IsButtonTriggered(0, BUTTON_B)))
-			&& (!GetTutorialUse()))
-		{
-			g_Player.action = TRUE;
-
-			SetCracker();
 		}
 	}
 

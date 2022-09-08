@@ -386,6 +386,9 @@ void UpdateSkyEnemy(void)
 			target[0].count++;
 
 			SetRockOn();
+
+			// SEの再生
+			SetEnemyPopSound();
 		}
 
 #ifdef _DEBUG	// デバッグ情報を表示する

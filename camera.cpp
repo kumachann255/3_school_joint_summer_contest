@@ -146,16 +146,6 @@ void UpdateCamera(void)
 			g_Shake = FALSE;
 		}
 	}
-	else if(!g_MoveSky)
-	{
-		////SetCameraAT(pPlayer->pos);
-		//g_Camera.pos = { POS_X_CAM_DEFO, POS_Y_CAM_DEFO, POS_Z_CAM_DEFO };
-
-		//if (GetMode() == MODE_GAME_SKY)
-		//{
-		//	g_Camera.pos = { POS_X_CAM_SKY, POS_Y_CAM_SKY, POS_Z_CAM_SKY };
-		//}
-	}
 
 	// ÉÄÅ[ÉrÅ[íÜÇÃèàóù
 	if (g_MoveSky)

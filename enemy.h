@@ -14,7 +14,7 @@
 
 #define	ENEMY_SIZE		(30.0f)				// 当たり判定の大きさ
 
-#define ENEMY_OFFSET_Y		(15.0f)			// エネミーの足元をあわせる
+#define ENEMY_OFFSET_Y		(24.0f)			// エネミーの足元をあわせる
 
 
 //*****************************************************************************
@@ -76,5 +76,6 @@ void DrawEnemy(void);
 ENEMY *GetEnemy(void);
 BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int num);
 void ResetEnemyTarget(void);
+void SetEnemyPopSound(void);
 
 

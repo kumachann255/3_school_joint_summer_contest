@@ -177,27 +177,9 @@ void DrawTarget(void)
 		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[i]);
 
-		if (g_Target[i].use == FALSE)
-		{
-			// １枚のポリゴンの頂点とテクスチャ座標を設定
-			SetSpriteColor(g_VertexBuffer, g_Target[i].pos.x, g_Target[i].pos.y, g_Target[i].w, g_Target[i].h, 0.0f, 0.0f, 1.0f, 1.0f,
-				XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-
-			SetSpriteColorRotation(g_VertexBuffer, g_Target[i].pos.x, g_Target[i].pos.y, g_Target[i].w, g_Target[i].h,
-				0.0f, 0.0f, 1.0f, 1.0f,
-				XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), g_Target[i].rot.z);
-		}
-		else
-		{
-			// １枚のポリゴンの頂点とテクスチャ座標を設定
-			SetSpriteColor(g_VertexBuffer, g_Target[i].pos.x, g_Target[i].pos.y, g_Target[i].w, g_Target[i].h, 0.0f, 0.0f, 1.0f, 1.0f,
-				XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-
-			SetSpriteColorRotation(g_VertexBuffer, g_Target[i].pos.x, g_Target[i].pos.y, g_Target[i].w, g_Target[i].h,
-				0.0f, 0.0f, 1.0f, 1.0f,
-				XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), g_Target[i].rot.z);
-
-		}
+		SetSpriteColorRotation(g_VertexBuffer, g_Target[i].pos.x, g_Target[i].pos.y, g_Target[i].w, g_Target[i].h,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), g_Target[i].rot.z);
 
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
