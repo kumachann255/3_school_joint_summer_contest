@@ -195,7 +195,7 @@ HRESULT InitGameSea(void)
 	g_Stage = GetStage();
 
 	// 連続再生のSEを再生
-	PlaySound(SOUND_LABEL_SE_stirringSound01);
+	//PlaySound(SOUND_LABEL_SE_stirringSound01);
 
 
 	switch (g_Stage)
