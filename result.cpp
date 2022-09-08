@@ -244,7 +244,7 @@ HRESULT InitResult(void)
 	}
 
 	// BGMçƒê∂
-	PlaySound(SOUND_LABEL_BGM_bgm_stage001);
+	PlaySound(SOUND_LABEL_BGM_bgm_result);
 
 	g_Load = TRUE;
 	return S_OK;

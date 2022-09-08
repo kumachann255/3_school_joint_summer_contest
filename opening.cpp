@@ -20,7 +20,7 @@
 #define TEXTURE_MAX					(6)				// テクスチャの数
 
 #define PAGE_FADE_RATE				(0.02f)			// フェード係数
-#define NEXT_PAGE					(500)			// 自動で次のページに変わる時間
+#define NEXT_PAGE					(525)			// 自動で次のページに変わる時間
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -99,7 +99,7 @@ HRESULT InitOpening(void)
 	g_Count = 0;
 
 	// BGM再生
-	PlaySound(SOUND_LABEL_BGM_bgm_opening_1_1);
+	PlaySound(SOUND_LABEL_BGM_bgm_opening_1_2);
 
 	// 初期化
 

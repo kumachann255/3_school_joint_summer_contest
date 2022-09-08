@@ -414,6 +414,8 @@ void UpdatePlayer(void)
 		}
 	}
 
+
+#ifdef _DEBUG
 	// 弾発射処理(カップ テスト)
 	if (g_Stage != tutorial)
 	{
