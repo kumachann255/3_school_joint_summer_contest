@@ -31,12 +31,17 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY				"data/MODEL/patoka-.obj"		// 読み込むモデル名
-#define	MODEL_ENEMY_01			"data/MODEL/sirobai.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_00			"data/MODEL/enemy00.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_01			"data/MODEL/enemy01.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_02			"data/MODEL/enemy02.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_03			"data/MODEL/enemy03.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_04			"data/MODEL/enemy04.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY_05			"data/MODEL/enemy05.obj"		// 読み込むモデル名
+
 #define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 
-#define ENEMY_TYPE_MAX		(2)							// エネミータイプの最大数
+#define ENEMY_TYPE_MAX		(6)							// エネミータイプの最大数
 
 #define	VALUE_MOVE			(3.0f)						// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)				// 回転量
@@ -101,8 +106,13 @@ static int				count = 0;		// ポップカウント
 //=============================================================================
 HRESULT InitEnemy(void)
 {
-	LoadModel(MODEL_ENEMY, &g_Enemy[0].model);
+	LoadModel(MODEL_ENEMY_00, &g_Enemy[0].model);
 	LoadModel(MODEL_ENEMY_01, &g_Enemy[1].model);
+	LoadModel(MODEL_ENEMY_02, &g_Enemy[2].model);
+	LoadModel(MODEL_ENEMY_03, &g_Enemy[3].model);
+	LoadModel(MODEL_ENEMY_04, &g_Enemy[4].model);
+	LoadModel(MODEL_ENEMY_05, &g_Enemy[5].model);
+
 
 	LoadModel(MODEL_ENEMY_COLLISION, &g_Collision[0].model);
 
@@ -524,6 +534,22 @@ void DrawEnemy(void)
 
 		case 1:
 			DrawModel(&g_Enemy[1].model);
+			break;
+
+		case 2:
+			DrawModel(&g_Enemy[2].model);
+			break;
+
+		case 3:
+			DrawModel(&g_Enemy[3].model);
+			break;
+
+		case 4:
+			DrawModel(&g_Enemy[4].model);
+			break;
+
+		case 5:
+			DrawModel(&g_Enemy[5].model);
 			break;
 		}
 

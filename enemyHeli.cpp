@@ -24,8 +24,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY_HELI		"data/MODEL/heri.obj"		// 読み込むモデル名
-#define	MODEL_HELI_PARTS		"data/MODEL/puropera.obj"	// 読み込むモデル名
+#define	MODEL_ENEMY_HELI		"data/MODEL/enemy09.obj"	// 読み込むモデル名
 
 #define	VALUE_MOVE				(3.0f)						// 移動量
 #define	VALUE_ROTATE			(0.5f)						// 回転量
@@ -62,8 +61,6 @@ void SetEnemyHeli(void);
 //*****************************************************************************
 static ENEMY_HELI	g_EnemyHeli[MAX_ENEMY_HELI];	// ヘリエネミー
 
-static ENEMY_HELI	g_Parts[HELI_PARTS_MAX];		// ヘリエネミー
-
 static XMFLOAT3		control0, control1, control2;	// ヘリエネミーの挙動制御
 
 static BOOL			g_Load = FALSE;
@@ -79,15 +76,14 @@ static int			g_Stage;
 //=============================================================================
 HRESULT InitEnemyHeli(void)
 {
+	LoadModel(MODEL_ENEMY_HELI, &g_EnemyHeli[0].model);
 
 	for (int i = 0; i < MAX_ENEMY_HELI; i++)
 	{
 		g_EnemyHeli[i].load = TRUE;
-		LoadModel(MODEL_ENEMY_HELI, &g_EnemyHeli[i].model);
-
 		g_EnemyHeli[i].pos = XMFLOAT3(0.0f, ENEMY_HELI_OFFSET_Y, 20.0f);
 		g_EnemyHeli[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_EnemyHeli[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		g_EnemyHeli[i].scl = XMFLOAT3(0.5f, 0.5f, 0.5f);
 
 		g_EnemyHeli[i].spd = 0.0f;			// 移動スピードクリア
 		g_EnemyHeli[i].size = ENEMY_HELI_SIZE;	// 当たり判定の大きさ
@@ -121,41 +117,6 @@ HRESULT InitEnemyHeli(void)
 		g_EnemyHeli[i].liveCount = 0;					// 生存時間をリセット
 
 		g_EnemyHeli[i].fuchi = FALSE;
-
-		// エネミーヘリのパーツ
-		// パーツの初期化
-		for (int i = 0; i < HELI_PARTS_MAX; i++)
-		{
-			g_Parts[i].use = FALSE;
-
-			// 親子関係
-			g_Parts[i].parent = &g_EnemyHeli[i];		// ← ここに親のアドレスを入れる
-
-			// パーツの読み込みはまだしていない
-			g_Parts[i].load = 0;
-		}
-
-		g_Parts[0].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Parts[1].pos = XMFLOAT3(7.5f, 0.0f, -32.5f);
-
-		g_Parts[0].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_Parts[1].rot = XMFLOAT3(0.0f, 0.0f, 1.57f);
-
-		g_Parts[0].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		g_Parts[1].scl = XMFLOAT3(0.25f, 1.0f, 0.25f);
-
-
-		g_Parts[0].use = TRUE;
-		g_Parts[1].use = TRUE;
-
-		g_Parts[0].parent = &g_EnemyHeli[i];		// 親をセット
-		g_Parts[0].load = 1;
-		LoadModel(MODEL_HELI_PARTS, &g_Parts[0].model);
-
-		g_Parts[1].parent = &g_EnemyHeli[i];		// 親をセット
-		g_Parts[1].load = 1;
-		LoadModel(MODEL_HELI_PARTS, &g_Parts[1].model);
-
 	}
 
 	g_Stage = GetStage();
@@ -219,12 +180,6 @@ void UpdateEnemyHeli(void)
 			// 攻撃を食らっていなけらば攻撃処理
 			if (g_EnemyHeli[i].isHit == FALSE)
 			{
-				// プロペラ回転処理
-				{
-					g_Parts[0].rot.y += VALUE_ROTATE;
-					g_Parts[1].rot.x += VALUE_ROTATE;
-				}
-
 				// ベジェ曲線での移動
 				{
 					g_EnemyHeli[i].pos.x = ((1.0f - g_EnemyHeli[i].time) * (1.0f - g_EnemyHeli[i].time) * control0.x) +
@@ -458,45 +413,7 @@ void DrawEnemyHeli(void)
 
 
 		// モデル描画
-		DrawModel(&g_EnemyHeli[i].model);
-
-		// パーツの階層アニメーション
-		for (int i = 0; i < HELI_PARTS_MAX; i++)
-		{
-			// ワールドマトリックスの初期化
-			mtxWorld = XMMatrixIdentity();
-
-			// スケールを反映
-			mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-			// 回転を反映
-			mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-			if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
-			{
-				mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
-				// ↑
-				// g_EnemyHeli[i].mtxWorldを指している
-			}
-
-			XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
-
-			// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
-			if (g_Parts[i].use == FALSE) continue;
-
-			// ワールドマトリックスの設定
-			SetWorldMatrix(&mtxWorld);
-
-
-			// モデル描画
-			DrawModel(&g_Parts[i].model);
-		}
+		DrawModel(&g_EnemyHeli[0].model);
 
 		// リムライトの設定
 		SetFuchi(FALSE);
