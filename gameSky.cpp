@@ -139,7 +139,7 @@ HRESULT InitGameSky(void)
 	InitPlayerHP();
 
 	// パーティクルの初期化
-	InitParticle();
+	//InitParticle();
 
 	//// 軌跡の初期化
 	//InitOrbit();
@@ -250,7 +250,7 @@ void UninitGameSky(void)
 	//UninitOrbit();
 
 	// パーティクルの終了処理
-	UninitParticle();
+	//UninitParticle();
 
 	// プレイヤーのHPの終了処理
 	UninitPlayerHP();
@@ -317,7 +317,7 @@ void UpdateGameSky(void)
 	UpdateS_Meteor();
 
 	// パーティクルの更新処理
-	UpdateParticle();
+	//UpdateParticle();
 
 	// 影の更新処理
 	UpdateShadow();
@@ -406,7 +406,7 @@ void DrawGameSky0(void)
 	DrawDome();
 
 	// パーティクルの描画処理
-	DrawParticle();
+	//DrawParticle();
 
 	// ターゲットオブジェクトの描画処理
 	DrawTargetObj();
