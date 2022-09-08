@@ -43,7 +43,7 @@
 #define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// 読み込むモデル名
 
 
-#define ENEMY_TYPE_MAX		(9)						// エネミータイプの最大数
+#define ENEMY_TYPE_MAX		(9)							// エネミータイプの最大数
 
 #define	VALUE_MOVE			(3.0f)						// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)				// 回転量
