@@ -378,7 +378,7 @@ void UpdateEnemy(void)
 				//BOOL ans = TRUE;
 
 				// SEの停止
-				StopSound(SOUND_LABEL_SE_siren01);
+				//StopSound(SOUND_LABEL_SE_siren01);
 
 				// 色を元に戻す
 				g_Enemy[i].fuchi = FALSE;
@@ -635,7 +635,7 @@ void SetEnemy(void)
 		{
 			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
 			// SEのセット
-			PlaySound(SOUND_LABEL_SE_siren01);
+			//PlaySound(SOUND_LABEL_SE_siren01);
 
 			g_Enemy[i].use = TRUE;
 			g_Enemy[i].pos.z = ENEMY_POP_Z;

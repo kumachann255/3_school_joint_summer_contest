@@ -38,27 +38,32 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
 	//// BGM
 	// タイトル
-	{ (char*)"data/BGM/bgm_title.wav", -1 },	// タイトルBGM
 	{ (char*)"data/BGM/bgm_title_0.wav", -1 },	// タイトルBGM
 	{ (char*)"data/BGM/bgm_title_4.wav", -1 },	// タイトルBGM
 
 	// オープニング
 	{ (char*)"data/BGM/bgm_opening_1_2.wav", -1 },	// タイトルBG
 
-	// エンドロール
-	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
+	// チュートリアル
+	{ (char*)"data/BGM/bgm_tutorial.wav", -1 },	// ステージBGM1
 
+	// 街ステージ
+	{ (char*)"data/BGM/bgm_city_stage_1.wav", -1 },	// ステージBGM1
+	{ (char*)"data/BGM/bgm_city_stage_2.wav", -1 },	// ステージBGM1
 
-	{ (char*)"data/BGM/bgm_stage001.wav", -1 },	// ステージBGM1
-	{ (char*)"data/BGM/bgm_stage002.wav", -1 },	// ステージBGM2
+	// 海ステージ
+	{ (char*)"data/BGM/bgm_sea_stage_1.wav", -1 },	// ステージBGM1
+	{ (char*)"data/BGM/bgm_sea_stage_3.wav", -1 },	// ステージBGM2
 
 	// 空ステージ
 	{ (char*)"data/BGM/bgm_sky_stage_1.wav", -1 },	// 空ステージBGMサンプル１
-	{ (char*)"data/BGM/bgm_sky_stage_2.wav", -1 },	// 空ステージBGMサンプル２
 	{ (char*)"data/BGM/bgm_sky_stage_3.wav", -1 },	// 空ステージBGMサンプル３
 
 	// リザルト
 	{ (char*)"data/BGM/bgm_result.wav", -1 },	// タイトルBG
+
+	// エンドロール
+	{ (char*)"data/BGM/bgm_endroll.wav", -1 },	// エンドロールBGM
 
 
 	//// SE
@@ -77,10 +82,10 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/explosionSound01.wav", 0 },	// 粘着物の爆発音
 	{ (char*)"data/SE/gunShot01.wav", 0 },			// 銃声1
 	{ (char*)"data/SE/gunShot02.wav", 0 },			// 銃声2
-	{ (char*)"data/SE/propellerSound01.wav", -1 },	// プロペラ音
+	//{ (char*)"data/SE/propellerSound01.wav", -1 },	// プロペラ音
 	{ (char*)"data/SE/selectBomb01.wav", 0 },		// タイトル選択音
 	{ (char*)"data/SE/shrinkageSound01.wav", 0 },	// 粘着物の収縮音
-	{ (char*)"data/SE/siren01.wav", 0 },			// パトカー音
+	//{ (char*)"data/SE/siren01.wav", 0 },			// パトカー音
 	{ (char*)"data/SE/stickingSound01.wav", 0 },	// 粘着物の張り付き音
 	{ (char*)"data/SE/stirringSound01.wav", 0 },	// 粘着かき混ぜ
 	{ (char*)"data/SE/throwingSound01.wav", 0 },	// 粘着物投擲音
@@ -97,13 +102,12 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/timing_good.wav", 0 },		// GOODの音
 
 	// オープニング
-	{ (char*)"data/SE/nextPage.wav", 0 },			// 
-
+	{ (char*)"data/SE/nextPage.wav", 0 },			// ページをめくる音
 
 	// 空ステージ
-	{ (char*)"data/SE/enemy_pop.wav", 0 },			// エネミーポップ音
-	{ (char*)"data/SE/meteor_shot.wav", 0 },		// メテオ発射音
-	{ (char*)"data/SE/meteor_hit.wav", 0 },			// メテオヒット音
+	{ (char*)"data/SE/enemy_pop.wav", 0 },				// エネミーポップ音
+	{ (char*)"data/SE/meteor_shot.wav", 0 },			// メテオ発射音
+	{ (char*)"data/SE/meteor_hit.wav", 0 },				// メテオヒット音
 	{ (char*)"data/SE/skyEnemy_death_0.wav", 0 },		// エネミー死亡音
 	{ (char*)"data/SE/skyEnemy_death_1.wav", 0 },		// エネミー死亡音
 	{ (char*)"data/SE/skyEnemy_death_2.wav", 0 },		// エネミー死亡音
@@ -257,22 +261,20 @@ BOOL InitSound(HWND hWnd)
 
 	}
 
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_title, 0.25f);
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_stage001, 0.2f);
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_stage002, 0.2f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sea_stage_1, 0.2f);
+	SetSourceVolume(SOUND_LABEL_BGM_bgm_sea_stage_3, 0.2f);
 
 
 	SetSourceVolume(SOUND_LABEL_SE_booingSound01, 0.5f);
 	//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 0.25f);
-	SetSourceVolume(SOUND_LABEL_SE_propellerSound01, 0.3f);
-	SetSourceVolume(SOUND_LABEL_SE_siren01, 0.5f);
+	//SetSourceVolume(SOUND_LABEL_SE_propellerSound01, 0.3f);
+	//SetSourceVolume(SOUND_LABEL_SE_siren01, 0.5f);
 	SetSourceVolume(SOUND_LABEL_SE_stickingSound01, 1.5f);
 	SetSourceVolume(SOUND_LABEL_SE_titleClick04, 0.25f);
 
 
 	// 空ステージのBGMとSEの音量調整
 	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_1, 0.8f);
-	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_2, 1.0f);
 	SetSourceVolume(SOUND_LABEL_BGM_bgm_sky_stage_3, 0.4f);
 
 	SetSourceVolume(SOUND_LABEL_SE_enemy_pop,		 1.0f);

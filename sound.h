@@ -16,30 +16,32 @@ enum
 {
 	//// BGM
 	// タイトル
-	SOUND_LABEL_BGM_bgm_title,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_title_0,		// タイトルBGM
-	SOUND_LABEL_BGM_bgm_title_4,		// タイトルBGM
+	SOUND_LABEL_BGM_bgm_title_0,		// クリア後のタイトルBGM
+	SOUND_LABEL_BGM_bgm_title_4,		// 最初のタイトルBGM
 
 	// オープニング
-	SOUND_LABEL_BGM_bgm_opening_1_2,		// タイトルBGM
+	SOUND_LABEL_BGM_bgm_opening_1_2,	// オープニングBGM
 
-	// エンドロール
-	SOUND_LABEL_BGM_bgm_endroll,	// エンドロールBGM
+	// チュートリアル
+	SOUND_LABEL_BGM_bgm_tutorial,		// チュートリアルBGM
 
+	// 街ステージ
+	SOUND_LABEL_BGM_bgm_city_stage_1,	// 街ステージ１BGM
+	SOUND_LABEL_BGM_bgm_city_stage_2,	// 街ステージ２BGM
 
-
-	SOUND_LABEL_BGM_bgm_stage001,	// ステージBGM
-	SOUND_LABEL_BGM_bgm_stage002,	// リザルトBGM
-
+	// 海ステージ
+	SOUND_LABEL_BGM_bgm_sea_stage_1,	// 海ステージ１BGM
+	SOUND_LABEL_BGM_bgm_sea_stage_3,	// 海ステージ２BGM
 
 	// 空ステージ
-	SOUND_LABEL_BGM_bgm_sky_stage_1,	// 空ステージBGMサンプル１
-	SOUND_LABEL_BGM_bgm_sky_stage_2,	// 空ステージBGMサンプル２
-	SOUND_LABEL_BGM_bgm_sky_stage_3,	// 空ステージBGMサンプル３
+	SOUND_LABEL_BGM_bgm_sky_stage_1,	// 空ステージ１BGM
+	SOUND_LABEL_BGM_bgm_sky_stage_3,	// 空ステージ２BGM
 
 	// リザルト
-	SOUND_LABEL_BGM_bgm_result,	// 空ステージBGMサンプル３
+	SOUND_LABEL_BGM_bgm_result,			// リザルトBGM
 
+	// エンドロール
+	SOUND_LABEL_BGM_bgm_endroll,		// エンドロールBGM
 
 
 	//// SE
@@ -58,10 +60,10 @@ enum
 	SOUND_LABEL_SE_explosionSound01,	// 粘着物の爆発音
 	SOUND_LABEL_SE_gunShot01,			// 銃声1
 	SOUND_LABEL_SE_gunShot02,			// 銃声2
-	SOUND_LABEL_SE_propellerSound01,	// プロペラ音
+	//SOUND_LABEL_SE_propellerSound01,	// プロペラ音
 	SOUND_LABEL_SE_selectBomb01,		// タイトルの選択音
 	SOUND_LABEL_SE_shrinkingSound01,	// 粘着物の収縮音
-	SOUND_LABEL_SE_siren01,				// パトカー音
+	//SOUND_LABEL_SE_siren01,				// パトカー音
 	SOUND_LABEL_SE_stickingSound01,		// 粘着物の張り付き音
 	SOUND_LABEL_SE_stirringSound01,		// 粘着かき混ぜ
 	SOUND_LABEL_SE_throwingSound01,		// 粘着物投擲音
@@ -78,7 +80,7 @@ enum
 	SOUND_LABEL_SE_timing_good,			// GOODの音
 
 	// オープニング
-	SOUND_LABEL_SE_nextPage,			// の音
+	SOUND_LABEL_SE_nextPage,			// オープニングのページをめくる音
 
 	// 空ステージ
 	SOUND_LABEL_SE_enemy_pop,				// エネミーポップ音
