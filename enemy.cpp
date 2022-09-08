@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// ƒGƒlƒ~[ƒ‚ƒfƒ‹ˆ— [enemy.cpp]
-// Author : ŒFàV‹`O{ƒGƒi 
+// ã‚¨ãƒãƒŸãƒ¼ãƒ¢ãƒ‡ãƒ«å‡¦ç† [enemy.cpp]
+// Author : ç†Šæ¾¤ç¾©å¼˜ï¼‹ã‚¨ãƒŠ 
 //
 //=============================================================================
 #include "main.h"
@@ -29,68 +29,68 @@
 #include "sound.h"
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define	MODEL_ENEMY_00			"data/MODEL/enemy00.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_01			"data/MODEL/enemy01.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_02			"data/MODEL/enemy02.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_03			"data/MODEL/enemy03.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_04			"data/MODEL/enemy04.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_05			"data/MODEL/enemy05.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_06			"data/MODEL/enemy06.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_07			"data/MODEL/enemy07.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_08			"data/MODEL/enemy08.obj"		// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
-#define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// “Ç‚İ‚Şƒ‚ƒfƒ‹–¼
+#define	MODEL_ENEMY_00			"data/MODEL/enemy00.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_01			"data/MODEL/enemy01.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_02			"data/MODEL/enemy02.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_03			"data/MODEL/enemy03.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_04			"data/MODEL/enemy04.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_05			"data/MODEL/enemy05.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+
+#define	MODEL_ENEMY_06			"data/MODEL/enemy06.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_07			"data/MODEL/enemy07.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_08			"data/MODEL/enemy08.obj"		// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+#define	MODEL_ENEMY_COLLISION	"data/MODEL/collisionBox.obj"	// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«å
+
+#define ENEMY_TYPE_MAX		(9)						// ã‚¨ãƒãƒŸãƒ¼ã‚¿ã‚¤ãƒ—ã®æœ€å¤§æ•°
+
+#define	VALUE_MOVE			(3.0f)						// ç§»å‹•é‡
+#define	VALUE_ROTATE		(XM_PI * 0.02f)				// å›è»¢é‡
+
+#define ENEMY_SHADOW_SIZE	(0.4f)						// å½±ã®å¤§ãã•
+
+#define ENEMY_POP_Z			(500.0f)					// ã‚¨ãƒãƒŸãƒ¼ã®åˆæœŸãƒãƒƒãƒ—ä½ç½®(zåº§æ¨™)
+#define ENEMY_POP_X			(250)						// ã‚¨ãƒãƒŸãƒ¼ã®åˆæœŸãƒãƒƒãƒ—ã®ç¯„å›²(xåº§æ¨™)
+
+#define ENEMY_GOAL_Z		(70.0f)						// ã‚¨ãƒãƒŸãƒ¼ã®ã‚´ãƒ¼ãƒ«åŸºæº–ä½ç½®(zåº§æ¨™)
+#define ENEMY_GOAL_Z_OFFSET	(60)						// ã‚¨ãƒãƒŸãƒ¼ã®ã‚´ãƒ¼ãƒ«ä½ç½®ã®ä¹±æ•°
+
+#define STAGE_TUTORIAL_MAX_POP	(1)						// æœ€å¤§ã€å ´ã«ä½•ä½“ã‚¨ãƒãƒŸãƒ¼ã‚’å‡ºã™ã‹
+
+#define STAGE0_POP_COUNT	(100)						// ã‚¨ãƒãƒŸãƒ¼ã®ãƒãƒƒãƒ—é–“éš”
+#define STAGE0_MAX_POP		(20)						// æœ€å¤§ã€å ´ã«ä½•ä½“ã‚¨ãƒãƒŸãƒ¼ã‚’å‡ºã™ã‹
+
+#define STAGE1_POP_COUNT	(70)						// ã‚¨ãƒãƒŸãƒ¼ã®ãƒãƒƒãƒ—é–“éš”
+#define STAGE1_MAX_POP		(25)						// æœ€å¤§ã€å ´ã«ä½•ä½“ã‚¨ãƒãƒŸãƒ¼ã‚’å‡ºã™ã‹
+
+#define STAGE2_POP_COUNT	(50)						// ã‚¨ãƒãƒŸãƒ¼ã®ãƒãƒƒãƒ—é–“éš”
+#define STAGE2_MAX_POP		(30)						// æœ€å¤§ã€å ´ã«ä½•ä½“ã‚¨ãƒãƒŸãƒ¼ã‚’å‡ºã™ã‹
+
+#define STAGE3_POP_COUNT	(30)						// ã‚¨ãƒãƒŸãƒ¼ã®ãƒãƒƒãƒ—é–“éš”
+#define STAGE3_MAX_POP		(45)						// æœ€å¤§ã€å ´ã«ä½•ä½“ã‚¨ãƒãƒŸãƒ¼ã‚’å‡ºã™ã‹
 
 
-#define ENEMY_TYPE_MAX		(9)							// ƒGƒlƒ~[ƒ^ƒCƒv‚ÌÅ‘å”
+#define ENEMY_HIT_MOVE		(5.0f)						// å½“ãŸã‚Šåˆ¤å®šå¾Œã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ç§»å‹•é‡
 
-#define	VALUE_MOVE			(3.0f)						// ˆÚ“®—Ê
-#define	VALUE_ROTATE		(XM_PI * 0.02f)				// ‰ñ“]—Ê
+#define ENEMY_ATTACK_0		(300)						// ã‚¨ãƒãƒŸãƒ¼ãŒç‚¹æ»…ã™ã‚‹ã¾ã§ã®æ™‚é–“
+#define ENEMY_ATTACK_1		(120 + ENEMY_ATTACK_0)		// ç‚¹æ»…ãŒæ—©ããªã‚‹ã¾ã§ã®æ™‚é–“
+#define ENEMY_ATTACK_2		(120 + ENEMY_ATTACK_1)		// æ”»æ’ƒã™ã‚‹ã¾ã§ã®æ™‚é–“
 
-#define ENEMY_SHADOW_SIZE	(0.4f)						// ‰e‚Ì‘å‚«‚³
-
-#define ENEMY_POP_Z			(500.0f)					// ƒGƒlƒ~[‚Ì‰Šúƒ|ƒbƒvˆÊ’u(zÀ•W)
-#define ENEMY_POP_X			(250)						// ƒGƒlƒ~[‚Ì‰Šúƒ|ƒbƒv‚Ì”ÍˆÍ(xÀ•W)
-
-#define ENEMY_GOAL_Z		(70.0f)						// ƒGƒlƒ~[‚ÌƒS[ƒ‹Šî€ˆÊ’u(zÀ•W)
-#define ENEMY_GOAL_Z_OFFSET	(60)						// ƒGƒlƒ~[‚ÌƒS[ƒ‹ˆÊ’u‚Ì—”
-
-#define STAGE_TUTORIAL_MAX_POP	(1)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
-
-#define STAGE0_POP_COUNT	(100)						// ƒGƒlƒ~[‚Ìƒ|ƒbƒvŠÔŠu
-#define STAGE0_MAX_POP		(20)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
-
-#define STAGE1_POP_COUNT	(70)						// ƒGƒlƒ~[‚Ìƒ|ƒbƒvŠÔŠu
-#define STAGE1_MAX_POP		(25)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
-
-#define STAGE2_POP_COUNT	(50)						// ƒGƒlƒ~[‚Ìƒ|ƒbƒvŠÔŠu
-#define STAGE2_MAX_POP		(30)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
-
-#define STAGE3_POP_COUNT	(30)						// ƒGƒlƒ~[‚Ìƒ|ƒbƒvŠÔŠu
-#define STAGE3_MAX_POP		(45)						// Å‘åAê‚É‰½‘ÌƒGƒlƒ~[‚ğo‚·‚©
-
-
-#define ENEMY_HIT_MOVE		(5.0f)						// “–‚½‚è”»’èŒãƒAƒjƒ[ƒVƒ‡ƒ“—pˆÚ“®—Ê
-
-#define ENEMY_ATTACK_0		(300)						// ƒGƒlƒ~[‚ª“_–Å‚·‚é‚Ü‚Å‚ÌŠÔ
-#define ENEMY_ATTACK_1		(120 + ENEMY_ATTACK_0)		// “_–Å‚ª‘‚­‚È‚é‚Ü‚Å‚ÌŠÔ
-#define ENEMY_ATTACK_2		(120 + ENEMY_ATTACK_1)		// UŒ‚‚·‚é‚Ü‚Å‚ÌŠÔ
-
-#define ENEMY_BLINKING0		(50)						// “_–Å‚ÌŠÔŠu
-#define ENEMY_BLINKING1		(14)						// “_–Å‚ÌŠÔŠu
+#define ENEMY_BLINKING0		(50)						// ç‚¹æ»…ã®é–“éš”
+#define ENEMY_BLINKING1		(14)						// ç‚¹æ»…ã®é–“éš”
 
 //*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
 void SetEnemy(void);
 
 
 //*****************************************************************************
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 //*****************************************************************************
-static ENEMY			g_Enemy[MAX_ENEMY];				// ƒGƒlƒ~[
-static ENEMY			g_Collision[MAX_ENEMY];			// “–‚½‚è”»’è—p‚Ìƒ{ƒbƒNƒX
+static ENEMY			g_Enemy[MAX_ENEMY];				// ã‚¨ãƒãƒŸãƒ¼
+static ENEMY			g_Collision[MAX_ENEMY];			// å½“ãŸã‚Šåˆ¤å®šç”¨ã®ãƒœãƒƒã‚¯ã‚¹
 
 static VERTEX_3D		*g_Vertex = NULL;				// 
 static MODEL			g_Collision_Vertex;	// 
@@ -99,12 +99,12 @@ static int				g_Stage;
 
 static BOOL				g_Load = FALSE;
 
-static int				count = 0;		// ƒ|ƒbƒvƒJƒEƒ“ƒg
+static int				count = 0;		// ãƒãƒƒãƒ—ã‚«ã‚¦ãƒ³ãƒˆ
 
 
 
 //=============================================================================
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //=============================================================================
 HRESULT InitEnemy(void)
 {
@@ -131,11 +131,11 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		g_Collision[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-		g_Enemy[i].spd = 0.0f;			// ˆÚ“®ƒXƒs[ƒhƒNƒŠƒA
-		g_Enemy[i].size = ENEMY_SIZE;	// “–‚½‚è”»’è‚Ì‘å‚«‚³
+		g_Enemy[i].spd = 0.0f;			// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¯ãƒªã‚¢
+		g_Enemy[i].size = ENEMY_SIZE;	// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 		g_Enemy[i].target = FALSE;
 
-			// ƒ‚ƒfƒ‹‚ÌƒfƒBƒtƒ…[ƒY‚ğ•Û‘¶‚µ‚Ä‚¨‚­BF•Ï‚¦‘Î‰‚Ìˆ×B
+			// ãƒ¢ãƒ‡ãƒ«ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚’ä¿å­˜ã—ã¦ãŠãã€‚è‰²å¤‰ãˆå¯¾å¿œã®ç‚ºã€‚
 		GetModelDiffuse(&g_Enemy[i].model, &g_Enemy[i].diffuse[0]);
 		GetModelDiffuse(&g_Collision[i].model, &g_Collision[i].diffuse[0]);
 
@@ -143,24 +143,24 @@ HRESULT InitEnemy(void)
 		//pos.y -= (ENEMY_OFFSET_Y - 0.1f);
 		//g_Enemy[i].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
 
-		g_Enemy[i].use = FALSE;			// TRUE:¶‚«‚Ä‚é
-		g_Collision[i].use = FALSE;			// TRUE:¶‚«‚Ä‚é
+		g_Enemy[i].use = FALSE;			// TRUE:ç”Ÿãã¦ã‚‹
+		g_Collision[i].use = FALSE;			// TRUE:ç”Ÿãã¦ã‚‹
 
-		g_Enemy[i].hitPos = XMFLOAT3(0.0f, ENEMY_OFFSET_Y, 0.0f);	// ”š”­‚Ì’†S
-		g_Enemy[i].hitRot = XMFLOAT3(0.0f, 0.0f, 0.0f);				// “–‚½‚è”»’èŒãƒAƒjƒ[ƒVƒ‡ƒ“—pƒXƒs[ƒh
-		g_Enemy[i].isHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].hitTime = 0;										// ƒ^ƒCƒ~ƒ“ƒOŠÇ——p
-		g_Enemy[i].liveCount = 0;		// ¶‘¶ŠÔ‚ğƒŠƒZƒbƒg
-		g_Enemy[i].type = 0;			// ƒGƒlƒ~[ƒ^ƒCƒv
+		g_Enemy[i].hitPos = XMFLOAT3(0.0f, ENEMY_OFFSET_Y, 0.0f);	// çˆ†ç™ºã®ä¸­å¿ƒ
+		g_Enemy[i].hitRot = XMFLOAT3(0.0f, 0.0f, 0.0f);				// å½“ãŸã‚Šåˆ¤å®šå¾Œã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ã‚¹ãƒ”ãƒ¼ãƒ‰
+		g_Enemy[i].isHit = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].hitTime = 0;										// ã‚¿ã‚¤ãƒŸãƒ³ã‚°ç®¡ç†ç”¨
+		g_Enemy[i].liveCount = 0;		// ç”Ÿå­˜æ™‚é–“ã‚’ãƒªã‚»ãƒƒãƒˆ
+		g_Enemy[i].type = 0;			// ã‚¨ãƒãƒŸãƒ¼ã‚¿ã‚¤ãƒ—
 
-		g_Enemy[i].cupHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].cupRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].sameHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].sameRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].takoHit = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
-		g_Enemy[i].takoRot = FALSE;									// TRUE:“–‚½‚Á‚Ä‚é
+		g_Enemy[i].cupHit = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].cupRot = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].sameHit = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].sameRot = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].takoHit = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
+		g_Enemy[i].takoRot = FALSE;									// TRUE:å½“ãŸã£ã¦ã‚‹
 
-		g_Enemy[i].radian = 0.0f;									// ‰ñ“]—Ê
+		g_Enemy[i].radian = 0.0f;									// å›è»¢é‡
 
 		g_Enemy[i].fuchi = FALSE;
 
@@ -171,7 +171,7 @@ HRESULT InitEnemy(void)
 
 	g_Vertex = new VERTEX_3D[g_Collision_Vertex.VertexNum];
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	for (int i = 0; i < g_Collision_Vertex.VertexNum; i++)
 	{
 		g_Vertex[i].Position = g_Collision_Vertex.VertexArray[i].Position;
@@ -190,7 +190,7 @@ HRESULT InitEnemy(void)
 }
 
 //=============================================================================
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //=============================================================================
 void UninitEnemy(void)
 {
@@ -209,27 +209,27 @@ void UninitEnemy(void)
 }
 
 //=============================================================================
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 //=============================================================================
 void UpdateEnemy(void)
 {
 	//return;
 
 	
-	{	// popˆ—
+	{	// popå‡¦ç†
 		count++;
 		int useCount = 0;
 
 		switch (g_Stage)
 		{
 		case stage0:
-			// ¡‰½‘ÌoŒ»‚µ‚Ä‚¢‚é‚©‚ğŠm”F
+			// ä»Šä½•ä½“å‡ºç¾ã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèª
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
 				if (g_Enemy[i].use == TRUE) useCount++;
 			}
 
-			// ŠÔŒo‰ß‚ÆƒGƒlƒ~[‚ÌoŒ»”Ÿ‘æ‚Åƒ|ƒbƒv‚·‚é‚©”»’f
+			// æ™‚é–“çµŒéã¨ã‚¨ãƒãƒŸãƒ¼ã®å‡ºç¾æ•°æ¬¡ç¬¬ã§ãƒãƒƒãƒ—ã™ã‚‹ã‹åˆ¤æ–­
 			if ((count % STAGE0_POP_COUNT == 0) && (useCount < STAGE0_MAX_POP))
 			{
 				SetEnemy();
@@ -238,13 +238,13 @@ void UpdateEnemy(void)
 			break;
 
 		case stage1:
-			// ¡‰½‘ÌoŒ»‚µ‚Ä‚¢‚é‚©‚ğŠm”F
+			// ä»Šä½•ä½“å‡ºç¾ã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèª
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
 				if (g_Enemy[i].use == TRUE) useCount++;
 			}
 
-			// ŠÔŒo‰ß‚ÆƒGƒlƒ~[‚ÌoŒ»”Ÿ‘æ‚Åƒ|ƒbƒv‚·‚é‚©”»’f
+			// æ™‚é–“çµŒéã¨ã‚¨ãƒãƒŸãƒ¼ã®å‡ºç¾æ•°æ¬¡ç¬¬ã§ãƒãƒƒãƒ—ã™ã‚‹ã‹åˆ¤æ–­
 			if ((count % STAGE1_POP_COUNT == 0) && (useCount < STAGE1_MAX_POP))
 			{
 				SetEnemy();
@@ -253,13 +253,13 @@ void UpdateEnemy(void)
 			break;
 
 		case tutorial:
-			// ¡‰½‘ÌoŒ»‚µ‚Ä‚¢‚é‚©‚ğŠm”F
+			// ä»Šä½•ä½“å‡ºç¾ã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèª
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
 				if (g_Enemy[i].use == TRUE) useCount++;
 			}
 
-			// ŠÔŒo‰ß‚ÆƒGƒlƒ~[‚ÌoŒ»”Ÿ‘æ‚Åƒ|ƒbƒv‚·‚é‚©”»’f
+			// æ™‚é–“çµŒéã¨ã‚¨ãƒãƒŸãƒ¼ã®å‡ºç¾æ•°æ¬¡ç¬¬ã§ãƒãƒƒãƒ—ã™ã‚‹ã‹åˆ¤æ–­
 			if ((count % STAGE2_POP_COUNT == 0) && (useCount < STAGE_TUTORIAL_MAX_POP))
 			{
 				SetEnemy();
@@ -270,84 +270,84 @@ void UpdateEnemy(void)
 	}
 
 
-	// ƒGƒlƒ~[‚ğ“®‚©‚­ê‡‚ÍA‰e‚à‡‚í‚¹‚Ä“®‚©‚·–‚ğ–Y‚ê‚È‚¢‚æ‚¤‚É‚ËI
+	// ã‚¨ãƒãƒŸãƒ¼ã‚’å‹•ã‹ãå ´åˆã¯ã€å½±ã‚‚åˆã‚ã›ã¦å‹•ã‹ã™äº‹ã‚’å¿˜ã‚Œãªã„ã‚ˆã†ã«ã­ï¼
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
-		if (g_Enemy[i].use == TRUE)			// ‚±‚ÌƒGƒlƒ~[‚ªg‚í‚ê‚Ä‚¢‚éH
+		if (g_Enemy[i].use == TRUE)			// ã“ã®ã‚¨ãƒãƒŸãƒ¼ãŒä½¿ã‚ã‚Œã¦ã„ã‚‹ï¼Ÿ
 		{									// Yes
-			// ¶‘¶ŠÔ‚ğƒJƒEƒ“ƒg
+			// ç”Ÿå­˜æ™‚é–“ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 			if(g_Stage != tutorial) g_Enemy[i].liveCount++;
 
-			// UŒ‚‚ğH‚ç‚Á‚Ä‚¢‚È‚¯‚ç‚ÎUŒ‚ˆ—
+			// æ”»æ’ƒã‚’é£Ÿã‚‰ã£ã¦ã„ãªã‘ã‚‰ã°æ”»æ’ƒå‡¦ç†
 			if (g_Enemy[i].isHit == FALSE)
 			{
-				// UŒ‚ˆ—
+				// æ”»æ’ƒå‡¦ç†
 				if (g_Enemy[i].liveCount > ENEMY_ATTACK_2)
-				{	// UŒ‚‚ğs‚¤
-					// ¶‘¶ŠÔ‚ğƒŠƒZƒbƒg
+				{	// æ”»æ’ƒã‚’è¡Œã†
+					// ç”Ÿå­˜æ™‚é–“ã‚’ãƒªã‚»ãƒƒãƒˆ
 					g_Enemy[i].liveCount = 0;
 
-					// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+					// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ•
 					g_Enemy[i].fuchi = FALSE;
 
 
-					// UŒ‚
+					// æ”»æ’ƒ
 					SetDamageEF(TRUE);
 					// SetCameraShake(20);
 					SetPlayerDamage(1);
 
 				}
 				else if(g_Enemy[i].liveCount > ENEMY_ATTACK_1)
-				{	// Ô‚¢“_–Å‚ª‘‚­‚È‚é
+				{	// èµ¤ã„ç‚¹æ»…ãŒæ—©ããªã‚‹
 				
 					if (g_Enemy[i].liveCount % ENEMY_BLINKING1 < ENEMY_BLINKING1 / 2)
-					{	// ƒIƒuƒWƒFƒNƒg‚ğÔ‚­‚·‚é
+					{	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’èµ¤ãã™ã‚‹
 
-						// ƒŠƒ€ƒ‰ƒCƒgƒIƒ“
+						// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ³
 						g_Enemy[i].fuchi = TRUE;
 					}
 					else
-					{	// ƒIƒuƒWƒFƒNƒg‚ÌF‚ğ–ß‚·
+					{	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è‰²ã‚’æˆ»ã™
 
-						// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+						// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ•
 						g_Enemy[i].fuchi = FALSE;
 					}
 
 
 				}
 				else if (g_Enemy[i].liveCount > ENEMY_ATTACK_0)
-				{	// Ô‚­“_–Å‚·‚é
+				{	// èµ¤ãç‚¹æ»…ã™ã‚‹
 
 					if (g_Enemy[i].liveCount % ENEMY_BLINKING0 < ENEMY_BLINKING0 / 2)
-					{	// ƒIƒuƒWƒFƒNƒg‚ğÔ‚­‚·‚é
+					{	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’èµ¤ãã™ã‚‹
 
-						// ƒŠƒ€ƒ‰ƒCƒgƒIƒ“
+						// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ³
 						g_Enemy[i].fuchi = TRUE;
 					}
 					else
-					{	// ƒIƒuƒWƒFƒNƒg‚ÌF‚ğ–ß‚·
+					{	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è‰²ã‚’æˆ»ã™
 
-						// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+						// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ•
 						g_Enemy[i].fuchi = FALSE;
 					}
 				}
 			}
 
 
-			// –Ú•W’n“_‚Ü‚Å“’B‚µ‚Ä‚¢‚È‚¢ê‡‚ÉˆÚ“®ˆ—
+			// ç›®æ¨™åœ°ç‚¹ã¾ã§åˆ°é”ã—ã¦ã„ãªã„å ´åˆã«ç§»å‹•å‡¦ç†
 			if (g_Enemy[i].pos.z > g_Enemy[i].zGoal)
 			{
 				BOOL ans = TRUE;
-				// ‘¼‚ÌƒpƒgƒJ[‚Æ“–‚½‚Á‚Ä‚¢‚È‚¢‚©‚ğŠm”F
+				// ä»–ã®ãƒ‘ãƒˆã‚«ãƒ¼ã¨å½“ãŸã£ã¦ã„ãªã„ã‹ã‚’ç¢ºèª
 				for (int p = 0; p < MAX_ENEMY; p++)
 				{
-					//“G‚Ì—LŒøƒtƒ‰ƒO‚ğƒ`ƒFƒbƒN‚·‚é
+					//æ•µã®æœ‰åŠ¹ãƒ•ãƒ©ã‚°ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 					if ((g_Enemy[p].use == FALSE) || (i == p) || (g_Enemy[p].isHit == TRUE)) continue;
 
-					//BC‚Ì“–‚½‚è”»’è
+					//BCã®å½“ãŸã‚Šåˆ¤å®š
 					if (CollisionBC(g_Enemy[i].pos, g_Enemy[p].pos, g_Enemy[p].size, g_Enemy[p].size) &&
 						(g_Enemy[i].pos.z > g_Enemy[p].pos.z))
-					{	// “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚ÉˆÚ“®
+					{	// å½“ãŸã£ã¦ã„ãªã„å ´åˆã«ç§»å‹•
 
 						ans = FALSE;
 						break;
@@ -365,34 +365,34 @@ void UpdateEnemy(void)
 			}
 
 
-			// “–‚½‚è”»’è‚æ‚¤‚Ìƒ{ƒbƒNƒX‚ÆˆÊ’u‚ğ‹¤—L‚·‚é
+			// å½“ãŸã‚Šåˆ¤å®šã‚ˆã†ã®ãƒœãƒƒã‚¯ã‚¹ã¨ä½ç½®ã‚’å…±æœ‰ã™ã‚‹
 			g_Collision[i].pos = g_Enemy[i].pos;
 
 			//=======================================================================
-			// «¡‰ñ‚Í“–‚½‚Á‚½Œã‚ÌƒGƒlƒ~[‚Ì‹““®‚ÍUŒ‚ƒIƒuƒWƒFƒNƒg‘¤‚Ås‚¢‚Ü‚µ‚å‚¤I
+			// â†“ä»Šå›ã¯å½“ãŸã£ãŸå¾Œã®ã‚¨ãƒãƒŸãƒ¼ã®æŒ™å‹•ã¯æ”»æ’ƒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå´ã§è¡Œã„ã¾ã—ã‚‡ã†ï¼
 			//=======================================================================
 
-			// ƒGƒlƒ~[‚ÌÁ‹ƒAƒjƒ[ƒVƒ‡ƒ“
-			if (g_Enemy[i].isHit == TRUE)				// UŒ‚‚ª“–‚½‚Á‚Ä‚é‚©H
+			// ã‚¨ãƒãƒŸãƒ¼ã®æ¶ˆå»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+			if (g_Enemy[i].isHit == TRUE)				// æ”»æ’ƒãŒå½“ãŸã£ã¦ã‚‹ã‹ï¼Ÿ
 			{											// Yes
 				//BOOL ans = TRUE;
 
-				// SE‚Ì’â~
+				// SEã®åœæ­¢
 				StopSound(SOUND_LABEL_SE_siren01);
 
-				// F‚ğŒ³‚É–ß‚·
+				// è‰²ã‚’å…ƒã«æˆ»ã™
 				g_Enemy[i].fuchi = FALSE;
 
-				BLAST *blast = GetBlast();		// ”š”jƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»
+				BLAST *blast = GetBlast();		// çˆ†ç ´ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
 
-				// k‚Ü‚éˆ—
+				// ç¸®ã¾ã‚‹å‡¦ç†
 				if ((blast[0].shrink) && (g_Enemy[i].hitTime > 0))
 				{
 					g_Enemy[i].pos.x += (g_Enemy[i].hitPos.x - g_Enemy[i].pos.x) / ENEMY_HIT_MOVE;
 					g_Enemy[i].pos.y += (g_Enemy[i].hitPos.y - g_Enemy[i].pos.y) / ENEMY_HIT_MOVE;
 					g_Enemy[i].pos.z += (g_Enemy[i].hitPos.z - g_Enemy[i].pos.z) / ENEMY_HIT_MOVE;
 
-					// ƒ‰ƒ“ƒ_ƒ€‚É‰ñ“]‚³‚¹‚é
+					// ãƒ©ãƒ³ãƒ€ãƒ ã«å›è»¢ã•ã›ã‚‹
 					g_Enemy[i].hitRot.x = RamdomFloat(2, 6.28f, -6.28f);
 					g_Enemy[i].hitRot.y = RamdomFloat(2, 6.28f, -6.28f);
 					g_Enemy[i].hitRot.z = RamdomFloat(2, 6.28f, -6.28f);
@@ -408,7 +408,7 @@ void UpdateEnemy(void)
 				}
 				
 
-				// ”š’e‚Æˆê‚É—‰º‚·‚é
+				// çˆ†å¼¾ã¨ä¸€ç·’ã«è½ä¸‹ã™ã‚‹
 				BOOL camera = GetCameraSwitch();
 
 				if (camera == FALSE && blast[0].move == FALSE)
@@ -421,7 +421,7 @@ void UpdateEnemy(void)
 					}
 				}
 				
-				//”š’e‚Æˆê‚É‰œ‚ÖˆÚ“®‚·‚é
+				//çˆ†å¼¾ã¨ä¸€ç·’ã«å¥¥ã¸ç§»å‹•ã™ã‚‹
 				if (blast[0].move == TRUE) /*&& (g_Enemy[i].move == TRUE)*/ //&& (g_Enemy[i].hitTime == 0))
 				{
 					g_Enemy[i].pos.z += FIELD_SPEED+ 2.0f;
@@ -439,9 +439,9 @@ void UpdateEnemy(void)
 			TARGETOBJ *targetObj = GetTargetObj();
 			TARGET *target = GetTarget();
 
-			// ƒŒƒCƒLƒƒƒXƒg‚µ‚Ä‘«Œ³‚Ì‚‚³‚ğ‹‚ß‚é
-			XMFLOAT3 hitPosition;								// Œğ“_
-			hitPosition = g_Enemy[i].pos;	// ŠO‚ê‚½—p‚É‰Šú‰»‚µ‚Ä‚¨‚­
+			// ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã—ã¦è¶³å…ƒã®é«˜ã•ã‚’æ±‚ã‚ã‚‹
+			XMFLOAT3 hitPosition;								// äº¤ç‚¹
+			hitPosition = g_Enemy[i].pos;	// å¤–ã‚ŒãŸæ™‚ç”¨ã«åˆæœŸåŒ–ã—ã¦ãŠã
 			bool ans = RayHitEnemy(targetObj[0].pos, camera->pos, &hitPosition, i);
 
 			if ((ans) && (!g_Enemy[i].target) && (g_Enemy[i].use))
@@ -454,32 +454,32 @@ void UpdateEnemy(void)
 				SetRockOn();
 			}
 			////////////////////////////////////////////////////////////////////////
-			//// p¨§Œä
+			//// å§¿å‹¢åˆ¶å¾¡
 			////////////////////////////////////////////////////////////////////////
 
 			//XMVECTOR vx, nvx, up;
 			//XMVECTOR quat;
 			//float len, angle;
 
-			//// ‚Q‚Â‚ÌƒxƒNƒgƒ‹‚ÌŠOÏ‚ğæ‚Á‚Ä”CˆÓ‚Ì‰ñ“]²‚ğ‹‚ß‚é
+			//// ï¼’ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®å¤–ç©ã‚’å–ã£ã¦ä»»æ„ã®å›è»¢è»¸ã‚’æ±‚ã‚ã‚‹
 			//g_Enemy[i].upVector = normal;
 			//up = { 0.0f, 1.0f, 0.0f, 0.0f };
 			//vx = XMVector3Cross(up, XMLoadFloat3(&g_Enemy[i].upVector));
 
-			//// ‹‚ß‚½‰ñ“]²‚©‚çƒNƒH[ƒ^ƒjƒIƒ“‚ğì‚èo‚·
+			//// æ±‚ã‚ãŸå›è»¢è»¸ã‹ã‚‰ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ä½œã‚Šå‡ºã™
 			//nvx = XMVector3Length(vx);
 			//XMStoreFloat(&len, nvx);
 			//nvx = XMVector3Normalize(vx);
 			//angle = asinf(len);
 			//quat = XMQuaternionRotationNormal(nvx, angle);
 
-			//// ‘O‰ñ‚ÌƒNƒH[ƒ^ƒjƒIƒ“‚©‚ç¡‰ñ‚ÌƒNƒH[ƒ^ƒjƒIƒ“‚Ü‚Å‚Ì‰ñ“]‚ğŠŠ‚ç‚©‚É‚·‚é
+			//// å‰å›ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‹ã‚‰ä»Šå›ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã¾ã§ã®å›è»¢ã‚’æ»‘ã‚‰ã‹ã«ã™ã‚‹
 			//quat = XMQuaternionSlerp(XMLoadFloat4(&g_Enemy[i].quaternion), quat, 0.05f);
 
-			//// ¡‰ñ‚ÌƒNƒH[ƒ^ƒjƒIƒ“‚ÌŒ‹‰Ê‚ğ•Û‘¶‚·‚é
+			//// ä»Šå›ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®çµæœã‚’ä¿å­˜ã™ã‚‹
 			//XMStoreFloat4(&g_Enemy[i].quaternion, quat);
 
-			//// ‰e‚àƒvƒŒƒCƒ„[‚ÌˆÊ’u‚É‡‚í‚¹‚é
+			//// å½±ã‚‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã«åˆã‚ã›ã‚‹
 			//XMFLOAT3 pos = g_Enemy[i].pos;
 			//pos.y -= (ENEMY_OFFSET_Y - 0.1f);
 			//SetPositionShadow(g_Enemy[i].shadowIdx, pos);
@@ -488,51 +488,51 @@ void UpdateEnemy(void)
 }
 
 //=============================================================================
-// •`‰æˆ—
+// æç”»å‡¦ç†
 //=============================================================================
 void DrawEnemy(void)
 {
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-	// ƒtƒHƒO—LŒø
+	// ãƒ•ã‚©ã‚°æœ‰åŠ¹
 	SetFogEnable(TRUE);
 
-	// ƒJƒŠƒ“ƒO–³Œø
+	// ã‚«ãƒªãƒ³ã‚°ç„¡åŠ¹
 	SetCullingMode(CULL_MODE_NONE);
 
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		if (g_Enemy[i].use == FALSE) continue;
 
-		// ƒŠƒ€ƒ‰ƒCƒg‚Ìİ’è
+		// ãƒªãƒ ãƒ©ã‚¤ãƒˆã®è¨­å®š
 		SetFuchi(g_Enemy[i].fuchi);
 
-		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 		mtxWorld = XMMatrixIdentity();
 
-		// ƒXƒP[ƒ‹‚ğ”½‰f
+		// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ 
 		mtxScl = XMMatrixScaling(g_Enemy[i].scl.x, g_Enemy[i].scl.y, g_Enemy[i].scl.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-		// ‰ñ“]‚ğ”½‰f
+		// å›è»¢ã‚’åæ˜ 
 		mtxRot = XMMatrixRotationRollPitchYaw(g_Enemy[i].rot.x, g_Enemy[i].rot.y + XM_PI, g_Enemy[i].rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-		// ƒNƒH[ƒ^ƒjƒIƒ“‚ğ”½‰f
+		// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’åæ˜ 
 		XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Enemy[i].quaternion));
 		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
 
-		// ˆÚ“®‚ğ”½‰f
+		// ç§»å‹•ã‚’åæ˜ 
 		mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 		SetWorldMatrix(&mtxWorld);
 
 		XMStoreFloat4x4(&g_Enemy[i].mtxWorld, mtxWorld);
 
 
-		// ƒ‚ƒfƒ‹•`‰æ
+		// ãƒ¢ãƒ‡ãƒ«æç”»
 		switch (g_Enemy[i].type)
 		{
 		case 0:
@@ -542,7 +542,7 @@ void DrawEnemy(void)
 		case 1:
 			DrawModel(&g_Enemy[1].model);
 			break;
-		
+	
 		case 2:
 			DrawModel(&g_Enemy[2].model);
 			break;
@@ -572,51 +572,51 @@ void DrawEnemy(void)
 			break;
 		}
 
-#ifdef _DEBUG	// ƒfƒoƒbƒO‚Ì‚İ•\¦
+#ifdef _DEBUG	// ãƒ‡ãƒãƒƒã‚°æ™‚ã®ã¿è¡¨ç¤º
 
-		// ƒRƒŠƒWƒ‡ƒ“—p‚Ìƒ{ƒbƒNƒX‚Ì•`‰æ
-		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+		// ã‚³ãƒªã‚¸ãƒ§ãƒ³ç”¨ã®ãƒœãƒƒã‚¯ã‚¹ã®æç”»
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 		mtxWorld = XMMatrixIdentity();
 
-		// ƒXƒP[ƒ‹‚ğ”½‰f
+		// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ 
 		mtxScl = XMMatrixScaling(g_Collision[i].scl.x, g_Collision[i].scl.y, g_Collision[i].scl.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-		// ‰ñ“]‚ğ”½‰f
+		// å›è»¢ã‚’åæ˜ 
 		mtxRot = XMMatrixRotationRollPitchYaw(g_Collision[i].rot.x, g_Collision[i].rot.y + XM_PI, g_Collision[i].rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-		// ƒNƒH[ƒ^ƒjƒIƒ“‚ğ”½‰f
+		// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’åæ˜ 
 		quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Collision[i].quaternion));
 		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
 
-		// ˆÚ“®‚ğ”½‰f
+		// ç§»å‹•ã‚’åæ˜ 
 		mtxTranslate = XMMatrixTranslation(g_Collision[i].pos.x, g_Collision[i].pos.y, g_Collision[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 		SetWorldMatrix(&mtxWorld);
 		XMStoreFloat4x4(&g_Collision[i].mtxWorld, mtxWorld);
 
-		// ƒ‚ƒfƒ‹•`‰æ
+		// ãƒ¢ãƒ‡ãƒ«æç”»
 		DrawModel(&g_Collision[0].model);
 
 
-		// ƒŠƒ€ƒ‰ƒCƒg‚Ìİ’è
+		// ãƒªãƒ ãƒ©ã‚¤ãƒˆã®è¨­å®š
 		SetFuchi(FALSE);
 #endif
 
 	}
 	
-	// ƒtƒHƒO—LŒø
+	// ãƒ•ã‚©ã‚°æœ‰åŠ¹
 	SetFogEnable(FALSE);
 
-	// ƒJƒŠƒ“ƒOİ’è‚ğ–ß‚·
+	// ã‚«ãƒªãƒ³ã‚°è¨­å®šã‚’æˆ»ã™
 	SetCullingMode(CULL_MODE_BACK);
 }
 
 //=============================================================================
-// ƒGƒlƒ~[‚Ìæ“¾
+// ã‚¨ãƒãƒŸãƒ¼ã®å–å¾—
 //=============================================================================
 ENEMY *GetEnemy()
 {
@@ -625,7 +625,7 @@ ENEMY *GetEnemy()
 
 
 //=============================================================================
-// ƒGƒlƒ~[‚Ì”­¶
+// ã‚¨ãƒãƒŸãƒ¼ã®ç™ºç”Ÿ
 //=============================================================================
 void SetEnemy(void)
 {
@@ -634,7 +634,7 @@ void SetEnemy(void)
 		if (g_Enemy[i].use == FALSE)
 		{
 			//SetSourceVolume(SOUND_LABEL_SE_carHorn01, 1.0f);
-			// SE‚ÌƒZƒbƒg
+			// SEã®ã‚»ãƒƒãƒˆ
 			PlaySound(SOUND_LABEL_SE_siren01);
 
 			g_Enemy[i].use = TRUE;
@@ -644,20 +644,20 @@ void SetEnemy(void)
 			g_Enemy[i].cupHit = FALSE;
 			g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-			// xÀ•W‚Íƒ‰ƒ“ƒ_ƒ€
+			// xåº§æ¨™ã¯ãƒ©ãƒ³ãƒ€ãƒ 
 			g_Enemy[i].pos.x = (float)(rand() % ENEMY_POP_X) - ((float)ENEMY_POP_X / 2.0f);
 			if (g_Stage == tutorial) g_Enemy[i].pos.x = 0.0f;
 
-			// “’B’n“_‚àƒ‰ƒ“ƒ_ƒ€
+			// åˆ°é”åœ°ç‚¹ã‚‚ãƒ©ãƒ³ãƒ€ãƒ 
 			g_Enemy[i].zGoal = (float)(rand() % ENEMY_GOAL_Z_OFFSET) + ENEMY_GOAL_Z;
 			if (g_Stage == tutorial) g_Enemy[i].zGoal = 150.0f;
 
 			g_Enemy[i].liveCount = 0;
 
-			// ƒGƒlƒ~[‚Ìƒ^ƒCƒv‚ğƒ‰ƒ“ƒ_ƒ€‚É
+			// ã‚¨ãƒãƒŸãƒ¼ã®ã‚¿ã‚¤ãƒ—ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«
 			g_Enemy[i].type = rand() % ENEMY_TYPE_MAX;
 
-			// ƒŠƒ€ƒ‰ƒCƒgƒIƒt
+			// ãƒªãƒ ãƒ©ã‚¤ãƒˆã‚ªãƒ•
 			g_Enemy[i].fuchi = FALSE;
 
 			XMFLOAT3 pos = g_Enemy[i].pos;
@@ -682,7 +682,7 @@ BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int nu
 	XMFLOAT3 end = Pos;
 	XMFLOAT3 org = *HitPosition;
 
-	// •K—v”•ªŒŸõ‚ğŒJ‚è•Ô‚·
+	// å¿…è¦æ•°åˆ†æ¤œç´¢ã‚’ç¹°ã‚Šè¿”ã™
 	for (int i = 0; i < g_Collision_Vertex.VertexNum - 2; i++)
 	{
 		XMFLOAT3 p0 = g_Vertex[i].Position;
@@ -700,7 +700,7 @@ BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int nu
 		p2.y += g_Collision[num].pos.y;
 		p2.z += g_Collision[num].pos.z;
 
-		// OŠpƒ|ƒŠƒSƒ“‚¾‚©‚ç‚Q–‡•ª‚Ì“–‚½‚è”»’è
+		// ä¸‰è§’ãƒãƒªã‚´ãƒ³ã ã‹ã‚‰ï¼’æšåˆ†ã®å½“ãŸã‚Šåˆ¤å®š
 		BOOL ans = RayCast(p0, p2, p1, start, end, HitPosition, &g_Vertex[i].Normal);
 		if (ans)
 		{
@@ -708,14 +708,14 @@ BOOL RayHitEnemy(XMFLOAT3 Pos, XMFLOAT3 CameraPos, XMFLOAT3 *HitPosition, int nu
 		}
 	}
 
-	// ‰½ˆ‚É‚à“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½
+	// ä½•å‡¦ã«ã‚‚å½“ãŸã£ã¦ã„ãªã‹ã£ãŸæ™‚
 	*HitPosition = org;
 	return FALSE;
 }
 
 
-// ƒƒbƒNƒIƒ“‚³‚ê‚Ä‚¢‚é‚©‚Ì‰Šú‰»
-// UŒ‚‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é
+// ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã•ã‚Œã¦ã„ã‚‹ã‹ã®åˆæœŸåŒ–
+// æ”»æ’ƒã—ãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹
 void ResetEnemyTarget(void)
 {
 	for (int i = 0; i < MAX_ENEMY; i++)
@@ -724,7 +724,7 @@ void ResetEnemyTarget(void)
 	}
 }
 
-// ƒXƒNƒŠ[ƒ“À•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 //void SetScreenToWorld(void)
 //{
 //	TARGET *target = GetTarget();
