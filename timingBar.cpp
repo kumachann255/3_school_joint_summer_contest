@@ -17,6 +17,7 @@
 #include "combo.h"
 #include "timingEffect.h"
 #include "timingtext.h"
+#include "gameSky.h"
 
 
 //*****************************************************************************
@@ -37,9 +38,16 @@
 
 #define ONPU_SPEED					(5.0f)		// 音符の速度
 
+// 空ステージ
+#define ONPU_SPEED_SKY_1				(0.3f)		// 空ステージ1の音符の速度
+#define ONPU_SPEED_SKY_2				(0.3f)		// 空ステージ2の音符の速度
+
 #define DISTANCE_ONPU_CITY			(40)		// 街ステージの音符の間隔(フレーム)
 #define DISTANCE_ONPU_SEA			(40)		// 海ステージの音符の間隔(フレーム)
-#define DISTANCE_ONPU_SKY			(40)		// 空ステージの音符の間隔(フレーム)
+
+// 空ステージ
+#define DISTANCE_ONPU_SKY_1			(58)		// 空ステージ1の音符の間隔(フレーム)
+#define DISTANCE_ONPU_SKY_2			(50)		// 空ステージ2の音符の間隔(フレーム)
 
 
 enum {
@@ -149,7 +157,6 @@ HRESULT InitTImingBar(void)
 	{
 	case MODE_GAME_CITY:
 		g_Distance = DISTANCE_ONPU_CITY;
-
 		break;
 
 	case MODE_GAME_SEA:
@@ -158,7 +165,20 @@ HRESULT InitTImingBar(void)
 		break;
 
 	case MODE_GAME_SKY:
-		g_Distance = DISTANCE_ONPU_SKY;
+		switch (GetStage())
+		{
+		case stage0:
+			g_Distance = DISTANCE_ONPU_SKY_1;
+
+				break;
+
+		case stage1:
+			g_Distance = DISTANCE_ONPU_SKY_2;
+				break;
+
+		default:
+			break;
+		}
 
 		break;
 
@@ -199,6 +219,59 @@ void UninitTImingBar(void)
 //=============================================================================
 void UpdateTImingBar(void)
 {
+	switch (GetMode())
+	{
+	case MODE_GAME_SKY:
+		switch (GetStage())
+		{
+		case stage0:
+			SetNoteMove(ONPU_SPEED_SKY_1);
+			break;
+
+		case stage1:
+			SetNoteMove(ONPU_SPEED_SKY_2);
+			break;
+		default:
+			break;
+		}
+		//for (int i = 0; i < NOTE_MAX; i++)
+		//{
+		//	if (g_Note[i].use)
+		//	{
+		//		// 左へ移動させる
+		//		g_Note[i].pos.x -= ONPU_SPEED_SKY;
+		//		if (g_Note[i].pos.x < -50.0f) g_Note[i].use = FALSE;
+
+		//		// タイミングターゲットに到達した時の処理
+		//		if ((g_Note[i].pos.x < TARGET_X) && (!g_Note[i].seDid))
+		//		{
+		//			// SEをならす
+		//			PlaySound(SOUND_LABEL_SE_rhythm);
+		//			g_Note[i].seDid = TRUE;
+
+		//			// g_Timing_oldがGOOD以上のとき攻撃のクールタイム中は全て押されたことにする
+		//			if ((GetPlayer()->cooltime > 0) && (g_Timing_old >= good))
+		//			{
+		//				SetNoteTiming(g_Timing_old);
+		//			}
+		//		}
+		//	}
+		//}
+
+
+		//// 音符の出現
+		//g_Time++;
+
+		//// 一定時間で音符を出現させる
+		//if (g_Time % g_Distance == 0)
+		//{
+		//	SetNote();
+		//}
+   
+		break;
+	default:
+		break;
+	}
 	for (int i = 0; i < NOTE_MAX; i++)
 	{
 		if (g_Note[i].use)
@@ -402,4 +475,44 @@ void SetNoteTiming(int timing)
 	// エフェクトを発生(エフェクトの種類はランダム)
 	SetTimingEffect(rand() % TEFFECT_TYPE_MAX);
 	SetTimingText(timing);
+}
+
+
+
+void SetNoteMove(float onpu_speed)
+{
+	for (int i = 0; i < NOTE_MAX; i++)
+	{
+		if (g_Note[i].use)
+		{
+			// 左へ移動させる
+			g_Note[i].pos.x -= onpu_speed;
+			if (g_Note[i].pos.x < -50.0f) g_Note[i].use = FALSE;
+
+			// タイミングターゲットに到達した時の処理
+			if ((g_Note[i].pos.x < TARGET_X) && (!g_Note[i].seDid))
+			{
+				// SEをならす
+				PlaySound(SOUND_LABEL_SE_rhythm);
+				g_Note[i].seDid = TRUE;
+
+				// g_Timing_oldがGOOD以上のとき攻撃のクールタイム中は全て押されたことにする
+				if ((GetPlayer()->cooltime > 0) && (g_Timing_old >= good))
+				{
+					SetNoteTiming(g_Timing_old);
+				}
+			}
+		}
+	}
+
+
+	// 音符の出現
+	g_Time++;
+
+	// 一定時間で音符を出現させる
+	if (g_Time % g_Distance == 0)
+	{
+		SetNote();
+	}
+
 }

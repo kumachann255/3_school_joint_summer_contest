@@ -20,7 +20,7 @@
 #define TEXTURE_MAX					(6)				// テクスチャの数
 
 #define PAGE_FADE_RATE				(0.02f)			// フェード係数
-#define NEXT_PAGE					(250)			// 自動で次のページに変わる時間
+#define NEXT_PAGE					(500)			// 自動で次のページに変わる時間
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -99,7 +99,7 @@ HRESULT InitOpening(void)
 	g_Count = 0;
 
 	// BGM再生
-	PlaySound(SOUND_LABEL_BGM_bgm_title);
+	PlaySound(SOUND_LABEL_BGM_bgm_opening_1_1);
 
 	// 初期化
 
@@ -180,7 +180,7 @@ void UpdateOpening(void)
 		{// Enter押したら、ステージを切り替える
 
 			// SEの挿入（モード選択音）
-			PlaySound(SOUND_LABEL_SE_selectBomb01);
+			PlaySound(SOUND_LABEL_SE_nextPage);
 
 			g_PageFade = FADE_OUT;
 			g_Count = 0;
@@ -223,7 +223,7 @@ void UpdateOpening(void)
 	if (g_Count == NEXT_PAGE)
 	{
 		// SEの挿入（モード選択音）
-		PlaySound(SOUND_LABEL_SE_selectBomb01);
+		PlaySound(SOUND_LABEL_SE_nextPage);
 
 		g_PageFade = FADE_OUT;
 		g_Count = 0;
