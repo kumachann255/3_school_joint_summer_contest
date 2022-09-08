@@ -1,71 +1,71 @@
 //=============================================================================
 //
-// ƒGƒlƒ~[ƒ‚ƒfƒ‹ˆ— [enemy.h]
-// Author : ŒFàV‹`O{ƒGƒi
+// ã‚¨ãƒãƒŸãƒ¼ãƒ¢ãƒ‡ãƒ«å‡¦ç† [enemy.h]
+// Author : ç†Šæ¾¤ç¾©å¼˜ï¼‹ã‚¨ãƒŠ
 //
 //=============================================================================
 #pragma once
 
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒžã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define MAX_ENEMY		(50)					// ƒGƒlƒ~[‚Ì”
+#define MAX_ENEMY		(50)					// ã‚¨ãƒãƒŸãƒ¼ã®æ•°
 
-#define	ENEMY_SIZE		(30.0f)				// “–‚½‚è”»’è‚Ì‘å‚«‚³
+#define	ENEMY_SIZE		(30.0f)				// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
 
-#define ENEMY_OFFSET_Y		(15.0f)			// ƒGƒlƒ~[‚Ì‘«Œ³‚ð‚ ‚í‚¹‚é
+#define ENEMY_OFFSET_Y		(24.0f)			// ã‚¨ãƒãƒŸãƒ¼ã®è¶³å…ƒã‚’ã‚ã‚ã›ã‚‹
 
 //*****************************************************************************
-// \‘¢‘Ì’è‹`
+// æ§‹é€ ä½“å®šç¾©
 //*****************************************************************************
 struct ENEMY
 {
-	XMFLOAT4X4			mtxWorld;			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX
-	XMFLOAT3			pos;				// ƒ‚ƒfƒ‹‚ÌˆÊ’u
-	XMFLOAT3			rot;				// ƒ‚ƒfƒ‹‚ÌŒü‚«(‰ñ“])
-	XMFLOAT3			scl;				// ƒ‚ƒfƒ‹‚Ì‘å‚«‚³(ƒXƒP[ƒ‹)
+	XMFLOAT4X4			mtxWorld;			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒžãƒˆãƒªãƒƒã‚¯ã‚¹
+	XMFLOAT3			pos;				// ãƒ¢ãƒ‡ãƒ«ã®ä½ç½®
+	XMFLOAT3			rot;				// ãƒ¢ãƒ‡ãƒ«ã®å‘ã(å›žè»¢)
+	XMFLOAT3			scl;				// ãƒ¢ãƒ‡ãƒ«ã®å¤§ãã•(ã‚¹ã‚±ãƒ¼ãƒ«)
 
 	BOOL				use;
 	BOOL				load;
-	DX11_MODEL			model;				// ƒ‚ƒfƒ‹î•ñ
-	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// ƒ‚ƒfƒ‹‚ÌF
+	DX11_MODEL			model;				// ãƒ¢ãƒ‡ãƒ«æƒ…å ±
+	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// ãƒ¢ãƒ‡ãƒ«ã®è‰²
 
-	float				spd;				// ˆÚ“®ƒXƒs[ƒh
-	float				size;				// “–‚½‚è”»’è‚Ì‘å‚«‚³
-	int					shadowIdx;			// ‰e‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
+	float				spd;				// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰
+	float				size;				// å½“ãŸã‚Šåˆ¤å®šã®å¤§ãã•
+	int					shadowIdx;			// å½±ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
 	
-	float				zGoal;				// zÀ•W‚ÌƒvƒŒƒCƒ„[‚É‹ß‚Ã‚­Å‘å‹——£
+	float				zGoal;				// zåº§æ¨™ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è¿‘ã¥ãæœ€å¤§è·é›¢
 
-	XMFLOAT3			hitPos;				// ”š”­‚ÌÀ•W
-	XMFLOAT3			hitRot;				// “–‚½‚è”»’èŒãƒAƒjƒ[ƒVƒ‡ƒ“—pA–ˆ‰ñ‚ÌˆÚ“®—Ê
-	BOOL				isHit;				// “–‚½‚Á‚Ä‚éƒtƒ‰ƒO TRUE:“–‚½‚Á‚Ä‚¢‚é
+	XMFLOAT3			hitPos;				// çˆ†ç™ºã®åº§æ¨™
+	XMFLOAT3			hitRot;				// å½“ãŸã‚Šåˆ¤å®šå¾Œã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ã€æ¯Žå›žã®ç§»å‹•é‡
+	BOOL				isHit;				// å½“ãŸã£ã¦ã‚‹ãƒ•ãƒ©ã‚° TRUE:å½“ãŸã£ã¦ã„ã‚‹
 	
-	BOOL				cupHit;				// “–‚½‚Á‚Ä‚éƒtƒ‰ƒO TRUE:“–‚½‚Á‚Ä‚¢‚é
-	BOOL				cupRot;				// ƒpƒ‰ƒ[ƒ^[ƒZƒbƒg—piƒJƒbƒvj
-	BOOL				sameHit;				// “–‚½‚Á‚Ä‚éƒtƒ‰ƒO TRUE:“–‚½‚Á‚Ä‚¢‚é
-	BOOL				sameRot;				// ƒpƒ‰ƒ[ƒ^[ƒZƒbƒg—piƒJƒbƒvj
-	BOOL				takoHit;				// “–‚½‚Á‚Ä‚éƒtƒ‰ƒO TRUE:“–‚½‚Á‚Ä‚¢‚é
-	BOOL				takoRot;				// ƒpƒ‰ƒ[ƒ^[ƒZƒbƒg—piƒJƒbƒvj
+	BOOL				cupHit;				// å½“ãŸã£ã¦ã‚‹ãƒ•ãƒ©ã‚° TRUE:å½“ãŸã£ã¦ã„ã‚‹
+	BOOL				cupRot;				// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚»ãƒƒãƒˆç”¨ï¼ˆã‚«ãƒƒãƒ—ï¼‰
+	BOOL				sameHit;				// å½“ãŸã£ã¦ã‚‹ãƒ•ãƒ©ã‚° TRUE:å½“ãŸã£ã¦ã„ã‚‹
+	BOOL				sameRot;				// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚»ãƒƒãƒˆç”¨ï¼ˆã‚«ãƒƒãƒ—ï¼‰
+	BOOL				takoHit;				// å½“ãŸã£ã¦ã‚‹ãƒ•ãƒ©ã‚° TRUE:å½“ãŸã£ã¦ã„ã‚‹
+	BOOL				takoRot;				// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚»ãƒƒãƒˆç”¨ï¼ˆã‚«ãƒƒãƒ—ï¼‰
 
-	float				radian;				// ‰ñ“]—Ê
+	float				radian;				// å›žè»¢é‡
 
-	int					hitTime;			// ˆÚ“®ŽžŠÔ
-	int					liveCount;			// ƒ|ƒbƒv‚µ‚Ä‚©‚ç‚ÌŽžŠÔ‚ðŠÇ—
+	int					hitTime;			// ç§»å‹•æ™‚é–“
+	int					liveCount;			// ãƒãƒƒãƒ—ã—ã¦ã‹ã‚‰ã®æ™‚é–“ã‚’ç®¡ç†
 
-	int					type;				// ƒGƒlƒ~[‚Ìƒ^ƒCƒvi0:ƒpƒgƒJ[A1:”’ƒoƒC
-	BOOL				fuchi;				// ƒŠƒ€ƒ‰ƒCƒg‚ÌƒIƒ“ƒIƒt
+	int					type;				// ã‚¨ãƒãƒŸãƒ¼ã®ã‚¿ã‚¤ãƒ—ï¼ˆ0:ãƒ‘ãƒˆã‚«ãƒ¼ã€1:ç™½ãƒã‚¤
+	BOOL				fuchi;				// ãƒªãƒ ãƒ©ã‚¤ãƒˆã®ã‚ªãƒ³ã‚ªãƒ•
 
-	// ƒNƒH[ƒ^ƒjƒIƒ“
-	XMFLOAT4			quaternion;	// ƒNƒH[ƒ^ƒjƒIƒ“
-	XMFLOAT3			upVector;	// Ž©•ª‚ª—§‚Á‚Ä‚¢‚éŠ
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	XMFLOAT4			quaternion;	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	XMFLOAT3			upVector;	// è‡ªåˆ†ãŒç«‹ã£ã¦ã„ã‚‹æ‰€
 
 	BOOL target;
 
 };
 
 //*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
 HRESULT InitEnemy(void);
 void UninitEnemy(void);
